@@ -1057,3 +1057,25 @@ export JSON의 외부 컨슈머 존재 여부. semantic.json의 changed 비율�
 커밋 전 `git grep`으로 API 키 패턴(sk-proj/sk-bf/sk-ant/AIza)·이메일 검색 → 0건. 단, HANDOFF.md에 로컬 경로(`C:\Users\honor\...`)는 그대로 들어감(비밀 아님).
 
 다음 세션에서 변경 후: 각 폴더에서 `git add -A && git commit && git push` (브랜치 main, origin 설정 완료).
+
+---
+
+## 35. 동료 프런트엔드(매니저 대시보드) 로컬 기동 + 교육영상 모션그래픽 전환 검토 (2026-11-11 23:20, 계획 단계·미승인)
+
+### 35-a. 동료 프런트엔드 "HELABA Knowledge Intelligence" (확인됨)
+- 원본: `C:\Users\honor\OneDrive\Desktop\helaba-frontend-setup (2).mjs` (665 KB 인스톨러, 95개 파일을 쓰기만 함, 네트워크·exec 호출 없음 — 실행 전 전수 확인).
+- 생성 위치: `C:\Users\honor\OneDrive\Desktop\helaba-knowledge-intelligence\` (git 저장소 밖). `.env` = `.env.example` 복사(VITE_AI_MODE=mock, 프록시 대상 http://localhost:8000, VITE_AI_FALLBACK=true).
+- 스택: Vite 6 + React 19 + Tailwind 4 + framer-motion + recharts + react-router 7. `npm install` 134 패키지 21 s.
+- 기동: 백그라운드 셸 `byiizp521`, http://127.0.0.1:5173 (Vite ready 1 s). 스크린샷 `C:\Users\honor\OneDrive\Desktop\helaba_frontend_landing.png`.
+- 라우트: `/`(랜딩), `/praesentation`, `/dashboard`, `/workforce`, `/reviews`, `/documents`, `/expert-knowledge`, `/knowledge-base`, `/content-studio`, `/learning`, `/assistant`, `/analytics`, `/settings`, `/help`.
+- 백엔드 계약(`API.md`, VITE_AI_MODE=backend일 때만 호출, camelCase 고정): GET `/api/health`, POST `/api/documents/analyze`(multipart), POST `/api/interviews/reply`, POST `/api/content/generate`(Folien/Video-Szenen/Podcast/Quiz), POST `/api/assistant/ask`. **우리 앱(8000, prefix /api)·RAG(8001)와 경로·필드가 다름 → "적용"하려면 어댑터 라우트가 필요.** 아직 아무것도 연결 안 함.
+
+### 35-b. 교육영상을 모션그래픽 스타일로 (사용자 요청, 참고: yumyumvideos motion-graphics 페이지, YouTube iGPA5t0cMlk)
+- 현재 파이프라인(`rag-service/app/video.py`): LLM 대본 1회 → 장면당 **정지 PNG**(`frames.py`, Pillow) → Piper WAV → ffmpeg stillimage 이어붙이기. 움직임이 전혀 없어서 "딱딱"함. 측정치 147.6 s(옵션 B 검증 시).
+- 참고 링크 확인: yumyumvideos 페이지는 "clean and modern", 예시 길이 35 s~2:51. YouTube 영상 내용은 WebFetch로 확인 못 함(내비게이션만 반환) → 미확인.
+- 가능 여부: **가능.** HyperFrames 0.7.54가 전역 설치돼 있고 스킬(hyperframes, faceless-explainer, hyperframes-registry) 존재. ffmpeg 8.1 있음.
+- 제안(승인 대기):
+  - 안 1 (권장): `style=motion` 옵션 추가. script.json(장면 5종) → HTML 컴포지션 템플릿(GSAP: 제목 슬라이드인, 불릿 순차 등장, 날짜 배지, 진행바, 아이콘/도형, Helaba 색) → `npx hyperframes render` → mp4 → ffmpeg로 WAV 합성. 기존 정지화면 파이프라인은 폴백으로 유지. 비용 3~4 h + 렌더 시간 **미측정**(30 fps × 90 s ≈ 2,700 프레임, headless Chromium). 되돌리기 쉬움(새 모듈 + 플래그).
+  - 안 2 (저위험): ffmpeg만으로 zoompan(Ken Burns) + xfade 전환 + 불릿 단계별 PNG. 1~2 h. 여전히 슬라이드쇼 느낌.
+  - 안 3: 동료 프런트의 AI Content Studio는 "Video-Szenen"을 브라우저에서 재생(mp4 아님). 우리 script.json 장면을 `/api/content/generate` 형식으로 주면 그쪽 플레이어로도 보여줄 수 있음(어댑터 필요).
+- 하지 않을 것(승인 전): video.py/frames.py 수정, HyperFrames 프로젝트 생성, 동료 프런트와 백엔드 연결.
