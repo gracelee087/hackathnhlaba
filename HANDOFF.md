@@ -987,3 +987,19 @@ export JSON의 외부 컨슈머 존재 여부. semantic.json의 changed 비율�
 - **실행 테스트(int_4981f54b92, 사용자의 20:04 인터뷰, 단위 2개)**: API로 단위 2개 confirm → publish 42 s → RAG에 approved fact 2건 생성(fact:5ff20c49e0 ADD/unsupported "Abgleich von Unterlagen…", fact:53f6efe045 NO_CHANGE/correct "Risikomanagement bei ungeregelter Nachfolge"), department Kreditanalyse. → video 147.6 s → http://localhost:8001/videos/wissenssicherung-firmenkundenkredite-mit_1bc265/training.mp4 (102 s, 독일어, 초급, 장면: 제목·크레딧 프로세스와 두 voten·v2 결정권자·v2 한도…). HTTP 200.
 - 주의: 영상 개요는 "승인된 지식 + 문서"에서 LLM이 고르므로 방금 반영한 fact가 반드시 장면에 나오지는 않음(이번 영상은 문서 내용 위주). 최신 인터뷰 int_3654dd400c는 사용자가 화면에서 직접 Bestätigen → 버튼 흐름을 보도록 손대지 않음(0/4 확인 상태 그대로).
 - RAG fact 수 16 → 24(인터뷰) → 26(publish 2건 approved).
+
+---
+
+## 34. Git 저장소 2개 생성 + 첫 커밋·푸시 (2026-11-11 23:05, 완료, 확인됨)
+
+사용자 결정: 폴더 2개를 각각 별도 저장소로, **Public** (Helaba/LBS 이름이 문서에 들어가는 점은 사전에 알림).
+
+| 저장소 | 로컬 경로 | 첫 커밋 | 파일 수 |
+|---|---|---|---|
+| https://github.com/gracelee087/hackathnhlaba | `C:\Users\honor\OneDrive\Desktop\hackathnhlaba` | `3987c6a` main | 91 |
+| https://github.com/gracelee087/expert-knowledge-platform | `C:\Users\honor\OneDrive\Desktop\expert-knowledge-platform` | `1075220` main | 76 |
+
+제외(.gitignore)로 확인한 것: `.env`(두 곳 모두), `rag-service/data/`, `tasks/`(주최측 PDF 배포 금지), `.venv`, `node_modules`, `.next`, `backend/data`(ekep.db), `*.log`, `*.mp4`.
+커밋 전 `git grep`으로 API 키 패턴(sk-proj/sk-bf/sk-ant/AIza)·이메일 검색 → 0건. 단, HANDOFF.md에 로컬 경로(`C:\Users\honor\...`)는 그대로 들어감(비밀 아님).
+
+다음 세션에서 변경 후: 각 폴더에서 `git add -A && git commit && git push` (브랜치 main, origin 설정 완료).
