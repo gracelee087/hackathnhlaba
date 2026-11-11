@@ -1109,4 +1109,4 @@ export JSON의 외부 컨슈머 존재 여부. semantic.json의 changed 비율�
 ### 36-e. 수정: 이력 장면 취소선 (2026-11-11 23:50, 확인됨)
 - 사용자 지적 "1분 20초에 빨간 밑줄": history 장면의 카드 중앙에 절대 위치 선 1개를 그려서 두 줄 텍스트에서는 첫 줄 아래 밑줄처럼 보였음.
 - 수정: 텍스트를 `span.old`로 감싸고 `background-image: linear-gradient` + `box-decoration-break: clone`으로 **줄마다** 선을 그림. GSAP로 `backgroundSize "0% 5px" → "100% 5px"` 0.4 s 애니메이션(왼→오). 스냅샷 80.5 s에서 3개 카드 모든 줄 관통 확인, lint 오류 0.
-- RAG 서버는 motion.py를 호출 시점에 import하므로 재시작 불필요(모듈은 이미 로드됨 → **재시작 필요**: `bj9bu2tzx` 중지 후 재기동할 것. 아래 참조).
+- RAG 서버 재시작 완료: `bj9bu2tzx` 중지 → 새 셸 `bz8ufja32`(8001, 로그 hlb_tmp/server_8001x.log). 바탕화면 데모 mp4 재렌더는 백그라운드 `bnhhtuadm`(로그 hlb_tmp/rerender.log, 끝나면 `training_motion_demo.mp4` 덮어씀).
