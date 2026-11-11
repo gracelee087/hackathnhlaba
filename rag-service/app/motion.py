@@ -158,12 +158,12 @@ def scene_section(sid, sc, dur, lang, i, total, history=False):
 #{sid}-rail{{position:absolute;left:916px;top:220px;width:4px;height:{rail_h}px;background:{LIGHT};border-radius:2px}}
 #{sid}-railfill{{position:absolute;left:916px;top:220px;width:4px;height:{rail_h}px;background:{CORAL if history else BLUE};border-radius:2px}}
 #{sid}-cards{{position:absolute;left:992px;top:200px;width:808px}}
-#{sid}-cards .card .strike{{position:absolute;left:34px;right:34px;top:50%;height:5px;background:{CORAL};border-radius:3px}}
+#{sid}-cards .card .old{{background-image:linear-gradient({CORAL},{CORAL});background-repeat:no-repeat;background-size:0% 5px;background-position:0 56%;-webkit-box-decoration-break:clone;box-decoration-break:clone;padding:0 2px}}
 #{sid}-stamp{{position:absolute;left:560px;top:700px;padding:14px 34px;border:8px solid {CORAL};border-radius:18px;color:{CORAL};font-size:72px;
   font-weight:900;letter-spacing:0.12em;text-transform:uppercase}}
 """
-    cards = "".join(f'<div class="card" id="{sid}-c{k}"><span class="badge">{k + 1}</span>{_esc(b)}'
-                    + ('<div class="strike"></div>' if history else "") + "</div>" for k, b in enumerate(sc["bullets"]))
+    cards = "".join(f'<div class="card" id="{sid}-c{k}"><span class="badge">{k + 1}</span>'
+                    + (f'<span class="old">{_esc(b)}</span>' if history else _esc(b)) + "</div>" for k, b in enumerate(sc["bullets"]))
     note = f'<div id="{sid}-note">{_esc(sc["note"])}</div>' if sc.get("note") else ""
     stamp = f'<div id="{sid}-stamp"><span>{t["old"]}</span></div>' if history else ""
     body = (f'<div class="blob" id="{sid}-blob"></div>{_counter(i, total, lang, False)}'
@@ -182,7 +182,7 @@ def scene_section(sid, sc, dur, lang, i, total, history=False):
           + cards_js)
     if history:
         for k, tk in enumerate(times):
-            js += (f'tl.fromTo("#{sid}-c{k} .strike", {{scaleX:0, transformOrigin:"left"}}, {{scaleX:1, duration:0.35, ease:"power3.inOut"}}, {_js(tk + 0.75)});\n'
+            js += (f'tl.fromTo("#{sid}-c{k} .old", {{backgroundSize:"0% 5px"}}, {{backgroundSize:"100% 5px", duration:0.4, ease:"power3.inOut"}}, {_js(tk + 0.75)});\n'
                    f'tl.to("#{sid}-c{k}", {{color:"#4f5f6b", duration:0.3}}, {_js(tk + 0.8)});\n')
         stamp_at = max(dur - 3.2, (times[-1] + 1.2) if times else 1.0)
         js += (f'tl.fromTo("#{sid}-stamp", {{opacity:0, scale:1.9, rotation:-8}}, {{opacity:1, scale:1, rotation:-8, duration:0.35, ease:"back.out(1.3)"}}, {_js(stamp_at)});\n')
