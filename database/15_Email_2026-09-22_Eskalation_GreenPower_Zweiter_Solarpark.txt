@@ -1,0 +1,33 @@
+From: Stefan Krüger <stefan.krueger@mainbank.example>
+To: Dr. Petra Hoffmann <petra.hoffmann@mainbank.example>
+Cc: Daniel Fischer <daniel.fischer@mainbank.example>, Jochen Richter <jochen.richter@mainbank.example>
+Date: 2026-09-22
+Subject: Eskalation GreenPower - zweiter Solarpark, Gesamtobligo EUR 7,5 Mio., Kreditausschuss
+
+Synthetisches Demo-Dokument für die FUTURY Build Days #4 (Knowledge Transfer). Die MainBank AG, ihre Kunden und alle Zahlen sind erfunden.
+
+Liebe Petra,
+
+Daniel hat am Freitag die KA-01 für den zweiten Solarpark von GreenPower Solutions eingestellt: "Solarpark Wetterau", 6 MWp, Finanzierungsanfrage EUR 3,5 Mio. Ich eskaliere den Fall hiermit formal gemäß Eskalationsrichtlinie und dokumentiere das heute in KreditPortal.
+
+Die Lage:
+
+- Bestehendes Obligo: EUR 4,0 Mio. Projektkredit "Odenwald-Süd" (Beschluss Kreditausschuss 24.03.2026, Auszahlung in Tranchen, bislang etwa die Hälfte abgerufen).
+- Neue Anfrage: EUR 3,5 Mio. für "Wetterau".
+- Gesamtobligo nach Zusage: EUR 7,5 Mio. Das liegt über der Grenze von EUR 5,0 Mio., ab der der Kreditausschuss entscheidet. Unabhängig davon gilt: Projektfinanzierungen über EUR 3,0 Mio. gehen immer in den Ausschuss. Beide Kriterien sind erfüllt, der Weg ist also eindeutig.
+
+Terminplanung:
+
+- Nächste reguläre Sitzung des Kreditausschusses: Dienstag, 20.10.2026 (Vorsitz Herr Richter).
+- Formale Frist für die Einreichung (KV-02 plus Anlage): 5 Arbeitstage vor der Sitzung, also spätestens 13.10.2026.
+- Ich möchte, dass wir eine Woche früher einreichen, also bis zum 07.10.2026. Der Fall ist groß genug, dass die Mitglieder Rückfragen stellen werden, und ich will nicht, dass wir die Sitzung wegen einer fehlenden Anlage verlieren.
+
+Was der Ausschuss erfahrungsgemäß verlangen wird: Sensitivitätsrechnungen. Bitte lege dem Cashflow-Modell für Wetterau mindestens die beiden Szenarien Strompreis -20 % und Bauverzug +6 Monate bei und zeige, wie sich DSCR (Durchschnitt und Minimum nach Inbetriebnahme) sowie die tilgungsfreie Zeit in beiden Fällen verhalten. Herr Richter hat beim ersten Park bereits nachgefragt, warum wir nur das Basisszenario vorgelegt hatten; das sollte uns nicht zweimal passieren. Bitte auch die Konzentration auf einen Abnehmer (Stadtwerke Darmstadt bei beiden Parks?) und die Abhängigkeit vom gleichen EPC-Unternehmer adressieren.
+
+Ein Hinweis zur Erwartungshaltung bei Daniel und beim Kunden: Eine Eilentscheidung durch zwei Vorstandsmitglieder kommt hier nicht in Frage. Die Eilentscheidung ist für zeitkritische Fälle mit klarem Sachverhalt gedacht, nicht für eine zweite Projektfinanzierung, die das Obligo fast verdoppelt. Der Kunde muss mit einer Entscheidung frühestens am 20.10.2026 planen, und wir sollten offen sagen, dass der Ausschuss Nachforderungen stellen kann.
+
+Daniel, bitte stelle sicher, dass PPA-Entwurf, EPC-Entwurf mit Fertigstellungsgarantie und der Eigenkapitalnachweis (wieder 25 %?) bis Ende September in KreditPortal liegen, sonst läuft die 10-Arbeitstage-Frist für die Kreditvorlage nicht.
+
+Vielen Dank und viele Grüße
+Stefan Krüger
+Leiter Kreditanalyse

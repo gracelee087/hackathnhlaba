@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Knowledge Transfer Console</title>
+<style>
+  :root { --bg:#f5f6f8; --side:#1f2937; --side2:#111827; --card:#fff; --line:#e5e7eb; --text:#111827; --muted:#6b7280;
+          --green:#15803d; --green-bg:#dcfce7; --red:#b91c1c; --red-bg:#fee2e2; --blue:#1d4ed8; --blue-bg:#dbeafe;
+          --amber:#b45309; --amber-bg:#fef3c7; --gray:#4b5563; --gray-bg:#e5e7eb; --accent:#2563eb; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; font-size:14px; color:var(--text); background:var(--bg); display:flex; min-height:100vh; }
+  a { color:var(--accent); }
+  /* sidebar */
+  nav { width:232px; background:var(--side); color:#e5e7eb; padding:20px 14px; display:flex; flex-direction:column; gap:4px; position:sticky; top:0; height:100vh; }
+  nav .brand { font-weight:700; font-size:15px; color:#fff; padding:4px 10px 14px; border-bottom:1px solid #374151; margin-bottom:10px; }
+  nav .brand small { display:block; font-weight:400; color:#9ca3af; font-size:11px; margin-top:3px; }
+  nav button { all:unset; display:flex; align-items:center; justify-content:space-between; padding:9px 10px; border-radius:6px; cursor:pointer; color:#d1d5db; }
+  nav button:hover { background:#374151; color:#fff; }
+  nav button.active { background:var(--accent); color:#fff; }
+  nav .count { background:rgba(255,255,255,.18); border-radius:10px; padding:1px 7px; font-size:11px; }
+  nav .count.red { background:var(--red); }
+  nav .foot { margin-top:auto; font-size:11px; color:#9ca3af; line-height:1.5; padding:10px; border-top:1px solid #374151; }
+  nav .foot input { width:100%; margin-top:4px; background:#111827; border:1px solid #374151; color:#e5e7eb; border-radius:4px; padding:4px 6px; font-size:12px; }
+  /* main */
+  main { flex:1; padding:24px 32px; max-width:1200px; }
+  header.top { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:18px; }
+  header.top h1 { font-size:20px; margin:0; }
+  header.top .sub { color:var(--muted); font-size:12px; }
+  section.view { display:none; } section.view.active { display:block; }
+  .kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px; }
+  .kpi { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:14px 16px; cursor:pointer; }
+  .kpi:hover { border-color:var(--accent); }
+  .kpi .n { font-size:28px; font-weight:700; line-height:1.1; }
+  .kpi .l { color:var(--muted); font-size:12px; margin-top:4px; }
+  .kpi.red .n { color:var(--red); } .kpi.blue .n { color:var(--blue); } .kpi.amber .n { color:var(--amber); }
+  .grid2 { display:grid; grid-template-columns:3fr 2fr; gap:16px; }
+  .panel { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:16px 18px; margin-bottom:16px; }
+  .panel h2 { font-size:14px; margin:0 0 12px; display:flex; justify-content:space-between; align-items:center; }
+  .panel h2 .hint { font-weight:400; color:var(--muted); font-size:12px; }
+  .card { border:1px solid var(--line); border-radius:6px; padding:12px 14px; margin-bottom:10px; background:#fff; }
+  .card.alert { border-left:4px solid var(--red); }
+  .card.gap { border-left:4px solid var(--blue); }
+  .card .who { font-weight:600; }
+  .card pre { white-space:pre-wrap; font-family:inherit; margin:6px 0; line-height:1.45; }
+  .meta { color:var(--muted); font-size:12px; line-height:1.5; }
+  .kb { background:#f9fafb; border-radius:4px; padding:7px 9px; font-size:12px; margin:6px 0; }
+  .badge { display:inline-block; font-size:11px; padding:2px 8px; border-radius:10px; margin-right:6px; background:var(--gray-bg); color:var(--gray); font-weight:600; }
+  .badge.current, .badge.approved, .badge.correct { background:var(--green-bg); color:var(--green); }
+  .badge.possibly_outdated, .badge.rejected { background:var(--gray-bg); color:var(--gray); }
+  .badge.needs_review, .badge.contradicted { background:var(--red-bg); color:var(--red); }
+  .badge.unsupported { background:var(--blue-bg); color:var(--blue); }
+  .badge.draft, .badge.plausible, .badge.not_yet_valid { background:var(--amber-bg); color:var(--amber); }
+  .badge.interview { background:#ede9fe; color:#5b21b6; }
+  .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  input[type=text], input[type=date], input[type=number], select, textarea { font:inherit; padding:7px 9px; border:1px solid #d1d5db; border-radius:6px; background:#fff; }
+  input[type=text] { flex:1; min-width:160px; } textarea { width:100%; min-height:64px; }
+  button.btn { font:inherit; padding:7px 14px; border-radius:6px; border:1px solid #d1d5db; background:#fff; cursor:pointer; }
+  button.btn:hover { border-color:#9ca3af; }
+  button.ok { background:var(--green); border-color:var(--green); color:#fff; }
+  button.bad { background:#fff; border-color:var(--red); color:var(--red); }
+  button.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .tabs { display:flex; gap:6px; margin-bottom:12px; }
+  .tabs button { font:inherit; padding:6px 12px; border-radius:16px; border:1px solid #d1d5db; background:#fff; cursor:pointer; }
+  .tabs button.active { background:var(--text); color:#fff; border-color:var(--text); }
+  table { border-collapse:collapse; width:100%; } th, td { text-align:left; padding:8px 8px; border-bottom:1px solid var(--line); vertical-align:top; } th { color:var(--muted); font-weight:600; font-size:12px; }
+  .empty { color:var(--muted); padding:12px 0; } .error { color:var(--red); }
+  .bar { display:flex; height:8px; border-radius:4px; overflow:hidden; background:var(--gray-bg); margin:6px 0 4px; }
+  .bar span { display:block; height:100%; }
+  .chat { display:flex; flex-direction:column; gap:10px; max-height:520px; overflow:auto; padding:4px 2px; }
+  .msg { max-width:82%; padding:10px 14px; border-radius:12px; line-height:1.45; white-space:pre-wrap; }
+  .msg.ai { background:var(--blue-bg); align-self:flex-start; border-bottom-left-radius:3px; }
+  .msg.ex { background:#fff; border:1px solid var(--line); align-self:flex-end; border-bottom-right-radius:3px; }
+  .msg .tag { display:block; font-size:11px; color:var(--muted); margin-bottom:4px; }
+  .badge.opening, .badge.deepen { background:var(--blue-bg); color:var(--blue); } .badge.gap { background:#ede9fe; color:#5b21b6; }
+  .badge.contradiction { background:var(--red-bg); color:var(--red); } .badge.handover { background:var(--amber-bg); color:var(--amber); } .badge.closing { background:var(--green-bg); color:var(--green); }
+  .chip { display:inline-block; font-size:11px; padding:2px 8px; border-radius:10px; border:1px solid var(--line); margin:2px 4px 2px 0; background:#fff; }
+  .chip.done { background:var(--green-bg); border-color:var(--green-bg); color:var(--green); }
+  details summary { cursor:pointer; color:var(--muted); font-size:12px; }
+  @media (max-width: 900px) { body { flex-direction:column; } nav { width:auto; height:auto; position:static; } .kpis { grid-template-columns:repeat(2,1fr); } .grid2 { grid-template-columns:1fr; } main { padding:16px; } }
+</style>
+</head>
+<body>
+<nav>
+  <div class="brand">Knowledge Transfer<small>MainBank AG &middot; credit manager console</small></div>
+  <button data-view="dashboard" class="active"><span>Dashboard</span></button>
+  <button data-view="interview"><span>AI interview</span></button>
+  <button data-view="queue"><span>Review queue</span><span class="count" id="n_queue">0</span></button>
+  <button data-view="knowledge"><span>Knowledge base</span><span class="count" id="n_docs">0</span></button>
+  <button data-view="ask"><span>Ask &amp; check</span></button>
+  <button data-view="export"><span>Training export</span></button>
+  <div class="foot">
+    Reviewer<input type="text" id="reviewer" value="Stefan Krüger">
+    As of<input type="date" id="asof">
+    Language<select id="lang"><option value="en">English</option><option value="de">Deutsch</option></select>
+    <div id="health" style="margin-top:8px">connecting...</div>
+  </div>
+</nav>
+
+<main>
+  <header class="top"><h1 id="title">Dashboard</h1><span class="sub" id="subtitle">What needs a human decision today</span></header>
+
+  <!-- DASHBOARD -->
+  <section class="view active" id="view-dashboard">
+    <div class="kpis">
+      <div class="kpi red" onclick="go('queue','needs_review')"><div class="n" id="k_review">-</div><div class="l">Needs review (conflicts with current rules)</div></div>
+      <div class="kpi amber" onclick="go('queue','draft')"><div class="n" id="k_draft">-</div><div class="l">Waiting for approval</div></div>
+      <div class="kpi blue" onclick="go('queue','draft')"><div class="n" id="k_gap">-</div><div class="l">Documentation gaps (expert knowledge not in any document)</div></div>
+      <div class="kpi" onclick="go('queue','approved')"><div class="n" id="k_approved">-</div><div class="l">Approved into the knowledge base</div></div>
+    </div>
+    <div class="grid2">
+      <div>
+        <div class="panel"><h2>To do now <span class="hint">conflicts first, then undocumented knowledge, then the rest</span></h2><div id="todo" class="empty">loading...</div></div>
+      </div>
+      <div>
+        <div class="panel"><h2>Departing experts</h2><div id="experts" class="empty">loading...</div></div>
+        <div class="panel"><h2>Knowledge base status <span class="hint" id="kb_asof"></span></h2><div id="kbstatus" class="empty">loading...</div></div>
+        <div class="panel"><h2>Source data updates <span class="hint">written to database/_updates/ on approval</span></h2><div id="updates" class="empty">loading...</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INTERVIEW -->
+  <section class="view" id="view-interview">
+    <div class="grid2">
+      <div>
+        <div class="panel"><h2>Interview session <span class="hint">the AI asks, the expert answers, every answer is checked against the knowledge base</span></h2>
+          <div class="row"><input type="text" id="i_expert" value="Dr. Petra Hoffmann" placeholder="expert"><input type="text" id="i_topic" value="SME corporate lending and credit analysis" placeholder="topic"><button class="btn primary" id="i_start" onclick="startInterview()">Start interview</button></div>
+          <div id="chat" class="chat" style="margin-top:12px"><div class="empty">Choose the expert and topic, then start. The first question comes from the documents on the topic.</div></div>
+          <div id="i_answer_box" style="display:none;margin-top:10px">
+            <textarea id="i_answer" placeholder="the expert's answer"></textarea>
+            <div class="row" style="margin-top:6px"><button class="btn" onclick="demoAnswer()">Use demo answer</button><span style="flex:1"></span><button class="btn primary" id="i_send" onclick="sendAnswer()">Store answer, check it, next question</button></div>
+            <div id="i_status" class="meta" style="margin-top:4px"></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="panel"><h2>Why this question</h2><div id="i_why" class="empty">-</div></div>
+        <div class="panel"><h2>Coverage</h2><div id="i_cov" class="empty">-</div></div>
+        <div class="panel"><h2>Captured in this session</h2><div id="i_facts" class="empty">nothing yet</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUEUE -->
+  <section class="view" id="view-queue">
+    <div class="tabs" id="tabs">
+      <button data-status="needs_review">Needs review</button>
+      <button data-status="draft" class="active">Draft</button>
+      <button data-status="approved">Approved</button>
+      <button data-status="rejected">Rejected</button>
+    </div>
+    <div id="facts" class="empty">loading...</div>
+    <details style="margin-top:18px"><summary>Add an interview fact by hand (simulates the Interview Interface)</summary>
+      <div class="panel" style="margin-top:8px">
+        <div class="row"><input type="text" id="f_expert" placeholder="expert" value="Dr. Petra Hoffmann"><input type="text" id="f_topic" placeholder="topic" value="SME corporate lending and credit analysis"></div>
+        <div class="row" style="margin-top:8px"><input type="text" id="f_question" placeholder="question"></div>
+        <textarea id="f_answer" placeholder="answer" style="margin-top:8px"></textarea>
+        <div class="row" style="margin-top:8px"><label>interviewed_at <input type="date" id="f_date"></label><label>valid_from <input type="date" id="f_valid_from"></label><span style="flex:1"></span><button class="btn primary" onclick="addFact()">Store and auto-check</button></div>
+        <div id="f_result" class="meta"></div>
+      </div>
+    </details>
+  </section>
+
+  <!-- KNOWLEDGE -->
+  <section class="view" id="view-knowledge">
+    <div class="panel"><h2>Documents <span class="hint">validity judged at the as-of date in the sidebar</span></h2><div id="docs" class="empty">loading...</div></div>
+  </section>
+
+  <!-- ASK -->
+  <section class="view" id="view-ask">
+    <div class="panel"><h2>Search the knowledge base</h2>
+      <div class="row"><input type="text" id="s_q" value="approval limits for corporate loans: four-eyes, Head of Credit Analysis, Credit Committee">
+        <label>k <input type="number" id="s_k" value="8" min="1" max="30" style="width:64px"></label>
+        <select id="s_origin"><option value="">documents + interviews</option><option value="document">documents only</option><option value="interview">interviews only</option></select>
+        <label><input type="checkbox" id="s_unapproved"> include unapproved</label>
+        <button class="btn primary" onclick="doSearch()">Search</button></div>
+      <div id="s_result" class="empty" style="margin-top:10px">no search yet</div></div>
+    <div class="panel"><h2>Check a statement <span class="hint">correct / plausible / possibly outdated / contradicted / unsupported at the as-of date</span></h2>
+      <div class="row"><input type="text" id="c_statement" value="Together with the relationship manager I can decide up to EUR 1.0 million."><button class="btn primary" onclick="doCheck()">Check</button></div>
+      <div id="c_result" class="empty" style="margin-top:10px">no check yet</div></div>
+  </section>
+
+  <!-- EXPORT -->
+  <section class="view" id="view-export">
+    <div class="panel"><h2>Training package for the Media block <span class="hint">only approved knowledge, current and historical kept apart</span></h2>
+      <div class="row"><input type="text" id="e_topic" value="credit approval limits and policy exceptions for corporate loans">
+        <select id="e_audience"><option>beginner</option><option>advanced</option><option>expert</option></select>
+        <label><input type="checkbox" id="e_outline" checked> training outline with quiz (LLM, ~20 s)</label>
+        <button class="btn primary" onclick="doExport()">Export</button>
+        <button class="btn" onclick="doVideo()" title="outline + German script + Piper voice + ffmpeg, about 1 minute">&#127909; Training video (DE)</button></div>
+      <div id="e_video"></div>
+      <div id="e_result" class="empty" style="margin-top:10px">no export yet</div></div>
+  </section>
+</main>
+
+<script>
+const BASE = location.protocol.startsWith("http") ? location.origin : "http://localhost:8001";
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const today = new Date().toISOString().slice(0, 10);
+$("asof").value = today; $("f_date").value = today;
+const TITLES = { dashboard: ["Dashboard", "What needs a human decision today"], queue: ["Review queue", "Nothing enters training without an approval here"],
+                 knowledge: ["Knowledge base", "Documents with their validity window and version chain"], ask: ["Ask & check", "Time-aware search and statement verdicts"],
+                 export: ["Training export", "Package for slides, script, quiz and video"] };
+TITLES.interview = ["AI interview", "Structured knowledge-transfer interview, grounded in the knowledge base"];
+let currentStatus = "draft";
+let cache = { facts: {}, docs: [] };
+
+async function api(path, opts = {}) {
+  const r = await fetch(BASE + path, opts);
+  const text = await r.text();
+  let data; try { data = JSON.parse(text); } catch { data = { detail: text }; }
+  if (!r.ok) throw new Error((data && data.detail) ? (typeof data.detail === "string" ? data.detail : JSON.stringify(data.detail)) : r.status + " " + r.statusText);
+  return data;
+}
+const badge = (s, label) => `<span class="badge ${esc(s)}">${esc(label || s).replace(/_/g, " ")}</span>`;
+const hitCard = h => `<div class="card">${badge(h.validity_status)}${badge(h.origin)}${h.review_status !== "approved" ? badge(h.review_status) : ""}${h.score !== undefined ? `<span class="badge">score ${h.score}</span>` : ""}
+  <pre>${esc(h.text)}</pre><div class="meta">${esc(h.citation)}${h.superseded_by ? " &middot; superseded by " + esc(h.superseded_by) : ""}</div></div>`;
+
+function factCard(f, opts = {}) {
+  const cls = f.review_status === "needs_review" ? "alert" : (f.kb_verdict === "unsupported" ? "gap" : "");
+  const actions = (f.review_status === "draft" || f.review_status === "needs_review")
+    ? `<div class="row" style="margin-top:8px"><input type="text" id="note_${esc(f.id)}" placeholder="note for the record (optional)" style="max-width:360px">
+       <button class="btn ok" onclick="review('${esc(f.id)}','approve')">Approve</button><button class="btn bad" onclick="review('${esc(f.id)}','reject')">Reject</button></div>` : "";
+  const why = { contradicted: "Conflicts with a current document. Decide which is right before this reaches anyone.",
+                unsupported: "No document says this. If true, it is knowledge that only exists in the expert's head.",
+                possibly_outdated: "Matches a rule that has since been replaced.", plausible: "Consistent with the documents but not stated there.",
+                correct: "Confirmed by a current document." }[f.kb_verdict] || "";
+  return `<div class="card ${cls}">${badge(f.review_status)}${f.kb_verdict ? badge(f.kb_verdict, "check: " + f.kb_verdict) : ""}<span class="who">${esc(f.expert)}</span> <span class="meta">&middot; ${esc(f.topic)} &middot; interviewed ${esc(f.valid_from || "")}</span>
+    <pre>${esc(f.text)}</pre>
+    ${f.kb_verdict ? `<div class="kb"><strong>${esc(why)}</strong> ${esc(f.kb_explanation)}${f.kb_evidence_ids && f.kb_evidence_ids.length ? `<div class="meta">evidence: ${esc(f.kb_evidence_ids.join(", "))}</div>` : ""}</div>` : ""}
+    <div class="meta">${esc(f.citation)}${f.reviewer ? ` &middot; ${esc(f.review_status)} by ${esc(f.reviewer)}${f.review_note ? ": " + esc(f.review_note) : ""}` : ""}</div>${opts.noActions ? "" : actions}</div>`;
+}
+
+async function loadHealth() {
+  try { const h = await api("/health"); $("health").innerHTML = `${esc(h.chunks)} chunks &middot; ${esc(h.embedding_backend)} embeddings<br>LLM ${esc(h.llm_model)}`; }
+  catch (e) { $("health").innerHTML = `<span class="error">server not reachable at ${esc(BASE)}</span>`; }
+}
+
+async function loadAll() {
+  const statuses = ["needs_review", "draft", "approved", "rejected"];
+  const res = await Promise.all(statuses.map(s => api("/facts?status=" + s).then(d => d.facts).catch(() => [])));
+  statuses.forEach((s, i) => cache.facts[s] = res[i]);
+  try { cache.docs = (await api("/documents")).documents; } catch { cache.docs = []; }
+  try { cache.updates = (await api("/updates")).updates; } catch { cache.updates = []; }
+  renderDashboard(); renderQueue(); renderDocs(); renderUpdates();
+  const open = cache.facts.needs_review.length + cache.facts.draft.length;
+  $("n_queue").textContent = open; $("n_queue").classList.toggle("red", cache.facts.needs_review.length > 0);
+  $("n_docs").textContent = cache.docs.length;
+}
+
+function renderDashboard() {
+  const F = cache.facts;
+  const gaps = [...F.draft, ...F.needs_review].filter(f => f.kb_verdict === "unsupported");
+  $("k_review").textContent = F.needs_review.length; $("k_draft").textContent = F.draft.length;
+  $("k_gap").textContent = gaps.length; $("k_approved").textContent = F.approved.length;
+  const order = { contradicted: 0, unsupported: 1, possibly_outdated: 2, plausible: 3, correct: 4 };
+  const todo = [...F.needs_review, ...F.draft].sort((a, b) => (order[a.kb_verdict] ?? 9) - (order[b.kb_verdict] ?? 9));
+  $("todo").innerHTML = todo.length ? todo.map(f => factCard(f)).join("") : `<div class="empty">Queue is empty. Nothing waits for a decision.</div>`;
+  const byExpert = {};
+  ["needs_review", "draft", "approved", "rejected"].forEach(s => F[s].forEach(f => { (byExpert[f.expert] ??= { needs_review: 0, draft: 0, approved: 0, rejected: 0, gaps: 0 })[s]++; if (f.kb_verdict === "unsupported") byExpert[f.expert].gaps++; }));
+  $("experts").innerHTML = Object.keys(byExpert).length ? Object.entries(byExpert).map(([name, c]) => {
+    const total = c.needs_review + c.draft + c.approved + c.rejected;
+    const w = k => (100 * c[k] / total).toFixed(0) + "%";
+    return `<div style="margin-bottom:12px"><div class="row" style="justify-content:space-between"><span class="who">${esc(name)}</span><span class="meta">${total} answers captured</span></div>
+      <div class="bar"><span style="width:${w("approved")};background:var(--green)"></span><span style="width:${w("draft")};background:#f59e0b"></span><span style="width:${w("needs_review")};background:var(--red)"></span><span style="width:${w("rejected")};background:#9ca3af"></span></div>
+      <div class="meta">${c.approved} approved &middot; ${c.draft} waiting &middot; ${c.needs_review} in conflict &middot; ${c.rejected} rejected${c.gaps ? ` &middot; <span style="color:var(--blue)">${c.gaps} undocumented</span>` : ""}</div></div>`; }).join("")
+    : `<div class="empty">no interviews yet</div>`;
+  const cur = cache.docs.filter(d => d.status_today === "current"), old = cache.docs.filter(d => d.status_today !== "current");
+  const chains = cache.docs.filter(d => d.superseded_by).map(d => `${esc(d.doc_id)} &rarr; ${esc(d.superseded_by)}`);
+  $("kb_asof").textContent = "as of " + $("asof").value;
+  $("kbstatus").innerHTML = `<div class="row" style="gap:18px;margin-bottom:8px"><span><span class="n" style="font-size:22px;font-weight:700;color:var(--green)">${cur.length}</span> <span class="meta">current documents</span></span>
+    <span><span style="font-size:22px;font-weight:700;color:var(--gray)">${old.length}</span> <span class="meta">superseded or expired</span></span>
+    <span><span style="font-size:22px;font-weight:700">${F.approved.length}</span> <span class="meta">approved expert facts</span></span></div>
+    ${chains.length ? `<div class="meta">Version chains: ${chains.join("; ")}</div>` : ""}
+    <div class="meta" style="margin-top:6px">${old.map(d => `${badge(d.status_today)} ${esc(d.title)} (valid until ${esc(d.valid_to)})`).join("<br>")}</div>`;
+}
+
+function renderUpdates() {
+  const u = cache.updates || [];
+  const label = { new_knowledge: "NEW", correction: "CORRECTION", confirmation: "confirmed", historical: "historical", unclassified: "unclassified" };
+  const cls = { new_knowledge: "unsupported", correction: "contradicted", confirmation: "correct", historical: "possibly_outdated" };
+  $("updates").innerHTML = u.length ? u.slice(0, 8).map(r => `<div style="margin-bottom:9px">${badge(cls[r.change_type] || "", label[r.change_type] || r.change_type)}<span class="who">${esc(r.expert)}</span> <span class="meta">&middot; interviewed ${esc(r.interviewed_at)} &middot; approved by ${esc(r.approved_by)} ${esc(r.approved_at.slice(0, 16).replace("T", " "))}</span>
+      <div class="meta">${esc(r.answer.slice(0, 140))}${r.answer.length > 140 ? "..." : ""}${r.related_docs.length ? ` &middot; docs: ${esc(r.related_docs.join(", "))}` : ""}</div></div>`).join("") + (u.length > 8 ? `<div class="meta">${u.length - 8} more in ledger.csv</div>` : "")
+    : `<div class="empty">no approvals written back yet</div>`;
+}
+
+function renderQueue() {
+  const list = cache.facts[currentStatus] || [];
+  document.querySelectorAll("#tabs button").forEach(b => { b.classList.toggle("active", b.dataset.status === currentStatus); const n = (cache.facts[b.dataset.status] || []).length; b.textContent = b.dataset.status.replace("_", " ") + (n ? ` (${n})` : ""); });
+  $("facts").innerHTML = list.length ? list.map(f => factCard(f)).join("") : `<div class="empty">nothing in "${esc(currentStatus.replace("_", " "))}"</div>`;
+}
+
+function renderDocs() {
+  const d = cache.docs;
+  if (!d.length) { $("docs").innerHTML = `<div class="empty">no documents</div>`; return; }
+  $("docs").innerHTML = `<table><tr><th>Document</th><th>Type</th><th>Valid</th><th>Status</th><th>Chunks</th></tr>` + d.map(x =>
+    `<tr><td><strong>${esc(x.title)}</strong><div class="meta">${esc(x.doc_id)} ${esc(x.version)}${x.supersedes ? " &middot; supersedes " + esc(x.supersedes) : ""}${x.superseded_by ? " &middot; superseded by " + esc(x.superseded_by) : ""} &middot; ${esc(x.owner)}</div></td>
+     <td>${esc(x.doc_type)}</td><td>${esc(x.valid_from)} &rarr; ${esc(x.valid_to || "open")}</td><td>${badge(x.status_today)}</td><td>${x.chunks}</td></tr>`).join("") + `</table>`;
+}
+
+async function review(id, action) {
+  const note = ($("note_" + id) || {}).value || "";
+  const reviewer = $("reviewer").value || "manager";
+  try { await api(`/facts/${encodeURIComponent(id)}/${action}?reviewer=${encodeURIComponent(reviewer)}&note=${encodeURIComponent(note)}`, { method: "POST" }); await loadAll(); await loadHealth(); }
+  catch (e) { alert(e.message); }
+}
+
+async function addFact() {
+  const body = { expert: $("f_expert").value, topic: $("f_topic").value, question: $("f_question").value, answer: $("f_answer").value,
+                 interviewed_at: $("f_date").value || null, valid_from: $("f_valid_from").value || null, lang: $("lang").value };
+  if (!body.expert || !body.topic || !body.question || !body.answer) { $("f_result").innerHTML = `<span class="error">expert, topic, question and answer are required</span>`; return; }
+  $("f_result").textContent = "storing and checking against the knowledge base...";
+  try {
+    const f = await api("/facts", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    $("f_result").innerHTML = `stored as ${badge(f.review_status)} with check ${badge(f.kb_verdict)}`; $("f_question").value = ""; $("f_answer").value = "";
+    currentStatus = f.review_status; await loadAll(); await loadHealth();
+  } catch (e) { $("f_result").innerHTML = `<span class="error">${esc(e.message)}</span>`; }
+}
+
+async function doSearch() {
+  $("s_result").innerHTML = `<div class="empty">searching...</div>`;
+  const p = new URLSearchParams({ q: $("s_q").value, as_of: $("asof").value, k: $("s_k").value, include_unapproved: $("s_unapproved").checked });
+  if ($("s_origin").value) p.set("origin", $("s_origin").value);
+  try { const d = await api("/search?" + p); $("s_result").innerHTML = d.hits.length ? `<div class="meta" style="margin-bottom:6px">${d.count} hits as of ${esc(d.as_of)}</div>` + d.hits.map(hitCard).join("") : `<div class="empty">no hits</div>`; }
+  catch (e) { $("s_result").innerHTML = `<div class="error">${esc(e.message)}</div>`; }
+}
+
+async function doCheck() {
+  $("c_result").innerHTML = `<div class="empty">checking against the knowledge base...</div>`;
+  try {
+    const d = await api("/check", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ statement: $("c_statement").value, as_of: $("asof").value, lang: $("lang").value }) });
+    $("c_result").innerHTML = `<div class="card"><div style="font-size:16px;margin-bottom:6px">${badge(d.verdict)} <span class="meta">as of ${esc(d.as_of)}</span></div>
+      <p><strong>Why.</strong> ${esc(d.explanation)}</p><p><strong>What applies today.</strong> ${esc(d.what_applies_today)}</p></div>
+      <h3 style="font-size:13px;margin:10px 0 6px">Evidence used (${d.evidence.length})</h3>${d.evidence.map(hitCard).join("") || `<div class="empty">none</div>`}`;
+  } catch (e) { $("c_result").innerHTML = `<div class="error">${esc(e.message)}</div>`; }
+}
+
+async function doVideo() {
+  const t0 = Date.now();
+  $("e_video").innerHTML = `<div class="empty">generating the training video: outline, German script, voice, frames, ffmpeg... (about 1 minute)</div>`;
+  const p = new URLSearchParams({ topic: $("e_topic").value, as_of: $("asof").value, audience: $("e_audience").value, k: 12, lang: $("lang").value });
+  try {
+    const v = await api("/export/video?" + p, { method: "POST" });
+    const secs = Math.round((Date.now() - t0) / 1000);
+    $("e_video").innerHTML = `<div class="card"><div style="font-size:16px;margin-bottom:4px">${esc(v.title)}</div>
+      <div class="meta">${v.scenes.length} scenes &middot; ${v.duration_s} s &middot; ${v.voice ? "Piper voice (de)" : "no voice"} &middot; generated in ${secs} s (script ${v.timings.script_s} s, tts ${v.timings.tts_s} s, render ${v.timings.render_s} s, ffmpeg ${v.timings.ffmpeg_s} s)</div>
+      <video controls style="width:100%;max-width:960px;margin-top:8px;border-radius:8px;background:#000" src="${esc(v.url)}"></video>
+      <details style="margin-top:8px"><summary>script (${v.scenes.length} scenes)</summary>${v.scenes.map(s => `<p><strong>${s.index}. ${esc(s.title)}</strong> <span class="meta">${esc(s.kind)}${s.note ? " &middot; " + esc(s.note) : ""}</span><br>${esc(s.narration)}</p>`).join("")}</details></div>`;
+  } catch (e) { $("e_video").innerHTML = `<div class="error">${esc(e.message)}</div>`; }
+}
+async function doExport() {
+  $("e_result").innerHTML = `<div class="empty">exporting${$("e_outline").checked ? " and generating the outline" : ""}...</div>`;
+  const p = new URLSearchParams({ topic: $("e_topic").value, as_of: $("asof").value, audience: $("e_audience").value, k: 12, outline: $("e_outline").checked, lang: $("lang").value });
+  try {
+    const d = await api("/export?" + p);
+    let html = "";
+    if (d.outline) {
+      const o = d.outline;
+      html += `<div class="card"><div style="font-size:16px;margin-bottom:4px">${esc(o.title)}</div><div class="meta">audience ${esc(o.audience)} &middot; ${o.sections.length} sections &middot; ${o.sections.filter(s => s.speaker_script).length} speaker scripts &middot; ${o.quiz_seeds.length} quiz questions</div>
+        <p><strong>Learning objectives</strong></p><ul>${o.learning_objectives.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
+        ${o.sections.map(s => `<p><strong>${esc(s.title)}</strong></p><ul>${s.key_points.map(x => `<li>${esc(x)}</li>`).join("")}</ul>${s.speaker_script ? `<p class="meta" style="font-style:italic;border-left:3px solid #ccc;padding-left:8px">&#127908; ${esc(s.speaker_script)}</p>` : ""}<div class="meta">evidence: ${esc(s.evidence_ids.join(", "))}</div>`).join("")}
+        <p><strong>Validity notes</strong> <span class="meta">(historical rules, never taught as current)</span></p><ul>${o.validity_notes.map(x => `<li>${esc(x)}</li>`).join("") || "<li>none</li>"}</ul>
+        <p><strong>Quiz seeds</strong></p><ol>${o.quiz_seeds.map(x => `<li>${esc(x)}</li>`).join("")}</ol></div>`;
+    }
+    html += `<div class="grid2" style="margin-top:12px"><div><h3 style="font-size:13px;margin:0 0 6px">Current knowledge (${d.current.length})</h3>${d.current.map(hitCard).join("") || `<div class="empty">none</div>`}</div>
+      <div><h3 style="font-size:13px;margin:0 0 6px">Historical (${d.historical.length}) - context only</h3>${d.historical.map(hitCard).join("") || `<div class="empty">none</div>`}</div></div>
+      <div class="meta" style="margin-top:8px">sources: ${d.sources.map(esc).join(" | ")}</div>`;
+    $("e_result").innerHTML = html;
+  } catch (e) { $("e_result").innerHTML = `<div class="error">${esc(e.message)}</div>`; }
+}
+
+// ── AI interview ─────────────────────────────────────────────────
+let iv = { turns: [], pending: null, facts: [] };
+const DEMO_ANSWERS = [
+  "Most of my day is credit memos: I pick up the cases the relationship managers open in KreditPortal, run the rating in RatingTool, write the KV-02 with my Marktfolge vote within ten business days of a complete file, and before every Credit Committee Tuesday I check that the submissions went in five business days earlier.",
+  "Together with the relationship manager I can decide up to EUR 1.0 million total exposure. Above EUR 3.0 million the Credit Committee decides.",
+  "Yes, EUR 1.5 million and EUR 5.0 million since July 2025, I know the policy changed after the 2024 write-off. In my head it is still 1.0 and 3.0 million, because I decided the Müller hall loan under those limits. In practice I still take anything above EUR 1.0 million to Stefan, because an exception that comes back from Katrin with an EXC-REQ costs me two weeks with the customer.",
+  "At Müller the number that worries me is not in any ratio: Thomas Müller is 68 and has no successor. Whenever an owner is over 60 I ask for the succession plan before I look at the machines. That is in no checklist as a duty, and Felix should keep doing it.",
+  "At Schmidt Logistik I voted for the truck loan although the equity ratio was 19%, below the 20% minimum. The policy threshold is a floor, the question is the trend and the mitigants: the Hessenfood contract runs to 2028 with indexation, the receivables are assigned, there is an equity covenant of 20% from FY2025 and quarterly BWA. Katrin approved it as EXC-REQ-2025-014 with a 0.5 point margin add-on, explicitly not a precedent. The 2026 review showed 21.5%.",
+  "Open cases: Müller Maschinenbau, EUR 500,000 seasonal bridge, pending until the audited 2025 statements or an EXC-REQ arrive, Martin Scholz is the RM. GreenPower Solutions, second park Wetterau EUR 3.5 million, total exposure EUR 7.5 million, the Credit Committee postponed on 2026-10-20 and wants the sensitivity analysis, electricity price minus 20% and six months construction delay, Daniel Fischer is the RM. Felix Brandt starts on 2026-12-01 and should read the Müller file first.",
+  "That is everything from my side. The rules are in the Credit Policy v2, the judgement is in the case files: Müller for seasonality and succession, Schmidt for concentration and the exception, GreenPower for project finance. Felix has my notes from 2026-12-01."
+];
+function reasonText(r) { return { opening: "Opening question from the documents on the topic", contradiction: "The last answer conflicts with a current document", deepen: "Last answer confirmed - digging for cases and exceptions",
+  gap: "Looking for knowledge that is in no document", handover: "Handover status: open tasks, contacts, deadlines", closing: "Topic covered - closing" }[r] || r; }
+
+function renderChat() {
+  const c = $("chat"); let html = "";
+  iv.turns.forEach((t, i) => { html += `<div class="msg ai"><span class="tag">AI interviewer &middot; Q${i + 1} ${badge(t.reason)}</span>${esc(t.question)}</div>`;
+    if (t.answer !== undefined) html += `<div class="msg ex"><span class="tag">${esc($("i_expert").value)}${t.kb_verdict ? " &middot; check: " + badge(t.kb_verdict) : ""}</span>${esc(t.answer)}</div>`; });
+  if (iv.pending) html += `<div class="msg ai"><span class="tag">AI interviewer &middot; Q${iv.turns.length + 1} ${badge(iv.pending.reason)}</span>${esc(iv.pending.question)}</div>`;
+  c.innerHTML = html || `<div class="empty">thinking...</div>`; c.scrollTop = c.scrollHeight;
+}
+function renderSide(nq) {
+  $("i_why").innerHTML = `<div style="margin-bottom:6px">${badge(nq.reason)} <strong>${esc(reasonText(nq.reason))}</strong></div><div>${esc(nq.rationale)}</div>
+    ${nq.evidence.length ? `<details style="margin-top:8px"><summary>evidence used (${nq.evidence.length})</summary>${nq.evidence.map(hitCard).join("")}</details>` : ""}`;
+  const chips = nq.covered_topics.map(t => `<span class="chip done">&#10003; ${esc(t)}</span>`).join("") + nq.remaining_topics.map(t => `<span class="chip">${esc(t)}</span>`).join("");
+  $("i_cov").innerHTML = chips || `<div class="empty">-</div>`;
+}
+async function askNext() {
+  $("i_status").textContent = "the interviewer is preparing the next question...";
+  const body = { expert: $("i_expert").value, topic: $("i_topic").value, as_of: $("asof").value, lang: $("lang").value,
+                 turns: iv.turns.map(t => ({ question: t.question, answer: t.answer, kb_verdict: t.kb_verdict || null })) };
+  const nq = await api("/interview/next", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  iv.pending = nq; renderChat(); renderSide(nq); $("i_status").textContent = "";
+  $("i_answer_box").style.display = nq.reason === "closing" ? "none" : "block";
+}
+async function startInterview() {
+  iv = { turns: [], pending: null, facts: [] }; $("i_facts").innerHTML = `<div class="empty">nothing yet</div>`; $("i_answer").value = "";
+  $("i_start").disabled = true; renderChat();
+  try { await askNext(); } catch (e) { $("chat").innerHTML = `<div class="error">${esc(e.message)}</div>`; }
+  $("i_start").disabled = false;
+}
+function demoAnswer() {
+  const r = iv.pending ? iv.pending.reason : "opening";
+  const pick = r === "contradiction" ? DEMO_ANSWERS[2] : r === "gap" ? DEMO_ANSWERS[3] : r === "handover" ? DEMO_ANSWERS[5] : r === "deepen" ? DEMO_ANSWERS[4] : DEMO_ANSWERS[Math.min(iv.turns.length, 1)];
+  const already = iv.turns.map(t => t.answer);
+  $("i_answer").value = already.includes(pick) ? (DEMO_ANSWERS.find(a => !already.includes(a)) || pick) : pick;
+}
+async function sendAnswer() {
+  const answer = $("i_answer").value.trim(); if (!answer || !iv.pending) return;
+  $("i_send").disabled = true; $("i_status").textContent = "storing the answer and checking it against the knowledge base...";
+  const turn = { question: iv.pending.question, reason: iv.pending.reason, answer };
+  try {
+    const f = await api("/facts", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ expert: $("i_expert").value, topic: $("i_topic").value, question: turn.question, answer, interviewed_at: $("asof").value, lang: $("lang").value }) });
+    turn.kb_verdict = f.kb_verdict; iv.facts.push(f);
+    $("i_facts").innerHTML = iv.facts.map(x => `<div class="meta" style="margin-bottom:6px">${badge(x.review_status)}${badge(x.kb_verdict)} ${esc(x.text.split("\n").pop().slice(3, 90))}...</div>`).join("");
+    iv.turns.push(turn); iv.pending = null; $("i_answer").value = ""; renderChat();
+    await askNext(); loadAll(); loadHealth();
+  } catch (e) { $("i_status").innerHTML = `<span class="error">${esc(e.message)}</span>`; }
+  $("i_send").disabled = false;
+}
+
+function go(view, status) {
+  document.querySelectorAll("nav button[data-view]").forEach(b => b.classList.toggle("active", b.dataset.view === view));
+  document.querySelectorAll("section.view").forEach(s => s.classList.toggle("active", s.id === "view-" + view));
+  $("title").textContent = TITLES[view][0]; $("subtitle").textContent = TITLES[view][1];
+  if (status) { currentStatus = status; renderQueue(); }
+  window.scrollTo(0, 0);
+}
+document.querySelectorAll("nav button[data-view]").forEach(b => b.addEventListener("click", () => go(b.dataset.view)));
+document.querySelectorAll("#tabs button").forEach(b => b.addEventListener("click", () => { currentStatus = b.dataset.status; renderQueue(); }));
+$("asof").addEventListener("change", loadAll);
+if (location.hash && TITLES[location.hash.slice(1)]) go(location.hash.slice(1));
+loadHealth(); loadAll();
+</script>
+</body>
+</html>

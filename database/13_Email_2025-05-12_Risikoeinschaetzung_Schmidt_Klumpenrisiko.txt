@@ -1,0 +1,43 @@
+From: Dr. Petra Hoffmann <petra.hoffmann@mainbank.example>
+To: Dr. Katrin Lorenz <katrin.lorenz@mainbank.example>
+Cc: Martin Scholz <martin.scholz@mainbank.example>
+Date: 2025-05-12
+Subject: AW: Risikoeinschätzung Schmidt Logistik - Klumpenrisiko drei Großkunden (71%)
+
+Synthetisches Demo-Dokument für die FUTURY Build Days #4 (Knowledge Transfer). Die MainBank AG, ihre Kunden und alle Zahlen sind erfunden.
+
+Hallo Frau Dr. Lorenz,
+
+kurz, weil ich heute noch die Kreditvorlage (KV-02) für den Fuhrpark-Kredit fertig machen muss.
+
+Ja, ich sehe Schmidt Logistik als Klumpenrisiko-Fall, auch wenn die Richtlinie v1 formal erst ab 40 % Umsatzanteil eines einzelnen Kunden einen Risikohinweis verlangt. Hessenfood liegt mit 38 % knapp darunter, aber drei Kunden mit zusammen 71 % sind für mich ein Konzentrationsthema, und so behandle ich es in der Vorlage.
+
+Meine Mitigants, die ich in KV-02 als Bedingungen vorschlage:
+
+1. Vertragslaufzeit und Indexierung des größten Kunden: Der Hessenfood-Vertrag läuft bis 31.12.2028 mit jährlicher Indexierung. Das deckt die Laufzeit des Fuhrpark-Kredits (5 Jahre ab Mitte 2025) zu gut zwei Dritteln ab. Die Verträge mit Rhein-Main Baustoffe (20 %) und Taunus Pharma Logistics (13 %) sind Zweijahresverträge, das ist die Schwachstelle.
+2. Abtretung der konkreten Forderungen: Nicht nur die Globalzession aus der Betriebsmittellinie von 2021, sondern eine ausdrückliche Abtretung der Forderungen aus dem Hessenfood-Vertrag.
+3. Sensitivität "größter Kunde fällt weg": Ich rechne das Szenario ohne Hessenfood (minus 38 % Umsatz, Fixkosten bleiben). Die Kapitaldienstfähigkeit (DSCR) muss in diesem Szenario noch über 1,0 liegen, sonst stimme ich nicht zu. Nach meiner ersten Rechnung liegt sie bei etwa 1,05, das reicht knapp.
+
+Die Zahlen aus dem Jahresabschluss 2024 (Stichtag 30.04.2025) kennen Sie: Umsatz EUR 22,0 Mio., EBITDA EUR 2,4 Mio., Eigenkapitalquote 19 %, Verschuldung/EBITDA 3,1x, DSCR 1,25. Die Eigenkapitalquote unter 20 % ist ein eigenes Thema, dazu kommt die Ausnahmeanfrage separat von Herrn Scholz.
+
+Der Fuhrpark-Kredit über EUR 1,2 Mio. (15 neue Lkw, Sicherungsübereignung) wird gerade geprüft; Entscheidung voraussichtlich Ende Juni durch Herrn Krüger, Gesamtobligo dann EUR 1,8 Mio.
+
+Viele Grüße
+Petra Hoffmann
+
+----- Ursprüngliche Nachricht -----
+From: Dr. Katrin Lorenz <katrin.lorenz@mainbank.example>
+To: Dr. Petra Hoffmann <petra.hoffmann@mainbank.example>
+Cc: Martin Scholz <martin.scholz@mainbank.example>
+Date: 2025-05-08
+Subject: Risikoeinschätzung Schmidt Logistik - Klumpenrisiko drei Großkunden (71%)
+
+Liebe Frau Dr. Hoffmann,
+
+ich habe mir die Vorabinformation zu Schmidt Logistik (Hanau, 95 Lkw, Rating 5) angesehen. Die drei größten Kunden machen zusammen 71 % des Umsatzes aus: Hessenfood AG 38 %, Rhein-Main Baustoffe GmbH 20 %, Taunus Pharma Logistics 13 %.
+
+Bevor der Fuhrpark-Kredit in die Vorlage geht: Wie schätzen Sie das Klumpenrisiko ein, und welche Mitigants wollen Sie vorschlagen? Bitte kurz, ich brauche das für die Risikorunde am Mittwoch.
+
+Mit freundlichen Grüßen
+Katrin Lorenz
+Leiterin Risikomanagement

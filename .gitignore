@@ -1,0 +1,18 @@
+# Organizer handouts (not ours to publish)
+tasks/
+
+# Secrets
+.env
+*.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# Local data / artifacts
+rag-service/data/
+*.mp4
+*.wav
+*.log

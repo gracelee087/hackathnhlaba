@@ -1,0 +1,340 @@
+[
+  {
+    "file": "01_MainBank_Credit_Policy_2022_v1",
+    "meta": {
+      "doc_id": "credit-policy-2022-v1",
+      "title": "Credit Policy for Corporate Customers (Version 1)",
+      "doc_type": "policy",
+      "version": "v1",
+      "valid_from": "2022-01-01",
+      "owner": "Risk Management",
+      "language": "en"
+    }
+  },
+  {
+    "file": "02_MainBank_Credit_Policy_2025_v2",
+    "meta": {
+      "doc_id": "credit-policy-2025-v2",
+      "title": "Credit Policy for Corporate Customers (Version 2)",
+      "doc_type": "policy",
+      "version": "v2",
+      "valid_from": "2025-07-01",
+      "supersedes": "credit-policy-2022-v1",
+      "owner": "Risk Management",
+      "language": "en"
+    }
+  },
+  {
+    "file": "03_MainBank_Credit_Processing_Workflow_2024",
+    "meta": {
+      "doc_id": "credit-workflow-2024",
+      "title": "Credit Processing Workflow (application to disbursement)",
+      "doc_type": "process",
+      "version": "2024-03",
+      "valid_from": "2024-03-01",
+      "owner": "Credit Analysis / Corporate Banking",
+      "language": "en"
+    }
+  },
+  {
+    "file": "04_MainBank_Risk_Assessment_Checklist_2025",
+    "meta": {
+      "doc_id": "risk-checklist-2025",
+      "title": "Risk Assessment Checklist (financial indicators and warning signs)",
+      "doc_type": "checklist",
+      "version": "2025-07",
+      "valid_from": "2025-07-01",
+      "owner": "Risk Management",
+      "language": "en"
+    }
+  },
+  {
+    "file": "05_MainBank_Escalation_Guidelines_2025",
+    "meta": {
+      "doc_id": "escalation-2025",
+      "title": "Escalation Guidelines (Head of Credit Analysis, Risk Management, Credit Committee)",
+      "doc_type": "guideline",
+      "version": "2025-07",
+      "valid_from": "2025-07-01",
+      "owner": "Risk Management / Credit Committee Office",
+      "language": "en"
+    }
+  },
+  {
+    "file": "06_MainBank_Customer_Profile_Mueller_Maschinenbau",
+    "meta": {
+      "doc_id": "cust-mueller-profile",
+      "title": "Customer Profile: Müller Maschinenbau GmbH (Wetzlar)",
+      "doc_type": "customer_profile",
+      "version": "2026-10",
+      "valid_from": "2026-10-01",
+      "owner": "Corporate Banking",
+      "language": "en"
+    }
+  },
+  {
+    "file": "07_MainBank_Credit_Case_History_Mueller_Maschinenbau",
+    "meta": {
+      "doc_id": "cust-mueller-cases",
+      "title": "Credit Case History: Müller Maschinenbau GmbH (2022-2026)",
+      "doc_type": "credit_case",
+      "version": "2026-10",
+      "valid_from": "2026-10-01",
+      "owner": "Credit Analysis",
+      "language": "en"
+    }
+  },
+  {
+    "file": "08_MainBank_Customer_Profile_Schmidt_Logistik",
+    "meta": {
+      "doc_id": "cust-schmidt-profile",
+      "title": "Customer Profile: Schmidt Logistik GmbH (Hanau)",
+      "doc_type": "customer_profile",
+      "version": "2026-06",
+      "valid_from": "2026-06-20",
+      "owner": "Corporate Banking",
+      "language": "en"
+    }
+  },
+  {
+    "file": "09_MainBank_Credit_Case_History_Schmidt_Logistik",
+    "meta": {
+      "doc_id": "cust-schmidt-cases",
+      "title": "Credit Case History: Schmidt Logistik GmbH (2021-2026)",
+      "doc_type": "credit_case",
+      "version": "2026-06",
+      "valid_from": "2026-06-20",
+      "owner": "Credit Analysis",
+      "language": "en"
+    }
+  },
+  {
+    "file": "10_MainBank_Customer_Profile_GreenPower_Solutions",
+    "meta": {
+      "doc_id": "cust-greenpower-profile",
+      "title": "Customer Profile: GreenPower Solutions GmbH (Darmstadt)",
+      "doc_type": "customer_profile",
+      "version": "2026-09",
+      "valid_from": "2026-09-30",
+      "owner": "Corporate Banking",
+      "language": "en"
+    }
+  },
+  {
+    "file": "11_MainBank_Credit_Case_History_GreenPower_Solutions",
+    "meta": {
+      "doc_id": "cust-greenpower-cases",
+      "title": "Credit Case History: GreenPower Solutions GmbH (2026)",
+      "doc_type": "credit_case",
+      "version": "2026-09",
+      "valid_from": "2026-09-30",
+      "owner": "Credit Analysis",
+      "language": "en"
+    }
+  },
+  {
+    "file": "01_MainBank_Credit_Policy_2022_v1_DE",
+    "meta": {
+      "doc_id": "credit-policy-2022-v1-de",
+      "title": "Kreditrichtlinie für Firmenkunden (Version 1)",
+      "doc_type": "policy",
+      "version": "v1",
+      "valid_from": "2022-01-01",
+      "owner": "Risk Management",
+      "language": "de"
+    }
+  },
+  {
+    "file": "02_MainBank_Credit_Policy_2025_v2_DE",
+    "meta": {
+      "doc_id": "credit-policy-2025-v2-de",
+      "title": "Kreditrichtlinie für Firmenkunden (Version 2)",
+      "doc_type": "policy",
+      "version": "v2",
+      "valid_from": "2025-07-01",
+      "supersedes": "credit-policy-2022-v1-de",
+      "owner": "Risk Management",
+      "language": "de"
+    }
+  },
+  {
+    "file": "03_MainBank_Credit_Processing_Workflow_2024_DE",
+    "meta": {
+      "doc_id": "credit-workflow-2024-de",
+      "title": "Kreditbearbeitungsprozess (Antrag bis Auszahlung)",
+      "doc_type": "process",
+      "version": "2024-03",
+      "valid_from": "2024-03-01",
+      "owner": "Credit Analysis / Corporate Banking",
+      "language": "de"
+    }
+  },
+  {
+    "file": "04_MainBank_Risk_Assessment_Checklist_2025_DE",
+    "meta": {
+      "doc_id": "risk-checklist-2025-de",
+      "title": "Checkliste Risikobeurteilung (Kennzahlen und Warnsignale)",
+      "doc_type": "checklist",
+      "version": "2025-07",
+      "valid_from": "2025-07-01",
+      "owner": "Risk Management",
+      "language": "de"
+    }
+  },
+  {
+    "file": "05_MainBank_Escalation_Guidelines_2025_DE",
+    "meta": {
+      "doc_id": "escalation-2025-de",
+      "title": "Eskalationsrichtlinie (Leiter Kreditanalyse, Risikomanagement, Kreditausschuss)",
+      "doc_type": "guideline",
+      "version": "2025-07",
+      "valid_from": "2025-07-01",
+      "owner": "Risk Management / Credit Committee Office",
+      "language": "de"
+    }
+  },
+  {
+    "file": "06_MainBank_Customer_Profile_Mueller_Maschinenbau_DE",
+    "meta": {
+      "doc_id": "cust-mueller-profile-de",
+      "title": "Kundenprofil: Müller Maschinenbau GmbH (Wetzlar)",
+      "doc_type": "customer_profile",
+      "version": "2026-10",
+      "valid_from": "2026-10-01",
+      "owner": "Corporate Banking",
+      "language": "de"
+    }
+  },
+  {
+    "file": "07_MainBank_Credit_Case_History_Mueller_Maschinenbau_DE",
+    "meta": {
+      "doc_id": "cust-mueller-cases-de",
+      "title": "Kreditfallhistorie: Müller Maschinenbau GmbH (2022-2026)",
+      "doc_type": "credit_case",
+      "version": "2026-10",
+      "valid_from": "2026-10-01",
+      "owner": "Credit Analysis",
+      "language": "de"
+    }
+  },
+  {
+    "file": "08_MainBank_Customer_Profile_Schmidt_Logistik_DE",
+    "meta": {
+      "doc_id": "cust-schmidt-profile-de",
+      "title": "Kundenprofil: Schmidt Logistik GmbH (Hanau)",
+      "doc_type": "customer_profile",
+      "version": "2026-06",
+      "valid_from": "2026-06-20",
+      "owner": "Corporate Banking",
+      "language": "de"
+    }
+  },
+  {
+    "file": "09_MainBank_Credit_Case_History_Schmidt_Logistik_DE",
+    "meta": {
+      "doc_id": "cust-schmidt-cases-de",
+      "title": "Kreditfallhistorie: Schmidt Logistik GmbH (2021-2026)",
+      "doc_type": "credit_case",
+      "version": "2026-06",
+      "valid_from": "2026-06-20",
+      "owner": "Credit Analysis",
+      "language": "de"
+    }
+  },
+  {
+    "file": "10_MainBank_Customer_Profile_GreenPower_Solutions_DE",
+    "meta": {
+      "doc_id": "cust-greenpower-profile-de",
+      "title": "Kundenprofil: GreenPower Solutions GmbH (Darmstadt)",
+      "doc_type": "customer_profile",
+      "version": "2026-09",
+      "valid_from": "2026-09-30",
+      "owner": "Corporate Banking",
+      "language": "de"
+    }
+  },
+  {
+    "file": "11_MainBank_Credit_Case_History_GreenPower_Solutions_DE",
+    "meta": {
+      "doc_id": "cust-greenpower-cases-de",
+      "title": "Kreditfallhistorie: GreenPower Solutions GmbH (2026)",
+      "doc_type": "credit_case",
+      "version": "2026-09",
+      "valid_from": "2026-09-30",
+      "owner": "Credit Analysis",
+      "language": "de"
+    }
+  },
+  {
+    "file": "12_Email_2026-10-06_Credit_Review_Mueller_Missing_Statements.txt",
+    "meta": {
+      "doc_id": "email-mueller-review-2026-10",
+      "title": "E-mail: Credit review Müller Maschinenbau - seasonal liquidity, missing 2025 statements, EUR 500,000 request",
+      "doc_type": "email",
+      "version": "",
+      "valid_from": "2026-10-06",
+      "owner": "Corporate Banking",
+      "language": "en"
+    }
+  },
+  {
+    "file": "13_Email_2025-05-12_Risikoeinschaetzung_Schmidt_Klumpenrisiko.txt",
+    "meta": {
+      "doc_id": "email-schmidt-concentration-2025-05",
+      "title": "E-Mail: Risikoeinschätzung Schmidt Logistik - Klumpenrisiko drei Großkunden (71%)",
+      "doc_type": "email",
+      "version": "",
+      "valid_from": "2025-05-12",
+      "owner": "Risk Management",
+      "language": "de"
+    }
+  },
+  {
+    "file": "14_Email_2026-03-18_Credit_Decision_GreenPower_Delayed_Cashflows.txt",
+    "meta": {
+      "doc_id": "email-greenpower-decision-2026-03",
+      "title": "E-mail: Credit decision GreenPower Odenwald-Süd - delayed cash flows, grace period, DSCR",
+      "doc_type": "email",
+      "version": "",
+      "valid_from": "2026-03-18",
+      "owner": "Corporate Banking",
+      "language": "en"
+    }
+  },
+  {
+    "file": "15_Email_2026-09-22_Eskalation_GreenPower_Zweiter_Solarpark.txt",
+    "meta": {
+      "doc_id": "email-greenpower-escalation-2026-09",
+      "title": "E-Mail: Eskalation GreenPower - zweiter Solarpark, Gesamtobligo EUR 7,5 Mio., Kreditausschuss",
+      "doc_type": "email",
+      "version": "",
+      "valid_from": "2026-09-22",
+      "owner": "Credit Analysis",
+      "language": "de"
+    }
+  },
+  {
+    "file": "16_Email_2025-06-24_Exception_Approval_Schmidt_Equity_Ratio.txt",
+    "meta": {
+      "doc_id": "email-schmidt-exception-2025-06",
+      "title": "E-mail: Exception approval EXC-REQ-2025-014 Schmidt Logistik - equity ratio 19%, LTV 80%",
+      "doc_type": "email",
+      "version": "",
+      "valid_from": "2025-06-24",
+      "owner": "Risk Management",
+      "language": "en"
+    }
+  },
+  {
+    "file": "17_Email_2026-10-14_Kundenhistorie_Mueller_Wiederholte_Anfragen.txt",
+    "meta": {
+      "doc_id": "email-mueller-history-2026-10",
+      "title": "E-Mail: Kundenhistorie Müller Maschinenbau - dritte Finanzierungsanfrage, Nachfolge",
+      "doc_type": "email",
+      "version": "",
+      "valid_from": "2026-10-14",
+      "owner": "Credit Analysis",
+      "language": "de"
+    }
+  }
+]

@@ -1,0 +1,42 @@
+From: Dr. Petra Hoffmann <petra.hoffmann@mainbank.example>
+To: Stefan Krüger <stefan.krueger@mainbank.example>
+Date: 2026-10-14
+Subject: AW: Kundenhistorie Müller Maschinenbau - dritte Finanzierungsanfrage, Nachfolge
+
+Synthetisches Demo-Dokument für die FUTURY Build Days #4 (Knowledge Transfer). Die MainBank AG, ihre Kunden und alle Zahlen sind erfunden.
+
+Hallo Stefan,
+
+gern, hier die Historie für Felix in Kurzform. Die lange Fassung lege ich bis Ende Oktober in MainWiki ab.
+
+1. 2022 (20.05.2022): EUR 1,0 Mio. Darlehen für die Hallenerweiterung, 7 Jahre, erstrangige Grundschuld auf die Produktionshalle (Beleihungswert EUR 1,5 Mio., Beleihungsauslauf 67 %). Entscheidung im Vier-Augen-Prinzip (Martin Scholz / ich) unter Richtlinie v1, damals Grenze EUR 1,0 Mio. Planmäßig getilgt.
+
+2. 2024 (15.04.2024): EUR 0,8 Mio. Betriebsmittellinie (Kontokorrent), Globalzession. Saisonale Nutzung: in Q2 und Q3 voll ausgeschöpft, jeden Dezember auf null. Das Muster muss Felix kennen, sonst erschrickt er im Juli. Gesamtobligo damals EUR 1,8 Mio., über der Vier-Augen-Grenze von v1; Entscheidung durch dich.
+
+3. 2026 (15.09.2026): EUR 2,5 Mio. Darlehen für zwei CNC-Bearbeitungslinien (Kaufpreis EUR 3,6 Mio., Beleihungswert EUR 2,9 Mio., 60 % = EUR 1,74 Mio.) plus zweitrangige Grundschuld auf die Halle, 8 Jahre. Gesamtobligo EUR 4,3 Mio., unter EUR 5,0 Mio., Entscheidung Leiter Kreditanalyse unter v2. ESG-Fragebogen liegt vor. BWA zum 31.08.2026: Verschuldung/EBITDA 2,7x, DSCR 1,4, Eigenkapitalquote 28 %.
+
+Dazu die offene Anfrage vom Oktober über EUR 500.000 Saisonüberbrückung (Liquiditätsplan, Auftragsbestand und Jahresabschluss 2025 fehlen noch).
+
+Jetzt das Eigentliche. Die Zahlen bei Müller sind in Ordnung, Rating 3, und drei Anfragen in vier Jahren sind Wachstum, kein Warnsignal. Das eigentliche Risiko steht in keiner Kennzahl: Thomas Müller ist 68, und die Nachfolge ist ungeregelt. Sein Sohn arbeitet nicht im Betrieb, eine zweite Geschäftsführung gibt es nicht, und beim Thema weicht er aus. Wenn ihm etwas passiert, hängen EUR 4,3 Mio. an einem Unternehmen ohne Führung.
+
+Ich frage bei Inhabern über 60 immer nach dem Nachfolgeplan, bevor ich mir die Maschinen ansehe. Das steht in keiner Checkliste als Pflicht; die Risikocheckliste führt "Inhaber über 60 ohne dokumentierten Nachfolgeplan" nur als weiches Warnsignal. Felix soll das übernehmen: bei jeder Jahresüberprüfung konkret nachfragen, das Ergebnis in der Kreditvorlage dokumentieren und bei der nächsten Finanzierung eine Nachfolgeregelung als Bedingung vorschlagen.
+
+Ich setze mich in der ersten Dezemberwoche mit Felix zusammen und gehe die drei Kunden mit ihm durch.
+
+Viele Grüße
+Petra
+
+----- Ursprüngliche Nachricht -----
+From: Stefan Krüger <stefan.krueger@mainbank.example>
+To: Dr. Petra Hoffmann <petra.hoffmann@mainbank.example>
+Date: 2026-10-13
+Subject: Kundenhistorie Müller Maschinenbau - dritte Finanzierungsanfrage, Nachfolge
+
+Hallo Petra,
+
+Felix Brandt fängt am 01.12.2026 an und übernimmt deine Kunden, Müller Maschinenbau als erstes. Mit der Anfrage über EUR 500.000 ist das die dritte Finanzierungsanfrage von Müller in vier Jahren.
+
+Kannst du mir die Kundenhistorie so aufschreiben, dass Felix sie ohne dich versteht: welche Kredite, wer hat wann unter welcher Richtlinie entschieden, was ist die Besonderheit, worauf muss er achten? Kurz reicht, die Details stehen in KreditPortal.
+
+Danke dir
+Stefan

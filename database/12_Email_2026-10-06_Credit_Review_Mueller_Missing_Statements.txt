@@ -1,0 +1,47 @@
+From: Dr. Petra Hoffmann <petra.hoffmann@mainbank.example>
+To: Martin Scholz <martin.scholz@mainbank.example>
+Cc: Stefan Krüger <stefan.krueger@mainbank.example>
+Date: 2026-10-06
+Subject: RE: Credit review Müller Maschinenbau - seasonal liquidity, missing 2025 statements, EUR 500,000 request
+
+Synthetic demo e-mail for the FUTURY Build Days #4 Knowledge Transfer challenge. MainBank AG, its customers and all figures are invented.
+
+Hi Martin,
+
+short answer, I am in committee preparation all afternoon.
+
+Before I can vote on the EUR 500,000 seasonal bridge I need two things from the customer:
+
+1. A 12-month liquidity plan (monthly, from 2026-10), so that we see when the Q4 plant acceptances turn into cash.
+2. The current order backlog (Auftragsbestand) with the planned acceptance dates.
+
+My rule of thumb for Müller: the Q2-Q3 dip is normal as long as the order backlog covers the dip at least 1.5 times. If the backlog shows that, I am fine with the bridge on top of the EUR 0.8 million working-capital line.
+
+The bigger issue is the statements. The latest audited statements are FY2024, dated 2025-06-30. From 2026-10-01 they are older than 9 months, so under Credit Policy v2 we cannot decide on them. Either the auditor delivers the FY2025 statements before we decide, or you file an EXC-REQ for the statement age with Dr. Lorenz. The BWA as of 2026-08-31 is fine as interim figures, but it does not replace the audited statements.
+
+Total exposure after the bridge would be EUR 4.8 million, below EUR 5.0 million, so Stefan can decide. Memo goes into KreditPortal as soon as the plan and the backlog are in.
+
+Best regards
+Petra
+
+----- Original message -----
+From: Martin Scholz <martin.scholz@mainbank.example>
+To: Dr. Petra Hoffmann <petra.hoffmann@mainbank.example>
+Cc: Stefan Krüger <stefan.krueger@mainbank.example>
+Date: 2026-10-05
+Subject: Credit review Müller Maschinenbau - seasonal liquidity, missing 2025 statements, EUR 500,000 request
+
+Hi Petra,
+
+I was at Müller Maschinenbau in Wetzlar on Friday for the review after the EUR 2.5 million CNC loan of 2026-09-15. Two points.
+
+First, liquidity: as every year, the account balance declined in Q2 and Q3. Per the BWA as of 2026-08-31 the dip is roughly 25% below the annual average, and the EUR 0.8 million working-capital line is fully drawn. Thomas Müller says three machines will be accepted in November and December, so the money comes in Q4 as always.
+
+Second, the customer asks for an additional EUR 500,000 seasonal bridge until 2027-01-31, because two acceptances slipped from September to November and the CNC installation ties up cash.
+
+The problem: the FY2025 annual financial statements are not yet available, the auditor has not finished. We only have the BWA as of 2026-08-31 (revenue EUR 14.2 million, EBITDA EUR 1.6 million, equity ratio 28%). The FY2024 statements of 2025-06-30 are the latest audited figures.
+
+Can we decide positively on this basis, and what exactly do you need? I would like to open the case in KreditPortal with KA-01 tomorrow.
+
+Thanks and best regards
+Martin

@@ -1,0 +1,33 @@
+From: Dr. Katrin Lorenz <katrin.lorenz@mainbank.example>
+To: Dr. Petra Hoffmann <petra.hoffmann@mainbank.example>
+Cc: Martin Scholz <martin.scholz@mainbank.example>, Stefan Krüger <stefan.krueger@mainbank.example>
+Date: 2025-06-24
+Subject: Exception approval EXC-REQ-2025-014 Schmidt Logistik - equity ratio 19%, LTV 80%
+
+Synthetic demo e-mail for the FUTURY Build Days #4 Knowledge Transfer challenge. MainBank AG, its customers and all figures are invented.
+
+Dear Dr. Hoffmann, dear Mr. Scholz,
+
+I have today approved the policy exception request EXC-REQ-2025-014 for Schmidt Logistik GmbH, Hanau, in connection with the EUR 1.2 million term loan for 15 new trucks (5 years). The signed form is uploaded to the case in KreditPortal.
+
+The request covers two deviations from the Credit Policy:
+
+1. Equity ratio of 19% per the FY2024 statements (dated 2025-04-30), below the minimum of 20%.
+2. Loan-to-value of 80% of the lending value on the security transfer of the trucks (lending value EUR 1.5 million), above the 60% maximum for machinery and vehicles that applies from 2025-07-01.
+
+The approval is subject to four conditions, to be included in the loan agreement and in the credit memo KV-02:
+
+1. Equity ratio covenant: the customer maintains an equity ratio of at least 20% from FY2025 onwards, tested on the audited annual financial statements.
+2. Quarterly interim figures (BWA) within 30 days after each quarter end.
+3. The assignment of receivables is extended to the specific receivables under the Hessenfood AG contract (term until 2028-12-31, annual indexation), in addition to the existing global assignment.
+4. Margin add-on of 0.5 percentage points.
+
+I would like to state explicitly: this approval is not a precedent. It rests on the specific mitigants in Dr. Hoffmann's assessment of 2025-05-12 (contract term and indexation of the largest customer, assignment of the specific receivables, DSCR above 1.0 without Hessenfood) and on the FY2024 figures (revenue EUR 22.0 million, EBITDA EUR 2.4 million, DSCR 1.25). A 19% equity ratio in another case does not become acceptable because of this decision.
+
+Please also note the timing. Mr. Krüger's decision is scheduled for 2025-06-30, the last day on which Credit Policy v1 is in force. From 2025-07-01 the new Credit Policy v2 applies. Under v2 every deviation from the policy requires the EXC-REQ form approved by Risk Management, is logged in KreditPortal and is never a precedent. This request was the pilot of the new form; from July it is mandatory, and exceptions documented only in the credit memo will no longer be accepted.
+
+Mr. Scholz, please inform the customer about the conditions before signing. Dr. Hoffmann, please add the covenant and the BWA deadline to the annual review schedule.
+
+Kind regards
+Dr. Katrin Lorenz
+Head of Risk Management

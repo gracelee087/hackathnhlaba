@@ -1,0 +1,169 @@
+{
+  "departments": [
+    {
+      "key": "corporate_banking",
+      "name": "Corporate Banking (Markt)",
+      "approver": "Claudia Weber",
+      "aliases": ["Corporate Banking", "Firmenkunden", "Firmenkundenbetreuung", "Relationship Manager", "RM", "Markt", "account manager", "customer request"],
+      "description": "The customer-facing side of corporate lending (Markt). Relationship managers such as Martin Scholz and Daniel Fischer receive the customer request, open the case in KreditPortal with form KA-01 within 2 business days, collect the documents per DOC-LIST and give the Markt vote in the credit memo KV-02. Together with the credit analyst they can decide cases up to EUR 1.5 million total exposure under the four-eyes principle."
+    },
+    {
+      "key": "credit_analysis",
+      "name": "Credit Analysis (Marktfolge)",
+      "approver": "Stefan Krüger",
+      "aliases": ["Credit Analysis", "Kreditanalyse", "Credit Analyst", "Marktfolge", "credit memo", "Kreditvorlage", "rating", "annual review"],
+      "description": "The independent analysis side (Marktfolge). Credit analysts are assigned within 2 business days of a complete file, rate the customer in RatingTool (1 = best to 10 = default), write the credit memo KV-02 with the Marktfolge vote within 10 business days and run the annual review every 12 months (every 6 months for ratings 6 and worse). The Head of Credit Analysis decides cases up to EUR 5.0 million total exposure and receives escalations above EUR 1.5 million, incomplete-file flags and rating deteriorations of 2 notches."
+    },
+    {
+      "key": "risk_management",
+      "name": "Risk Management",
+      "approver": "Dr. Katrin Lorenz",
+      "aliases": ["Risk Management", "Risikomanagement", "CRO", "policy exception", "EXC-REQ", "watchlist", "concentration risk", "Klumpenrisiko", "covenant"],
+      "description": "Owner of the Credit Policy, the Risk Assessment Checklist and the Escalation Guidelines. The Head of Risk Management approves every policy exception on form EXC-REQ (logged in KreditPortal, never a precedent), signs off grace periods above 12 months (maximum 24) and receives escalations for rating 6 or worse, covenant breaches, watchlist proposals and concentration risk cases (single customer above 25% or top three above 60% of revenue)."
+    },
+    {
+      "key": "credit_committee",
+      "name": "Credit Committee",
+      "approver": "Jochen Richter",
+      "aliases": ["Credit Committee", "Kreditausschuss", "committee", "board decision", "Vorstand", "Eilentscheidung"],
+      "description": "The highest decision level, chaired by board member Jochen Richter. It decides total exposures above EUR 5.0 million, every project finance above EUR 3.0 million, exceptions on exposures above EUR 2.5 million and any customer group above EUR 10 million. It meets every second Tuesday; the submission (KV-02 plus annex) is due at least 5 business days before, and urgent decisions (Eilentscheidung) by two board members within 2 business days must be confirmed at the next meeting."
+    },
+    {
+      "key": "loan_operations",
+      "name": "Loan Operations (Kreditsachbearbeitung)",
+      "approver": "Sabine Neumann",
+      "aliases": ["Loan Operations", "Kreditsachbearbeitung", "collateral registration", "Sicherheiten", "disbursement", "Auszahlung", "contract documentation"],
+      "description": "The back office after the credit decision. Loan Operations prepares the loan agreement, registers the collateral (mortgages, assignment of receivables, security transfer of machines and vehicles, pledges of shares) and disburses the loan, in tranches where the decision requires it. Disbursement only takes place after the collateral is registered and all conditions precedent are met."
+    },
+    {
+      "key": "other",
+      "name": "Other / not yet assigned",
+      "approver": "Stefan Krüger",
+      "aliases": [],
+      "description": "Catch-all for facts and documents that do not clearly belong to one of the five lending departments, for example general bank information, IT systems or compliance topics. The Head of Credit Analysis reviews these items and reassigns them to the right department."
+    }
+  ],
+  "glossary": [
+    {
+      "term": "total exposure",
+      "aliases": ["Gesamtobligo", "Obligo", "total commitment"],
+      "definition": "The sum of all facilities of a customer group at MainBank; it determines the approval level (four-eyes up to EUR 1.5 million, Head of Credit Analysis up to EUR 5.0 million, Credit Committee above EUR 5.0 million)."
+    },
+    {
+      "term": "DSCR",
+      "aliases": ["debt service coverage ratio", "Kapitaldienstfähigkeit", "Schuldendienstdeckung"],
+      "definition": "Cash flow available for debt service divided by interest plus scheduled repayments; the Credit Policy v2 requires at least 1.20, and for project finance an average of 1.20 and at least 1.05 in any year after commissioning."
+    },
+    {
+      "term": "equity ratio",
+      "aliases": ["Eigenkapitalquote", "EK-Quote"],
+      "definition": "Equity divided by total assets per the annual financial statements; the policy minimum is 20%, the Risk Assessment Checklist scores 30% or above green, 20-30% amber and below 20% red."
+    },
+    {
+      "term": "debt/EBITDA",
+      "aliases": ["Verschuldungsgrad", "leverage", "net debt to EBITDA"],
+      "definition": "Financial debt divided by EBITDA, a measure of how many years of operating cash earnings the debt represents; the maximum under Credit Policy v2 is 3.5x."
+    },
+    {
+      "term": "LTV",
+      "aliases": ["loan-to-value", "Beleihungsauslauf", "lending value", "Beleihungswert"],
+      "definition": "The loan amount as a percentage of the lending value (Beleihungswert) of the collateral; Credit Policy v2 allows at most 60% for machinery and vehicles and 80% for real estate."
+    },
+    {
+      "term": "BWA",
+      "aliases": ["betriebswirtschaftliche Auswertung", "interim figures", "management accounts"],
+      "definition": "Unaudited interim financial figures produced by the customer's accountant; for exposures above EUR 1.0 million they must not be older than 3 months at the decision date."
+    },
+    {
+      "term": "KA-01",
+      "aliases": ["credit application", "Kreditantrag", "application form"],
+      "definition": "The credit application form that the relationship manager fills in to open a case in KreditPortal within 2 business days of the customer request."
+    },
+    {
+      "term": "DOC-LIST",
+      "aliases": ["document checklist", "Unterlagenliste", "required documents"],
+      "definition": "The checklist of documents needed for a complete file: the last two annual financial statements, current BWA, 6 months of bank statements, order backlog, a business plan for investments above EUR 500,000, and for project finance the cash-flow model, EPC contract and PPA."
+    },
+    {
+      "term": "KV-02",
+      "aliases": ["credit memo", "Kreditvorlage", "credit proposal"],
+      "definition": "The credit memo with the analysis, the rating, the Markt vote and the Marktfolge vote, due within 10 business days of a complete file and submitted to the Credit Committee at least 5 business days before the meeting."
+    },
+    {
+      "term": "EXC-REQ",
+      "aliases": ["policy exception request", "Ausnahmeantrag", "exception form"],
+      "definition": "The form for every deviation from the Credit Policy since v2 (2025-07-01); it must be approved by the Head of Risk Management, is logged in KreditPortal and is never a precedent."
+    },
+    {
+      "term": "KreditPortal",
+      "aliases": ["credit workflow system", "Kreditportal", "case system"],
+      "definition": "MainBank's credit workflow system in which every credit case, decision, exception and escalation is opened and documented."
+    },
+    {
+      "term": "RatingTool",
+      "aliases": ["internal rating", "Rating", "Ratingsystem"],
+      "definition": "The internal rating system with a scale from 1 (best) to 10 (default); new business is only possible for ratings 1-5, and ratings 6 or worse are escalated to Risk Management and reviewed every 6 months."
+    },
+    {
+      "term": "four-eyes principle",
+      "aliases": ["Vier-Augen-Prinzip", "Markt / Marktfolge", "dual control"],
+      "definition": "Every credit decision needs a Markt vote (relationship manager, Corporate Banking) and a Marktfolge vote (credit analyst, Credit Analysis); the two together can decide up to EUR 1.5 million total exposure."
+    },
+    {
+      "term": "covenant",
+      "aliases": ["Financial Covenant", "Auflage", "Kreditauflage"],
+      "definition": "A contractual undertaking by the borrower to keep a financial ratio, for example an equity ratio of at least 20%; a covenant breach is escalated to Risk Management."
+    },
+    {
+      "term": "concentration risk",
+      "aliases": ["Klumpenrisiko", "customer concentration", "Kundenkonzentration"],
+      "definition": "Dependence on few customers; under Credit Policy v2 a single customer above 25% or the top three above 60% of revenue requires a risk note in the credit memo and a sensitivity analysis for the loss of the largest customer."
+    },
+    {
+      "term": "grace period",
+      "aliases": ["tilgungsfreie Zeit", "interest-only period", "Tilgungsaussetzung"],
+      "definition": "A period at the start of a loan in which only interest is paid; grace periods above 12 months need Risk Management sign-off and may not exceed 24 months."
+    },
+    {
+      "term": "annual review",
+      "aliases": ["Jahresüberprüfung", "Kreditüberwachung", "periodic review"],
+      "definition": "The regular re-assessment of every exposure with updated statements and rating, every 12 months, and every 6 months for ratings 6 and worse."
+    },
+    {
+      "term": "watchlist",
+      "aliases": ["Watchlist", "Intensivbetreuung", "early warning list"],
+      "definition": "The list of exposures under intensified monitoring because of warning signs; a watchlist proposal is escalated to Risk Management within 1 business day."
+    },
+    {
+      "term": "PPA",
+      "aliases": ["power purchase agreement", "Stromabnahmevertrag", "offtake agreement"],
+      "definition": "A long-term contract in which an offtaker buys the electricity of a solar park at agreed terms; in project finance the PPA must be signed before the first disbursement and its revenues are assigned to the bank."
+    },
+    {
+      "term": "EPC contract",
+      "aliases": ["engineering, procurement and construction contract", "Generalunternehmervertrag", "turnkey contract"],
+      "definition": "The construction contract for a project; MainBank requires a fixed-price EPC contract with completion guarantee, and disburses in tranches against progress certificates issued by the EPC contractor."
+    },
+    {
+      "term": "ESG questionnaire",
+      "aliases": ["ESG-Fragebogen", "sustainability questionnaire", "ESG"],
+      "definition": "A questionnaire on environmental, social and governance factors that is mandatory for every exposure above EUR 2.0 million under Credit Policy v2."
+    },
+    {
+      "term": "Credit Committee",
+      "aliases": ["Kreditausschuss", "KA", "committee"],
+      "definition": "The decision body chaired by board member Jochen Richter that decides total exposures above EUR 5.0 million and all project finance above EUR 3.0 million; it meets every second Tuesday."
+    },
+    {
+      "term": "Eilentscheidung",
+      "aliases": ["urgent decision", "emergency decision", "Eilbeschluss"],
+      "definition": "An urgent credit decision taken by two board members within 2 business days instead of the full Credit Committee, to be confirmed at the next committee meeting."
+    },
+    {
+      "term": "conditions precedent",
+      "aliases": ["Auszahlungsvoraussetzungen", "CPs", "disbursement conditions"],
+      "definition": "The conditions that must be fulfilled before Loan Operations may disburse, such as registered collateral, a signed PPA, paid-in equity or a progress certificate."
+    }
+  ],
+  "concept_kinds": ["rule", "deadline", "threshold", "procedure_step", "contact", "form", "definition"]
+}

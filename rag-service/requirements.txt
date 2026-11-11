@@ -1,0 +1,12 @@
+fastapi
+uvicorn[standard]
+python-multipart
+python-dotenv
+pydantic>=2
+chromadb>=1.0
+openai>=1.0
+anthropic>=1.0
+pymupdf
+python-docx
+python-pptx
+requests

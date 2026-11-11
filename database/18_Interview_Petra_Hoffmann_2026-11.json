@@ -1,0 +1,57 @@
+[
+  {
+    "expert": "Dr. Petra Hoffmann",
+    "topic": "SME corporate lending and credit analysis",
+    "question": "Who can approve a corporate loan at MainBank, and where are the limits today?",
+    "answer": "Together with the relationship manager I can decide up to EUR 1.5 million total exposure. Up to EUR 5.0 million it is Stefan as Head of Credit Analysis, above that the Credit Committee.",
+    "interviewed_at": "2026-11-11",
+    "tags": ["approval_limits", "four_eyes", "credit_committee", "policy_v2"],
+    "source_hint": "Credit Policy v2 section on approval limits"
+  },
+  {
+    "expert": "Dr. Petra Hoffmann",
+    "topic": "SME corporate lending and credit analysis",
+    "question": "Up to which amount can you decide a loan yourself, and when does the Credit Committee get involved?",
+    "answer": "Together with the relationship manager I can decide up to EUR 1.0 million. Above EUR 3.0 million the Credit Committee decides.",
+    "interviewed_at": "2023-03-01",
+    "tags": ["approval_limits", "four_eyes", "credit_committee", "policy_v1"],
+    "source_hint": "Credit Policy v1",
+    "valid_from": "2023-03-01"
+  },
+  {
+    "expert": "Dr. Petra Hoffmann",
+    "topic": "SME corporate lending and credit analysis",
+    "question": "How do you tell a normal seasonal liquidity dip from a real liquidity problem, for example at Müller Maschinenbau?",
+    "answer": "Three checks. First, I compare the quarter with the same quarters of the last three years, not with the previous quarter. Second, I check that the order backlog covers the dip at least 1.5 times. Third, I look at whether the Q4 incoming payments really arrived last year, because that tells me whether the pattern is real or a story. If the dip is deeper than 30% of the annual average, or the backlog does not cover it, I treat it as a real problem and not as seasonality.",
+    "interviewed_at": "2026-11-11",
+    "tags": ["seasonal_liquidity", "order_backlog", "tacit_knowledge", "mueller"],
+    "source_hint": ""
+  },
+  {
+    "expert": "Dr. Petra Hoffmann",
+    "topic": "SME corporate lending and credit analysis",
+    "question": "How old may the annual financial statements be when you take a credit decision?",
+    "answer": "Annual financial statements may be up to 12 months old when we decide.",
+    "interviewed_at": "2026-11-11",
+    "tags": ["financial_statements", "document_age", "deadline"],
+    "source_hint": ""
+  },
+  {
+    "expert": "Dr. Petra Hoffmann",
+    "topic": "SME corporate lending and credit analysis",
+    "question": "You once supported a loan although the equity ratio was below the policy minimum. How did you justify that?",
+    "answer": "At Schmidt Logistik I voted for the loan although the equity ratio was 19%: the policy threshold is a floor, the question is the trend and the mitigants. The Hessenfood contract until the end of 2028 with annual indexation, two further two-year contracts, assigned receivables and an equity covenant made it bankable.",
+    "interviewed_at": "2026-11-11",
+    "tags": ["policy_exception", "equity_ratio", "mitigants", "schmidt"],
+    "source_hint": "EXC-REQ-2025-014"
+  },
+  {
+    "expert": "Dr. Petra Hoffmann",
+    "topic": "SME corporate lending and credit analysis",
+    "question": "What should your successor know about Müller Maschinenbau that is not in the file?",
+    "answer": "At Müller the number that worries me is not in any ratio: Thomas Müller is 68 and has no successor. Whenever an owner is over 60 I ask for the succession plan before I look at the machines.",
+    "interviewed_at": "2026-11-11",
+    "tags": ["succession", "soft_warning_sign", "tacit_knowledge", "mueller"],
+    "source_hint": ""
+  }
+]

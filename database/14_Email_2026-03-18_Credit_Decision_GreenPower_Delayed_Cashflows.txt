@@ -1,0 +1,50 @@
+From: Dr. Petra Hoffmann <petra.hoffmann@mainbank.example>
+To: Daniel Fischer <daniel.fischer@mainbank.example>
+Cc: Stefan Krüger <stefan.krueger@mainbank.example>
+Date: 2026-03-18
+Subject: RE: Credit decision GreenPower Odenwald-Süd - delayed cash flows, grace period, DSCR
+
+Synthetic demo e-mail for the FUTURY Build Days #4 Knowledge Transfer challenge. MainBank AG, its customers and all figures are invented.
+
+Hi Daniel,
+
+yes, we can live with the delayed cash flows, but only with the full project-finance package. Here is what goes into the KV-02:
+
+Grace period: 24 months interest-only is the maximum the Credit Policy v2 allows, and anything above 12 months needs Risk Management sign-off. Dr. Lorenz has the structure and will sign on 2026-03-20, so we have that before the committee.
+
+DSCR: for project finance the policy floor is an average of 1.20 and at least 1.05 in any single year after commissioning. The cash-flow model shows an average of 1.35 and a minimum of 1.22 in the weakest year, so we are above the floor on both. The first feed-in revenue in 2027-Q3 is consistent with commissioning in 2027-06 after 14 months of construction.
+
+Conditions precedent I will propose:
+
+1. The 12-year PPA with Stadtwerke Darmstadt is signed before the first disbursement.
+2. Fixed-price EPC contract with completion guarantee is in place.
+3. The equity contribution of 25% (EUR 1.33 million of EUR 5.33 million total cost) is paid in first.
+4. Disbursement in tranches against construction progress certificates issued by the EPC contractor.
+
+Collateral: assignment of the PPA revenues, pledge of the project company shares, security transfer of the plant.
+
+Decision level: project finance above EUR 3.0 million always goes to the Credit Committee. The next meeting is 2026-03-24; my memo has been in KreditPortal since Monday 2026-03-16, so the 5-business-day submission rule is met. Please make sure the ESG questionnaire is complete, the exposure is above EUR 2.0 million.
+
+Best regards
+Petra
+
+----- Original message -----
+From: Daniel Fischer <daniel.fischer@mainbank.example>
+To: Dr. Petra Hoffmann <petra.hoffmann@mainbank.example>
+Cc: Stefan Krüger <stefan.krueger@mainbank.example>
+Date: 2026-03-17
+Subject: Credit decision GreenPower Odenwald-Süd - delayed cash flows, grace period, DSCR
+
+Hi Petra,
+
+GreenPower Solutions (Darmstadt, rating 4, customer since 2023) has filed the KA-01 for the EUR 4.0 million project loan "Solarpark Odenwald-Süd", 8 MWp, 15 years. The file is complete per DOC-LIST including the cash-flow model, the EPC draft and the PPA draft.
+
+The issue is timing. Construction takes 14 months, commissioning is planned for 2027-06, and the first feed-in revenue comes only in 2027-Q3. Until then the project company has no income. Dr. Winter asks for 24 months interest-only.
+
+Two questions before I finalise the Markt vote:
+
+1. Can we accept 24 months interest-only, and who has to approve that?
+2. Which DSCR applies to a project loan? The company-level figures look fine (FY2024 audited statements plus the preliminary FY2025 numbers from the BWA as of 2025-12-31: revenue around EUR 9.5 million, EBITDA EUR 1.9 million, equity ratio 31%; the audited FY2025 statements are expected in April), but the project itself has no history.
+
+Thanks
+Daniel
