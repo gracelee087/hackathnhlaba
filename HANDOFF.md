@@ -1,9 +1,9 @@
-# Session Handoff — OpenAI 전환 → Delta Engine 최소 묶음 → 검토화면 "지식 업데이트/교육영상" 버튼 → Git 저장소 2개 공개 (2026-11-11 23:10)
+# Session Handoff — OpenAI 전환 → Delta Engine 최소 묶음 → 검토화면 "지식 업데이트/교육영상" 버튼 → Git 저장소 2개 공개 (2026-11-11 23:20)
 
 > 아래 "Session Handoff"는 최신 세션 요약. 그 밑의 §1~§34는 누적 기록(원문 그대로 보존).
 
 ## Where it started
-FUTURY Build Days #4 (LBS/Helaba "Knowledge Transfer") 해커톤, 코드 프리즈 2026-11-12 13:00. 이 세션은 RAG 임베딩을 hIP에서 OpenAI로 완전히 옮기고, 멘토의 "Knowledge Delta Engine" 제안을 코드와 대조한 뒤 최소 묶음을 구현하고, 인터뷰 검토 화면에서 확정 지식을 부서별 Chroma에 올리고 교육영상을 만드는 버튼(옵션 B)을 붙였다. 마지막으로 두 프로젝트 폴더를 각각 Public GitHub 저장소로 커밋·푸시했다. 제약: API 키 값은 `.env` 외 어디에도 쓰지 않음, `tasks/` 주최측 PDF는 공개 금지, 한국어 응답, 변경은 계획 승인 후.
+FUTURY Build Days #4 (LBS/Helaba "Knowledge Transfer") 해커톤, 코드 프리즈 2026-11-12 13:00. 이 세션은 RAG 임베딩을 hIP에서 OpenAI로 완전히 옮기고, 멘토의 "Knowledge Delta Engine" 제안을 코드와 대조한 뒤 최소 묶음을 구현하고, 인터뷰 검토 화면에서 확정 지식을 부서별 Chroma에 올리고 교육영상을 만드는 버튼(옵션 B)을 붙였다. 마지막으로 두 프로젝트 폴더를 각각 Public GitHub 저장소로 커밋·푸시했다. 직전 "깃 커밋, 푸쉬" 요청 시점에는 두 저장소 모두 변경 없음, origin/main과 동일. 제약: API 키 값은 `.env` 외 어디에도 쓰지 않음, `tasks/` 주최측 PDF는 공개 금지, 한국어 응답, 변경은 계획 승인 후.
 
 ## Decisions locked + what shipped
 - 임베딩 백엔드 OpenAI(text-embedding-3-small, 컬렉션 `knowledge_openai`), LLM claude-opus-5-5 — hIP 제거 가능. 측정: 적재 240 s, 질의 15 s. `C:\Users\honor\OneDrive\Desktop\hackathnhlaba\rag-service\.env`(키는 여기만).
@@ -11,7 +11,8 @@ FUTURY Build Days #4 (LBS/Helaba "Knowledge Transfer") 해커톤, 코드 프리�
 - Delta Engine 최소 묶음 — 중복 fact → NO_CHANGE(`find_duplicate`, content_hash), `approve?resolution=supersede` → 근거 청크 possibly_outdated(valid_to 배타, fact.valid_from), `DELETE /facts/{id}` → 청크 재오픈. 파일: `...\hackathnhlaba\rag-service\app\{main,store,updates,semantic,models}.py`. 대조 보고서 `...\hackathnhlaba\delta_engine_check.md`.
 - 옵션 B — `POST /api/interviews/{id}/knowledge-base/publish`(확정 단위 중 neu/ergaenzung만 add_fact+approve, 부서=직원 부서) 및 `.../knowledge-base/video`. 파일: `...\ekep\backend\app\api\knowledge_routes.py`, `...\ekep\backend\app\services\rag_client.py`, `...\ekep\frontend\app\interviews\[id]\review\page.tsx`(카드 "Wissensbasis aktualisieren"). 검증: publish 42 s(2건), 영상 147.6 s mp4 200.
 - 라이브 인터뷰 `int_3654dd400c`는 데모용으로 손대지 않음(0/4 확정). "Neu abgleichen"은 비결정적이라 누르지 말 것.
-- Git — 두 저장소 Public, main 브랜치, origin 설정 완료. https://github.com/gracelee087/hackathnhlaba (커밋 3987c6a, 5eea385), https://github.com/gracelee087/expert-knowledge-platform (커밋 1075220). 커밋 전 키 패턴·이메일 git grep 0건. §34에 기록.
+- Git — https://github.com/gracelee087/hackathnhlaba (main 81b2e42), https://github.com/gracelee087/expert-knowledge-platform (main 1075220). 둘 다 Public, 워킹트리 clean, origin과 동기화 확인(2026-11-11 23:20). 커밋 전 키 패턴·이메일 git grep 0건. §34에 기록.
+- Notion 세션 로그 1건 기록됨(23:15). 이번 핸드오프는 변경 없음이라 추가 기록 안 함.
 - 아티팩트 https://claude.ai/artifact/8FLU1dw23sArdjCT7vKQ6s 버전 2 (OpenAI 반영).
 
 ## Key files for next session
@@ -36,7 +37,7 @@ FUTURY Build Days #4 (LBS/Helaba "Knowledge Transfer") 해커톤, 코드 프리�
 - `curl -s http://localhost:8001/facts | python -c "import sys,json;print(len(json.load(sys.stdin)))"` — 26 (라이브 인터뷰+publish 이후 값)
 - `curl -s -X POST "http://localhost:8001/facts/<id>/approve?reviewer=x&resolution=supersede"` — `superseded_chunks` 포함 응답
 - 브라우저 http://localhost:3000/interviews/int_3654dd400c/review — "Wissensbasis aktualisieren" 카드가 보이고, 확정 0건이면 publish 버튼 비활성
-- `cd ...\hackathnhlaba && git status` — clean, `git log --oneline | head -1` = 5eea385
+- 각 폴더에서 `git status -sb` — `## main...origin/main`, 변경 없음
 - `gh repo view gracelee087/hackathnhlaba --json visibility` — PUBLIC
 
 ## Deferred + open questions
