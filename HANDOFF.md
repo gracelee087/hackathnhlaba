@@ -1110,3 +1110,40 @@ export JSON의 외부 컨슈머 존재 여부. semantic.json의 changed 비율�
 - 사용자 지적 "1분 20초에 빨간 밑줄": history 장면의 카드 중앙에 절대 위치 선 1개를 그려서 두 줄 텍스트에서는 첫 줄 아래 밑줄처럼 보였음.
 - 수정: 텍스트를 `span.old`로 감싸고 `background-image: linear-gradient` + `box-decoration-break: clone`으로 **줄마다** 선을 그림. GSAP로 `backgroundSize "0% 5px" → "100% 5px"` 0.4 s 애니메이션(왼→오). 스냅샷 80.5 s에서 3개 카드 모든 줄 관통 확인, lint 오류 0.
 - RAG 서버 재시작 완료: `bj9bu2tzx` 중지 → 새 셸 `bz8ufja32`(8001, 로그 hlb_tmp/server_8001x.log). 바탕화면 데모 mp4 재렌더는 백그라운드 `bnhhtuadm`(로그 hlb_tmp/rerender.log, 끝나면 `training_motion_demo.mp4` 덮어씀).
+
+---
+
+## 37. 계획서: RAG(8001) + 앱 백엔드(8000) 통합 → 동료 프런트(5173) `/expert-knowledge`에 연결 (2026-11-11 23:55, 승인 대기, 미착수)
+
+### 목표
+- 백엔드 **프로세스 1개**(포트 8000, prefix `/api`)로 띄워서, 동료 프런트의 Vite 프록시(`VITE_API_PROXY_TARGET`, 기본 http://localhost:8000, `/api/*`만 전달)에 바로 붙인다.
+- 동료 프런트 계약(`helaba-knowledge-intelligence/API.md`, camelCase 고정) 중 `/expert-knowledge` 화면이 쓰는 `POST /api/interviews/reply`를 우리 LLM+RAG로 실제 응답한다.
+
+### 확인한 사실 (원문)
+- 동료 프런트는 **무상태**: 매 턴 인터뷰 스냅샷 전체(messages, missingInfo, topics, expertText…)를 보내고 `{reply, extracted{statement, topic, confidence, plausibility{score, reasons}}, resolveMissing, topicDone, contradiction, finished}`를 기대. 필수는 `reply`, `resolveMissing`뿐. plausibility<60이면 프런트가 자동으로 Vier-Augen-Prüfung 생성. `VITE_AI_FALLBACK=true`면 오류 시 시뮬레이션으로 자동 복귀(데모 안전장치).
+- 우리 앱: `FastAPI` + CORS + 라우터 4개(prefix /api), `GET /api/health`는 이미 있음({"status":"ok",...} → 계약 충족). RAG는 httpx로 `RAG_SERVICE_URL` 호출(rag_client.py).
+- RAG: `app/` 패키지(상대 import), 루트 경로 라우트(/search, /facts, /export/video, /videos, /review), env 이름이 앱과 충돌 없음(EMBEDDING_BACKEND, LLM_BACKEND, ANTHROPIC_API_KEY, OPENAI_API_KEY, PORT, DATA_DIR vs 앱 LLM_PROVIDER, OPENAI_API_KEY, RAG_SERVICE_URL). 의존성: chromadb, anthropic, pymupdf, python-docx/pptx + 외부 바이너리 ffmpeg, Piper, **Node + hyperframes(Chromium)**.
+
+### 작업 (권장안: 재작성 대신 "마운트")
+| # | 작업 | 비용 | 되돌리기 | 검증 |
+|---|---|---|---|---|
+| 1 | `rag-service/app` → `ekep/backend/rag/` 복사(패키지), requirements 병합, `.env` 키 병합(값은 .env에만), RAG DATA_DIR을 기존 `rag-service/data`(Chroma 262청크·facts 26)로 지정 | 45 m | 쉬움(폴더 삭제) | `python -c "import rag.main"` |
+| 2 | `ekep/backend/app/main.py`에 `app.mount("/rag", rag.main.app)`; `RAG_SERVICE_URL=http://localhost:8000/rag`(자기 호출, export_video는 sync→threadpool이라 데드락 없음 — **실측 확인 필요**) | 30 m | 쉬움(1줄) | `GET /rag/health`, 검토 화면 publish/video 재검증 |
+| 3 | 어댑터 `POST /api/interviews/reply`: messages+expertText → LLM(다음 질문 + statement/topic 추출) + RAG `/search` kb_verdict → plausibility score(correct 85~95 / plausible 60~75 / possibly_outdated 40~55 / contradicted 20~35 / unsupported 45) + reasons(근거 청크 제목·날짜), contradiction은 contradicted일 때만 | 2 h | 쉬움(라우터 1개) | 동료 프런트 `.env` `VITE_AI_MODE=backend`로 /expert-knowledge 실제 대화 |
+| 4 | (SHOULD) `POST /api/assistant/ask` → RAG `/ask`; (MAY) `/api/content/generate` → export outline+quiz(영상 장면은 script.json 장면 재사용); (MAY) `/api/documents/analyze` → RAG ingest+요약 | 1 h / 1 h / 1.5 h | 쉬움 | 각 화면에서 호출 |
+| 5 | 경로 충돌 점검: 기존 `/api/interviews/{iv_id}` 계열과 `POST /api/interviews/reply` — 어댑터 라우터를 **먼저** include | 10 m | — | `/openapi.json` 확인 |
+
+합계(1~3 + 5): 약 **3.5 h**. 4까지 하면 +3.5 h.
+
+### "어디에 올릴지" (열린 결정 — 사용자 선택 필요)
+- **A. 내 노트북 + 행사장 Wi-Fi (권장, 내일용)**: 동료는 `.env`의 `VITE_API_PROXY_TARGET=http://<내 IP>:8000`만 바꿈. 배포 작업 0, CORS 불필요(프록시). 위험: 같은 네트워크여야 함, Windows 방화벽 8000 허용 필요.
+- **B. 클라우드 VM + Docker**: Dockerfile에 Node 20 + Chromium 의존성 + ffmpeg + Piper 음성 + chromadb 추가 → 이미지 무겁고 작은 VM에서 HyperFrames 렌더가 10분 이상 걸릴 수 있음. 3~4 h + 디버깅, 코드 프리즈 전 위험.
+- **C. 절충**: 영상만 미리 렌더한 mp4를 쓰고 나머지는 B. 
+
+### 하지 않을 것
+- rag_client의 httpx 호출을 함수 직접 호출로 재작성(이득 없음, 위험만).
+- 동료 프런트 코드 수정(계약을 우리가 맞춤).
+- 저장소 통합(SQLite ekep.db + Chroma는 그대로 각자), 두 Git 저장소 합치기(통합 코드는 expert-knowledge-platform 쪽에 둠).
+
+### 사용자가 정할 것
+1. 배포 대상 A/B/C. 2. 어댑터 범위: 3번만(필수) vs 4번까지. 3. 착수 시점: 오늘 밤 vs 내일 아침(프리즈 13:00). 4. 통합 코드를 expert-knowledge-platform 저장소에 두는 데 동의하는지.
