@@ -58,7 +58,7 @@ Each backend writes to its own Chroma collection (`data/chroma`), so switching b
 | `POST /interview/next` | Propose the next interview question from the KB and the turns so far (reason: opening, gap, contradiction, deepen, handover, closing) | body `lang`: language of the question and rationale |
 | `POST /check` | Verdict for a statement as of a date: correct, plausible, possibly_outdated, contradicted, unsupported | body `lang`: language of `explanation` and `what_applies_today` |
 | `GET /export` | Knowledge package for training: current vs historical, citations, optional `outline=true` | `lang`: language of the outline and speaker scripts |
-| `POST /export/video` | Builds the export outline, narrates it (Piper voice) and renders an MP4 with ffmpeg; query params `topic`, `as_of`, `audience`, `k`, `department` | `lang` (default `de`): narration language |
+| `POST /export/video` | Builds the export outline, narrates it (Piper voice) and renders an MP4; query params `topic`, `as_of`, `audience`, `k`, `department` | `lang` (default `de`): narration language; `style` (default `still`): `still` = one image per scene + ffmpeg (~2-3 min), `motion` = HyperFrames motion graphics (`app/motion.py`, needs Node + `npx hyperframes@0.7.54`, render ≈ 2x realtime, ~4-5 min for a 100 s video) |
 | `GET /videos/{job}/{name}` | Serves a rendered training video (MP4) | - |
 | `GET /health`, `GET /ui`, `POST /admin/reset` | Status; the review console; delete everything (demo) | - |
 

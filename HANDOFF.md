@@ -1079,3 +1079,26 @@ export JSON의 외부 컨슈머 존재 여부. semantic.json의 changed 비율�
   - 안 2 (저위험): ffmpeg만으로 zoompan(Ken Burns) + xfade 전환 + 불릿 단계별 PNG. 1~2 h. 여전히 슬라이드쇼 느낌.
   - 안 3: 동료 프런트의 AI Content Studio는 "Video-Szenen"을 브라우저에서 재생(mp4 아님). 우리 script.json 장면을 `/api/content/generate` 형식으로 주면 그쪽 플레이어로도 보여줄 수 있음(어댑터 필요).
 - 하지 않을 것(승인 전): video.py/frames.py 수정, HyperFrames 프로젝트 생성, 동료 프런트와 백엔드 연결.
+
+---
+
+## 36. 교육영상 모션그래픽(HyperFrames) 구현 — 안 1 (2026-11-11 23:25~, 사용자 "1번으로" 승인, 구현 완료·측정 중)
+
+### 36-a. 구현 (확인됨)
+- 새 모듈 `rag-service/app/motion.py`: script.json 장면(title/section/history/quiz/outro) + Piper WAV → HyperFrames 프로젝트(`<job>/motion/index.html` + `compositions/s<i>.html` + `assets/`) → `npx --yes hyperframes@0.7.54 render` → `<job>/training_motion.mp4`.
+  - 디자인: Helaba 팔레트(navy #004874 / blue #009ee3 / coral #fe3b61), Inter(번들 폰트), 1920×1080 30 fps. 루트 타임라인이 장면 경계마다 배경색 플러드(0.4 s) + 하단 진행바. 장면별: 제목 단어 블러인, 섹션은 세로 레일 + 번호 카드가 나레이션 길이에 맞춰 순차 등장, 이력(history)은 카드에 취소선 + "VERALTET" 스탬프, 퀴즈는 카드 플립, 아웃트로는 담당자 + "Danke fürs Mitmachen!". 모든 움직임은 타임라인 시간의 함수(랜덤·시계·네트워크 없음).
+- `app/video.py` `build(..., style="still"|"motion")`: motion이면 PNG/세그먼트 생략, TTS 후 `motion.build()` 호출. 기존 정지화면 파이프라인은 `_concat()`으로 분리해 폴백 유지.
+- `app/main.py` `POST /export/video?style=still|motion` (기본 still, 그 외 400). README 표 갱신.
+- 앱: `rag_client.export_video(..., style="motion")` 기본값 motion, TIMEOUT_VIDEO_S 600→900; `knowledge_routes.generate_video(style="motion")`; 검토 화면 버튼 문구 "Video wird erstellt (ca. 4–6 Min., Motion-Graphics)".
+- 서버 재시작: RAG `bj9bu2tzx`(8001, 로그 hlb_tmp/server_8001w.log), 앱 백엔드 `bep4hx12f`(8000, 로그 hlb_tmp/ekep_backend5.log). 프런트 3000 `bhkdjxr5b` 그대로, 동료 프런트 5173 `byiizp521` 그대로.
+
+### 36-b. 측정 (확인됨)
+- 기존 job `wissenssicherung-firmenkundenkredite-mit_1bc265`(7장면, 102.4 s)로 단독 렌더: `hyperframes check` 오류 0(경고: 대비 4.06:1 2건), 렌더 **224 s**(3,074 프레임, 워커 4, 캡처 139 s + 인코드 55 s), mp4 9.7 MB, h264 1920×1080 30 fps + aac, 오디오 mean −18.7 dB / max −3.0 dB.
+- 결과 복사본: `C:\Users\honor\OneDrive\Desktop\training_motion_demo.mp4`.
+- 앱 경로 end-to-end(검토 화면 버튼과 동일 호출 `POST /api/interviews/int_3654dd400c/knowledge-base/video`, style=motion, 23:39:07→23:44:22): HTTP 200, **314 s** 총 소요. RAG 내부 timings: script 32.2 s, tts 12.9 s, hf_render 209.8 s, total 255.0 s(나머지 ≈ 60 s는 export 아웃라인 LLM). 결과 `wissenssicherung-firmenkundenkredite-mit_509d88/training_motion.mp4` 108.2 s, 10.5 MB, GET /videos 200. 앱 타임아웃 900 s 안에 여유 있음.
+
+### 36-c. 함정
+- `python -c "..."`를 Git Bash에서 쓰면 `|| goto :error`가 섞여 깨짐 → 스크립트 파일로 실행.
+- `.w` 단어 스팬: inline-block 높이가 줄 높이보다 커서 lint content_overlap 오류 → `.w{line-height:1.02}` + 제목 line-height 1.2. 단어는 `"".join`(마진으로 간격).
+- 큰 heredoc에 HTML/JS가 섞이면 bash 따옴표 파싱이 깨질 수 있음 → Write 도구 사용.
+- 음악 없음(사용자 요청 없음, 나레이션만). 필요하면 `/media-use`로 무료 BGM 추가 가능.

@@ -16,7 +16,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-from . import config, frames, llm, tts
+from . import config, frames, llm, motion, tts
 
 logger = logging.getLogger(__name__)
 VIDEO_DIR = config.DATA_DIR / "videos"
@@ -66,8 +66,9 @@ def _run(cmd: list[str]) -> None:
         raise VideoError(f"ffmpeg failed: {r.stderr[-600:]}")
 
 
-def build(topic: str, as_of: str, audience: str, outline: dict, lang: str = "de") -> dict:
-    """outline = TrainingOutline.model_dump(). Returns a JSON-able job description incl. the mp4 name and timings."""
+def build(topic: str, as_of: str, audience: str, outline: dict, lang: str = "de", style: str = "still") -> dict:
+    """outline = TrainingOutline.model_dump(). Returns a JSON-able job description incl. the mp4 name and timings.
+    style="still": one PNG per scene + ffmpeg (fast fallback); style="motion": HyperFrames motion graphics (motion.py, ~2x realtime render)."""
     t_all = time.time()
     timings: dict[str, float] = {}
     t0 = time.time()
@@ -90,6 +91,11 @@ def build(topic: str, as_of: str, audience: str, outline: dict, lang: str = "de"
         t0 = time.time()
         dur = tts.synthesize(sc.narration, wav, lang) if voice else 0.0
         timings["tts_s"] += time.time() - t0
+        if style == "motion":  # frames + per-scene mp4 are not needed; motion.py renders from the script + WAVs
+            length = (dur + 0.7) if voice and wav.exists() else 6.0
+            scenes_out.append({"index": i, "kind": sc.kind, "title": sc.title, "bullets": sc.bullets, "note": sc.note,
+                               "narration": sc.narration, "seconds": round(length, 1)})
+            continue
         t0 = time.time()
         frames.render_scene({"kind": sc.kind, "title": sc.title, "bullets": sc.bullets, "note": sc.note, "caption": sc.narration,
                              "index": i, "total": total, "audience": audience, "lang": lang}, png)
@@ -111,20 +117,32 @@ def build(topic: str, as_of: str, audience: str, outline: dict, lang: str = "de"
                            "narration": sc.narration, "seconds": round(length, 1)})
 
     t0 = time.time()
+    if style == "motion":
+        try:
+            out_name, mt = motion.build(job, scenes_out, lang)
+        except (motion.MotionError, subprocess.TimeoutExpired) as e:
+            raise VideoError(f"motion render failed: {e}")
+        timings.update(mt)
+        name = f"{job.name}/{out_name}"
+    else:
+        name = _concat(job, segments)
+        timings["ffmpeg_s"] += time.time() - t0
+    for k in timings:
+        timings[k] = round(timings[k], 1)
+    timings["total_s"] = round(time.time() - t_all, 1)
+    (job / "script.json").write_text(json.dumps({"title": script.title, "scenes": scenes_out}, ensure_ascii=False, indent=2), encoding="utf-8")
+    logger.info("training video %s (%s): %s scenes, %.1f s, timings %s", name, style, total, sum(s["seconds"] for s in scenes_out), timings)
+    return {"title": script.title, "file": name, "url": f"/videos/{name}", "language": lang, "voice": voice, "audience": audience, "style": style,
+            "as_of": as_of, "duration_s": round(sum(s["seconds"] for s in scenes_out), 1), "scenes": scenes_out, "timings": timings}
+
+
+def _concat(job: Path, segments: list[Path]) -> str:
     lst = job / "segments.txt"
     lst.write_text("".join(f"file '{s.name}'\n" for s in segments), encoding="utf-8")
     out = job / "training.mp4"
     _run([FFMPEG, "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", str(lst), "-c:v", "libx264", "-pix_fmt", "yuv420p",
           "-c:a", "aac", "-movflags", "+faststart", str(out)])
-    timings["ffmpeg_s"] += time.time() - t0
-    for k in timings:
-        timings[k] = round(timings[k], 1)
-    timings["total_s"] = round(time.time() - t_all, 1)
-    name = f"{job.name}/training.mp4"
-    (job / "script.json").write_text(json.dumps({"title": script.title, "scenes": scenes_out}, ensure_ascii=False, indent=2), encoding="utf-8")
-    logger.info("training video %s: %s scenes, %.1f s, timings %s", name, total, sum(s["seconds"] for s in scenes_out), timings)
-    return {"title": script.title, "file": name, "url": f"/videos/{name}", "language": lang, "voice": voice, "audience": audience,
-            "as_of": as_of, "duration_s": round(sum(s["seconds"] for s in scenes_out), 1), "scenes": scenes_out, "timings": timings}
+    return f"{job.name}/training.mp4"
 
 
 def video_path(name: str) -> Path:

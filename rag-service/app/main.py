@@ -332,10 +332,13 @@ def export(topic: str, as_of: Optional[str] = None, audience: str = "beginner",
 
 @app.post("/export/video", summary="Generate a short training video (German narration, customer look) from the export outline")
 def export_video(topic: str, as_of: Optional[str] = None, audience: str = "beginner", k: int = 12,
-                 department: Optional[str] = None, lang: str = "de"):
+                 department: Optional[str] = None, lang: str = "de",
+                 style: str = Query("still", description="still = one image per scene (fast) | motion = HyperFrames motion graphics (~2x realtime render)")):
+    if style not in ("still", "motion"):
+        raise HTTPException(400, "style must be 'still' or 'motion'")
     package = export(topic, as_of, audience, k, True, department, lang)
     try:
-        return video.build(topic, package["as_of"], audience, package["outline"], lang)
+        return video.build(topic, package["as_of"], audience, package["outline"], lang, style)
     except video.VideoError as e:
         raise HTTPException(500, str(e))
 
