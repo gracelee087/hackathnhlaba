@@ -1147,3 +1147,11 @@ export JSON의 외부 컨슈머 존재 여부. semantic.json의 changed 비율�
 
 ### 사용자가 정할 것
 1. 배포 대상 A/B/C. 2. 어댑터 범위: 3번만(필수) vs 4번까지. 3. 착수 시점: 오늘 밤 vs 내일 아침(프리즈 13:00). 4. 통합 코드를 expert-knowledge-platform 저장소에 두는 데 동의하는지.
+
+### 37-b. "Render 같은 데 올리면 안 돼?" / "도커로 묶어서" 검토 (2026-11-12 00:05, 2차 출처 포함)
+- Render 요금(2차 출처, 2026): Free $0 256~512 MB(출처마다 다름, 15분 무트래픽 시 스핀다운, **영구 디스크 없음**), Starter $7 0.5 CPU/512 MB, Standard $25 1 CPU/2 GB, Pro $85 2 vCPU/4 GB. HTTP 요청 타임아웃은 커뮤니티 글 기준 100분(공식 문서 미확인). 긴 작업은 폴링 권장.
+- 우리 요구: HyperFrames 렌더는 Chrome 워커 4개 × ~256 MB → **2 GB 이상(Standard)** 필요, 1 CPU면 노트북(224 s)보다 훨씬 느릴 것(미측정). 데이터: Chroma 31 MB + Piper 음성 ~120 MB + videos 42 MB → 디스크(유료) 또는 이미지에 포함. Free 티어로는 영상 생성 불가, RAG+인터뷰도 메모리 빠듯.
+- Docker: Render는 어차피 Docker 이미지를 돌리므로 "도커로 묶기"와 "Render에 올리기"는 같은 작업의 두 단계. Dockerfile에 Node 20 + Chromium 런타임 라이브러리 + ffmpeg + Piper 음성 + chromadb 추가 필요(현재 ekep Dockerfile은 python:3.12-slim만). Render 빌드는 회당 10분+ → 디버깅 왕복 비용 큼.
+- 권장(내일 데모 기준): §37 통합(마운트 + reply 어댑터) → **노트북에서 실행 + Cloudflare quick tunnel(무료, 계정 불필요)로 공개 URL** → 동료는 `VITE_API_BASE_URL=<터널 URL>`(우리 앱 CORS 이미 `*`). 영상 렌더는 노트북 성능 그대로. Docker는 선택(클라우드 갈 때만 필요). 위험: 노트북 켜져 있어야 함, 터널 URL이 재시작마다 바뀜.
+- 대안: Render Standard($25)에 Docker로 올리되 영상은 미리 렌더한 mp4만 서빙(생성은 노트북). 비용 3~4 h + 빌드 디버깅, 프리즈 전 완료 보장 못 함.
+- 결정 대기: 터널 방식(권장) vs Render Standard.
