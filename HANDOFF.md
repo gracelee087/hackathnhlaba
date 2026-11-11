@@ -1102,3 +1102,6 @@ export JSON의 외부 컨슈머 존재 여부. semantic.json의 changed 비율�
 - `.w` 단어 스팬: inline-block 높이가 줄 높이보다 커서 lint content_overlap 오류 → `.w{line-height:1.02}` + 제목 line-height 1.2. 단어는 `"".join`(마진으로 간격).
 - 큰 heredoc에 HTML/JS가 섞이면 bash 따옴표 파싱이 깨질 수 있음 → Write 도구 사용.
 - 음악 없음(사용자 요청 없음, 나레이션만). 필요하면 `/media-use`로 무료 BGM 추가 가능.
+
+### 36-d. 사용자 결정 (2026-11-11 23:46)
+- "비디오는 이 정도면 된 거 같아. 앞으로도 이런 퀄리티로 제작해줘." → **motion 스타일(§36-a 디자인)이 앞으로 교육영상의 기준.** 검토 화면 버튼 기본값 motion 유지, still은 폴백 전용. 향후 영상 작업은 `app/motion.py` 장면 템플릿을 기준선으로 하고 그 이하로 내리지 않는다.
