@@ -1217,3 +1217,55 @@ RAG 병합(§37 작업 1·2), Docker/Render, analyze 어댑터, 3000 인터뷰 �
 - **T3** 완료(09:46): Bauspar 모션 영상 98.6 s, 8장면(title / 4 section / history "Historische Regeln – nicht mehr aktuell" / quiz / outro), 총 275 s(script 30 + TTS 12 + HyperFrames 200). URL `http://localhost:8001/videos/historische-bausparvertr-ge-und-tarifgen_69f7d9/training_motion.mp4`, 복사본 `Desktop\training_bauspar_demo.mp4`. 데모에서는 이 URL을 별도 탭으로.
 - 커밋: hackathnhlaba fe123ff(ingest 스크립트+HANDOFF), expert-knowledge-platform aa3005c(어댑터 2파일+main.py). 둘 다 push 완료.
 - 실행 중 bg: RAG 8001 `bpsz91k0f`, 앱 백엔드 8000 `bfw9gwvhz`(log hlb_tmp/ekep_backend9.log), 앱 프런트 3000 `ba01me2qq`, 동료 프런트 5173(쉘 분리 실행, log hlb_tmp/helaba_fe4.log; 종료는 포트 5173 PID taskkill).
+
+---
+
+## 39. 음성 인터뷰를 동료 대시보드에 넣는 계획 (2026-11-12 10:05, 승인 대기)
+
+### 확인된 사실 (1차 출처·실측)
+- "Neues Interview starten" 버튼은 정상 동작. 헤드리스 Chrome(puppeteer-core)으로 5173 /expert-knowledge 로드 → 클릭 → "Neues Experteninterview" 다이얼로그 열림(select expert 14개, script 3개, doc 9개, 하단 "Abbrechen / Interview starten"). 콘솔 오류 0. 즉 2단계: 버튼 → 다이얼로그에서 전문가·가이드 선택 → **Interview starten**.
+- 동료 대시보드 인터뷰는 텍스트 전용. `src/` 전체에 MediaRecorder/getUserMedia/SpeechRecognition/speechSynthesis 코드 없음. 입력은 `src/components/interviews/InterviewChat.tsx`의 Textarea + 전송 버튼 → `onSend(text)` → `ExpertKnowledgePage.tsx` `send()` → `aiService.interviewReply` (= 우리 8000 `/api/interviews/reply`).
+- 우리 인터뷰 앱(3000)의 음성: `frontend/lib/useVoice.ts`(475줄). 현재 `.env`: STT_ENGINE=openai (MediaRecorder 녹음 → `POST /api/interviews/{id}/answer/audio` → `get_stt().transcribe`, 모델 gpt-4o-transcribe, 무음 1.8 s에 자동 종료), TTS_ENGINE=browser (speechSynthesis). 훅이 백엔드를 부르는 곳은 서버 TTS 한 곳뿐(`api.blob("/api/tts")`) → browser TTS면 의존 없음.
+- `answer/audio`는 인터뷰 id·데모 헤더(X-Demo-User/Role)·orchestrator에 묶여 있어 대시보드에서 그대로 못 씀 → 전사 전용 어댑터 필요.
+
+### 작업 (승인 후)
+| # | 작업 | 어디 | 비용 | 되돌리기 |
+|---|------|------|------|---------|
+| V1 | `POST /api/interviews/transcribe` (multipart audio, 선택 `hint`) → `get_stt().transcribe(..., prompt=Bauspar 어휘+hint)` → `{text}`. 인증 없음(기존 어댑터와 동일). 빈 인식 → 422 | ekep `backend/app/api/dashboard_interview.py` | 15분 | 쉬움(파일 1개) |
+| V2 | `useVoice.ts` 복사 → 동료 `src/lib/useVoice.ts`. 변경 최소: `api.*` 제거, onUtterance(blob)만 사용, TTS=browser 고정(de 음성), 서버 TTS 분기 삭제 | 동료 frontend (**동료 코드 수정**) | 15분 | 파일 추가라 쉬움 |
+| V3 | `InterviewChat.tsx`에 마이크 버튼 + 상태 라벨(우리 앱 MicButton 축약판). 음성 → V1 전사 → 기존 `onSend(text)` 그대로 → reply 어댑터 → RAG /check (기존 흐름 불변). AI 질문 도착 시 speechSynthesis로 읽기 | 동료 frontend (**동료 코드 수정**, 1파일) | 25분 | 중간(git 아님 → 원본 사본 보관 후 수정) |
+| V4 | 검증: wav 샘플 multipart curl → V1 200 + text; 브라우저 수동(마이크 권한, 질문 읽기, 답변 전사, 점수/모순 토스트) | — | 15분 | — |
+
+- 일정: 승인 10:10 → V1·V2 병렬(서브에이전트) 10:25 → V3 10:50 → V4 11:05 → 사용자 리허설 → 12:40 마무리(커밋·HANDOFF·Notion). 13:00 freeze.
+- 성공 조건: 대시보드 /expert-knowledge에서 마이크 켜고 독일어로 답하면 전사 텍스트가 채팅에 들어가고 8000 reply 어댑터 결과(점수·모순)가 표시된다. 우리 앱과 같은 STT 모델·무음 종료·브라우저 TTS.
+- 하지 않을 것: 서버 TTS(gpt-4o-mini-tts), 끼어들기(barge-in) 기본 on, 동료의 다른 페이지 수정, Document Intelligence 연결.
+- 함정: 헤드리스로 마이크 테스트 불가(수동 필수). localhost는 getUserMedia 허용. 동료가 같은 파일을 동시에 수정하면 충돌(동료 폴더는 git 아님 → 수정 전 `InterviewChat.tsx.orig` 사본).
+
+### 열린 결정 (사용자)
+1. 동료 `src/` 수정(V2·V3) 승인 여부 — 동료와 합의 필요. 미승인 시 대안: 음성 데모는 우리 앱 3000(`/interviews/{id}`)에서, 대시보드는 텍스트로.
+2. 발표 시 TTS(AI 질문 읽어주기) 켤지 — 우리 앱과 동일하게 browser TTS 기본 on 제안.
+
+### 39-a. 승인 후 범위 확장 (10:10, 사용자: "AI 인터뷰 앱 백엔드였던 게 100% 똑같이 적용돼야")
+- 사용자 승인("진행") 후 추가 요구: 음성뿐 아니라 **인터뷰 엔진 자체**가 우리 앱과 같아야 함. 기존 reply 어댑터는 LLM 1회 호출(TurnDecision)이라 플래너·인터뷰어 에이전트·애널리스트 추출·RAG next_question/fact 제출이 빠져 있었음.
+- 서브에이전트 3개 병렬:
+  - agent-voice-fe: 동료 `src/lib/useVoice.ts`(우리 훅 복사, api 의존 제거, browser TTS) + `src/components/interviews/InterviewChat.tsx` 마이크 버튼(원본 `.orig` 사본). 음성 → `/api/interviews/transcribe` → 기존 `onSend(text)`.
+  - agent-stt: ekep `app/api/dashboard_voice.py` `POST /api/interviews/transcribe` (answer_audio와 동일 STT 프롬프트·오류 코드) + main.py 라우터 등록.
+  - agent-orch: ekep `app/api/dashboard_interview.py` reply를 orchestrator 기반으로 교체. 대시보드 interviewId ↔ ekep Interview 매핑(`[dash:<id>]` 제목), 플랜은 대시보드 topics/missingInfo로 구성(플래너 LLM 호출 대신 — UI 토픽과 엔진 토픽 일치), 기존 메시지를 Turn으로 적재 → `orch.answer()` → `wait_idle` 후 KnowledgeUnit에서 statement → RAG /check 점수 매핑(기존 유지). 구 경로는 `DASHBOARD_ENGINE=simple`로 보존.
+- 백엔드(8000)는 --reload 없이 떠 있으므로 변경 후 재시작 필요(bg bfw9gwvhz 중지 → 재시작).
+
+### 39-b. 결과 (10:12, 실측)
+- 백엔드 8000 재시작(bg b0guryt26, 로그 hlb_tmp/ekep_backend11.log). 프록시(5173 → 8000) 경유 검증 `scratchpad/verify_v39.py`:
+  - REPLY1 200, 18.4 s: 엔진이 RAG 근거("Laut Rundschreiben RS 02-2021 …")로 되물음, statement=전문가 발언, score 48, contradiction mittel, topicId t1.
+  - REPLY2 200, 20.8 s: 같은 interviewId로 이어짐(이전 발언 교차 참조, 다른 질문), score 62.
+  - TRANSCRIBE 무음 wav → 처음엔 200으로 프롬프트(어휘+힌트) 에코 반환 → `dashboard_voice.py`에 에코 가드 추가(어휘 문자열 포함 또는 힌트와 동일 → 422) → 재시작 후 422 확인. 빈 파일 400.
+- 프론트(동료): `src/lib/useVoice.ts` 신규, `src/components/interviews/InterviewChat.tsx` 수정(원본 `.orig`). 마이크 버튼 상태기계: off→enable+listen / recording→finishNow / ai_speaking→listen / idle·listening→startNow. 0.6 s 미만 클립·힌트 에코는 전송 안 함. AI 메시지 도착 시 마이크 켜진 경우만 speechSynthesis(de-DE). tsc 통과.
+- 미확인: 실제 마이크(헤드리스 불가) → 사용자 수동. statement가 KnowledgeUnit이 아닌 전문가 발언 그대로인 경우(애널리스트 대기 25 s 초과 또는 유닛 미매칭) 있음 — 점수 매핑은 동일하게 동작.
+- 아직 안 한 것: ekep 커밋/푸시(agent-orch 최종 보고 후), Notion 갱신.
+
+### 39-c. agent-orch 최종 보고 요약 + 커밋 (10:15)
+- `dashboard_interview.py` 395줄. 응답 모델에 선택 필드 `topicId` 추가만(나머지 계약 불변). 기존 테스트 19개 통과(tests/test_interview_flow.py, test_units.py).
+- TestClient 실측: 턴당 17–18 s (answer 12 s = RAG /interview/next + InterviewerDecision 3 s, 애널리스트 대기 2–7 s, /check 5 s). 깨끗한 첫 실행에서는 statement가 애널리스트 KnowledgeUnit(KU-…)에서 나옴; 같은 발언을 반복하면 새 유닛이 없어 전문가 발언으로 폴백(설계대로).
+- DB(backend/data/ekep.db)에 `[dash:int-demo]` 인터뷰 9턴/3유닛 생성됨. 프로세스 재시작 후에는 제목 접두사 DB 폴백으로 찾음(재시작 후 경로는 미실측).
+- 미검증: closing 턴(finished=True → 다음 reply는 새 ekep 인터뷰 생성).
+- 커밋: expert-knowledge-platform `d09e16b` (push 완료). 동료 프론트 폴더는 git 아님(변경: src/lib/useVoice.ts 신규, src/components/interviews/InterviewChat.tsx 수정, .orig 백업).
+- 실행 상태: RAG 8001 bg bpsz91k0f / ekep 백엔드 8000 bg b0guryt26 / ekep 프론트 3000 bg ba01me2qq / 동료 5173 detached(포트 PID로 종료).
