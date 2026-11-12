@@ -1350,3 +1350,8 @@ RAG 병합(§37 작업 1·2), Docker/Render, analyze 어댑터, 3000 인터뷰 �
 - 발행은 Claude Code 권한 분류기가 "공개 표면 생성"으로 거부 → 사용자가 직접 `npx gh-pages -d dist` + `gh api ... /pages` 실행 필요(아래 채팅 안내). 예상 URL https://gracelee087.github.io/hackathnhlaba/
 - 발행 결과(12:37): 사용자가 `npx gh-pages -d dist` 실행 → Pages 자동 활성화(gh-pages 브랜치, 루트). 첫 발행에 mp4가 빠짐(gh-pages 패키지가 `*.mp4` ignore 규칙을 따름) → gh-pages 브랜치를 클론해 dist 전체를 `git add -f`로 다시 커밋·푸시. **공개 URL: https://gracelee087.github.io/hackathnhlaba/** — 라이브 헤드리스 검증: 딥링크 /learning/trn-trn_f110ecd4a8 → 코스 제목 표시, video readyState 4, 길이 107.3 s, 페이지 오류 0. mp4 HTTP 200(10.6 MB). 딥링크는 HTTP 상태 404지만 본문이 앱(404.html)이라 브라우저에서는 정상.
 - 재배포 절차: `cd dashboard && MSYS_NO_PATHCONV=1 VITE_AI_MODE=mock npx vite build --base=/hackathnhlaba/ && cp dist/index.html dist/404.html` → gh-pages 브랜치 클론에 dist 복사 후 `git add -A -f` 커밋·푸시(mp4 때문에 -f 필수).
+
+### 39-q. 하이브리드(터널) 중단 — 최종 제출 상태 (12:50)
+- AI Interview 페이지를 공개 URL에서 살리는 하이브리드(cloudflared 터널 2개 + CORS/NEXT_PUBLIC_API_URL 재시작 + 대시보드 재배포)는 사용자 결정으로 **하지 않음**. 파일 변경 없음(조사만). ngrok 실행은 권한 분류기가 차단함.
+- 제출물: 공개 데모 https://gracelee087.github.io/hackathnhlaba/ (정적, mock AI + 인터뷰 결과 스냅샷), 저장소 https://github.com/gracelee087/hackathnhlaba (README Quickstart, dashboard/ 포함), https://github.com/gracelee087/expert-knowledge-platform.
+- 제출 후 후보: ElevenLabs 나레이션(§39 계획), docker compose 번들(4 서비스), Render 등 전체 호스팅, README 기준 clean clone 검증.
