@@ -1314,3 +1314,6 @@ RAG 병합(§37 작업 1·2), Docker/Render, analyze 어댑터, 3000 인터뷰 �
 - 실측(프록시 경유, 인터뷰 기사 1건을 소스로): articles 1건 `iv-int_4981f54b92` facts 20; praesentation 200 49.8 s(slides 7, quiz 5), video 200 45.6 s(scenes 5), podcast 200 52.5 s(podcast 9), **quiz 200 58.3 s quiz 20**(correctIndex·explanation 모두 유효). 헤드리스: /content-studio 1단계 첫 항목이 인터뷰 기사 + Neu, Quiz Generator 생성 57 s → 결과 헤더 Neu, "In Learning Academy speichern" → "öffnen" 버튼 전환, /knowledge-base 첫 카드 Neu, /learning Neu 배지 3개(원격 모듈 1 + 저장한 모듈 2), 콘솔 오류 0.
 - 함정: Content Studio 생성은 기사 제목을 주제로 RAG /export를 돌리므로 RAG 8001이 꺼져 있으면 기사 본문만으로 폴백(품질 저하). 인터뷰 기사는 확인된 유닛(Review "Bestätigen")이 있는 인터뷰만 노출.
 - 실행 상태: RAG 8001 bg b7i3glcy8 / ekep 백엔드 8000 **bg b60cphs4p**(ekep_backend16.log) / ekep 프론트 3000 bg bupkp25g3 / 동료 5173 detached.
+
+### 39-k. 사이드바 순서 변경 (11:38, 사용자 요청)
+- `src/components/navigation/nav-items.ts`: "Wissen vermitteln" 그룹 순서를 AI Interview → **Learning Academy** → AI Content Studio → AI Knowledge Assistant 로(Learning Academy를 Content Studio 위로). tsc 통과, 헤드리스로 렌더 순서 확인.
