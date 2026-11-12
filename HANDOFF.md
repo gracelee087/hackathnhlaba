@@ -1274,3 +1274,8 @@ RAG 병합(§37 작업 1·2), Docker/Render, analyze 어댑터, 3000 인터뷰 �
 - 동료 프론트 되돌림: `src/components/interviews/InterviewChat.tsx` ← `.orig` 복원(음성 코드 0줄 확인), `src/lib/useVoice.ts` 삭제, `.orig` 삭제. tsc 통과, HMR 반영. `.env`(VITE_AI_MODE=backend, 타임아웃 120 s)는 §38 그대로 유지 → 대시보드 인터뷰는 **텍스트 입력**, 백엔드는 orchestrator 엔진 그대로.
 - 롤백 전 실측(기록용): 자동 마이크 시작 포함 헤드리스 E2E 2회 성공(31 s / 36 s, 점수 48, Vier-Augen 토스트). 사용자 환경에서는 동작 확인 못 함(원인 미확인 — 백엔드 로그에 사용자 브라우저발 transcribe 요청 없음).
 - 백엔드 어댑터(`dashboard_voice.py` /transcribe, orchestrator reply)는 그대로 둠(프론트가 안 부르면 무해). 음성 데모는 우리 앱 3000(`/interviews/{id}`)에서 가능.
+
+### 39-e. 동료 대시보드에 "AI Interview" 메뉴 추가 (10:40, 사용자 요청)
+- 사이드바 "AI Content Studio" 바로 위 **AI Interview**(`/ai-interview`, 그룹 Wissen vermitteln, 아이콘 Mic). 페이지는 우리 인터뷰 앱(3000)을 iframe으로 통째로 임베드(`allow="microphone; autoplay; clipboard-write"`), 우측 상단 "In neuem Tab öffnen". URL은 `VITE_INTERVIEW_APP_URL`(기본 http://localhost:3000).
+- 동료 파일: `src/pages/AiInterviewPage.tsx` 신규, `src/components/navigation/nav-items.ts` 1줄, `src/App.tsx` import+라우트. tsc 통과. 헤드리스 확인: 메뉴 순서 OK, 임베드 앱 로드 OK(3000은 frame 차단 헤더 없음), 콘솔 오류 0.
+- 서버 재기동(10:33): RAG 8001 bg b7i3glcy8(log server_8001z.log) / ekep 백엔드 8000 bg ba21s79m9(ekep_backend12.log) / ekep 프론트 3000 bg bupkp25g3(ekep_frontend7.log) / 동료 5173 detached(helaba_fe5.log, 포트 PID로 종료).
