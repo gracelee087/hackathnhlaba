@@ -1,45 +1,47 @@
-# Session Handoff — 발표 직전: 서버 24h 감시(keepalive), 스모크 테스트, Content Studio 결과 하드코딩, 발표 대본 (2026-11-12 14:45)
+# Session Handoff — 포트폴리오 레포 `expert-knowledge-transfer` 완성·private 푸시 (2026-11-13 00:30)
 
-> 아래 "Session Handoff"는 최신 세션 요약. 그 밑의 §1~§39-v는 누적 기록(원문 그대로 보존).
+> 아래 "Session Handoff"는 최신 세션 요약. 그 밑의 §1~§40-i는 누적 기록(원문 그대로 보존). 이번 세션의 단계별 타임라인은 §40-i(20:30~00:30).
 
 ## Where it started
-FUTURY Build Days #4(LBS/Helaba "Knowledge Transfer") 발표 직전. 사용자(Sohee Lee) 요구: "서버는 앞으로 24시간 계속 살려줘, 절대 꺼지면 안됨", "잘되는지 스모크 테스트", "AI Content Studio에 결과물이 없다 → 이미 만든 걸 하드코드로", "intro+problem statement+마무리 대본", "서브에이전트 써서 진행". 규칙: 1차 출처·실측, 비밀값은 `.env`에만, 동료 대시보드 수정 시 `.orig` 백업(이미 있으면 보존).
+해커톤 결과물을 독일 채용 담당자용 포트폴리오로 재구성: 새 레포 `C:\Users\honor\OneDrive\Desktop\expert-knowledge-transfer`(내 파트 중심, 두 FastAPI 서버를 하나로 병합, `/rag` 라우터). 사용자 결정: 코퍼스를 은행 → 물류(Nordfracht Logistik, 20년차 수입 오퍼레이터 Michael Brandt), 모든 언어 영어, 고객사 SOP·Outlook .eml·업무 xlsx·ADR 사례 포함, 데모 영상은 AI 자동 제작(헤드리스 녹화 + Piper 영어 TTS), 레포는 **private으로 내가 직접 생성**("너가 레포 생성 private으로 알아서해"). 서브에이전트 활용 허용.
 
 ## Decisions locked + what shipped
-- 서버 감시: `C:\Users\honor\OneDrive\Desktop\hackathnhlaba\scripts\keepalive.ps1` — 20 s마다 8001/8000/3000/5173 HTTP 체크, 2회 연속 실패 시 재기동. **pwsh 7 전용**, Claude 세션과 분리하려고 WMI(`Invoke-CimMethod Win32_Process Create`)로 숨김 실행(§39-u). 대시보드는 `--host 127.0.0.1` 필수(없으면 ::1만 듣고 무한 재시작).
-- 스모크(실측 14:24~14:40): 4포트 200, Learning 모듈 2개+영상 206, 기사 2개, 헤드리스 대시보드·인터뷰 앱 렌더 OK. 인터뷰 앱은 `localhost:3000`으로 열 것(127.0.0.1은 CORS 거부).
-- Content Studio: 백엔드로 4개 포맷 생성(podcast/quiz 20/praesentation/video, 기사 iv-int_07e170f3a8) → `src/data/seed-contents.ts`로 두 사본(동료 원본 `helaba-knowledge-intelligence`, repo `dashboard/`)에 시드. 초기 상태 + 기존 localStorage에 병합(STATE_VERSION 6 유지), 페이지 열면 첫 결과(팟캐스트) 미리보기 자동 오픈 (§39-v).
-- 발표 대본: `C:\Users\honor\OneDrive\Desktop\hackathnhlaba\docs\pitch_script.md` (영/독, 인트로+문제제기 65~70 s, 마무리 25 s, Q&A 3줄).
-- 이전 결정 유지: 코드 제출 불필요, 공개 정적 데모 https://gracelee087.github.io/hackathnhlaba/ (이번 시드는 미반영), ElevenLabs·Docker·터널 미착수.
+- **GitHub**: https://github.com/gracelee087/expert-knowledge-transfer — PRIVATE, main, 커밋 95de896(187파일, "Initial public version: ..."), 작업 트리 clean. 민감 경로 0건(.env/.db/data/node_modules/.venv 제외 확인, 비밀값 패턴 스캔 0건).
+- **단일 백엔드**: `backend/app/main.py`가 `app/rag/main.py`(APIRouter prefix `/rag`, 20 경로)를 마운트, 자기호출 `RAG_SERVICE_URL=http://127.0.0.1:8000/rag`, CORS env `CORS_ORIGINS`. 청커 무한루프 수정, `.eml` 파서(헤더·본문·첨부 재귀 청킹), openpyxl 추가. pytest 44 passed.
+- **코퍼스** `data/corpus/`: 30 manifest 파일(01–10 PDF, 11–19 DOCX, 20–27 EML, 28 인터뷰 JSON 6 facts, 29–31 XLSX) + `_src/` md 마스터 + `_incoming/` v3 초안 + `_updates/`(시드 승인 1건으로 복원). 생성·검증 스크립트는 `backend/scripts/corpus/`(레포 상대경로, validate RESULT: OK). 적재 실측 276 doc chunks(+facts 285).
+- **스모크** `backend/scripts/rag/smoke_test.py`: 24 검사, 3차 실행 21 pass / 0 fail / 1 skip(승인 단계는 재적재 후에만). 재실행 안전화(RUN_TAG, b 섹션 skip).
+- **README**: 영어 전면 개정, 플레이스홀더 0, 측정표(276 chunks, 스모크 수치), 스크린샷 4장(docs/media/01–04, 영어·Nordfracht), `docs/media/demo.gif`(10 s, 2.4 MB), `docs/media/demo.mp4`(125.0 s, 9.4 MB, 2번째 커밋으로 갱신). 예시 문장은 실측 판정으로 정정(Baltic 전화합의 = contradicted, 문서 전무 답변 = unsupported).
+- **데모 영상 제작 방식**: puppeteer 스크린캐스트 10샷 + Piper en_US-lessac 내레이션 + **ffmpeg 조립**(HyperFrames 구성은 check 통과했지만 렌더가 ENOSPC로 실패 → 폴백). 샷리스트 `docs/demo-video-shotlist.md`에 실제 방식 반영.
+- **감사 정리**(repo-audit → repo-cleanup): 독일어·은행 잔재 제거(스크립트 2개 영어화, ingest_dashboard_articles.py·make_demo_pdfs.py·docs/reference/ 삭제), docs/06·05·01 정정, 프런트 주석 32줄 영어화, 활동 라벨 "Knowledge base updated", gitignore(+*.tsbuildinfo, tasks/), dockerignore(+.env), 앱 제목 "Expert Knowledge Transfer".
+- 하지 않은 것(결정): GraphRAG 등 확장 없음, 은행 시절 docs/reference 삭제(원본은 해커톤 레포), ElevenLabs·Docker build 검증·gh-pages 재배포 미착수.
 
 ## Key files for next session
-- `C:\Users\honor\OneDrive\Desktop\hackathnhlaba\HANDOFF.md` §39-u~§39-v — keepalive 함정 3개, 시드 구현·검증.
-- `C:\Users\honor\OneDrive\Desktop\hackathnhlaba\scripts\keepalive.ps1`, `scripts\start_demo.ps1` — 서버 기동.
-- `C:\Users\honor\OneDrive\Desktop\helaba-knowledge-intelligence\src\data\seed-contents.ts`, `src\context\AppContext.tsx`, `src\pages\ContentStudioPage.tsx` — 시드(repo `dashboard/src`에 동일 사본).
-- `C:\Users\honor\OneDrive\Desktop\hackathnhlaba\docs\pitch_script.md` — 대본.
+- `C:\Users\honor\OneDrive\Desktop\expert-knowledge-transfer\README.md` — 포트폴리오 본문(먼저 읽을 것).
+- `C:\Users\honor\OneDrive\Desktop\hackathnhlaba\HANDOFF.md` §40-i — 이번 세션 전체 타임라인·함정.
+- `C:\Users\honor\OneDrive\Desktop\expert-knowledge-transfer\docs\06-single-backend.md`, `docs\demo-video-shotlist.md`, `data\corpus\README.md`.
+- `C:\Users\honor\OneDrive\Desktop\expert-knowledge-transfer\backend\.env`(gitignored, 키 보유, RAG_SERVICE_URL 8000으로 복원됨).
 - Plan file: 없음. Memory files touched: 없음.
 
 ## Running state
-- Background processes (이 세션): 없음(모두 종료). 서버는 세션 밖 프로세스.
-- keepalive: pwsh 숨김 프로세스, PID는 `C:\Users\honor\AppData\Local\Temp\hlb_keepalive.pid`(14:34 기준 24888). 로그 `C:\Users\honor\AppData\Local\Temp\hlb_keepalive.log`. 종료: `Stop-Process -Id (Get-Content $env:TEMP\hlb_keepalive.pid)` 후 포트별 프로세스 kill. 재시작: HANDOFF §39-u의 WMI 명령 또는 pwsh 터미널에서 `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts\keepalive.ps1`.
-- 서버 창(최소화): "RAG 8001", "Backend 8000", "Frontend 3000", "Dashboard 5173" — 닫혀도 40 s 내 재기동.
-- Dev servers / ports: http://127.0.0.1:5173 (대시보드), http://localhost:3000 (인터뷰 앱), :8000, :8001. 공개: https://gracelee087.github.io/hackathnhlaba/
-- Open worktrees / branches: hackathnhlaba main(이 커밋), gh-pages; expert-knowledge-platform main fa28960(변경 없음).
+- Background processes (이 세션): 없음(감시용 대기 명령은 모두 종료; 스크래치패드 du 스캔 1건은 무해, 종료돼도 무관).
+- 포트폴리오 검증 서버(이 세션이 띄움, 최소화 창): 백엔드 8010(새 코드, 물류 코퍼스 적재, 데모 인터뷰 데이터 포함), 프런트 3010(NEXT_PUBLIC_API_URL=8010). 필요 없으면 창을 닫으면 됨. 데모 서버 8000/8001/3000/5173과 keepalive는 건드리지 않음.
+- 서브에이전트(모두 idle): merge-backend, docs-writer, corpus-writer, frontend-english, backend-english, docs-english, repo-audit, repo-cleanup, demo-recorder, video-maker.
+- Open worktrees / branches: expert-knowledge-transfer main = origin/main (95de896 초기 + 영상 최종 빌드 커밋 1개); hackathnhlaba main(HANDOFF만 수정, 미커밋).
 
 ## Verification — how to confirm things still work
-- `curl http://127.0.0.1:8001/health`, `:8000/api/health`, `http://localhost:3000/`, `http://127.0.0.1:5173/` → 모두 200.
-- `Get-Content $env:TEMP\hlb_keepalive.log -Tail 5` → 최근 "ok"/"started" 줄, "unhealthy" 반복 없음.
-- 브라우저 http://127.0.0.1:5173/content-studio → "Zuletzt generiert" 4개, 팟캐스트 미리보기 열림(재생 버튼 → 브라우저 음성).
-- http://127.0.0.1:5173/learning → 과정 6(Neu 3), 새 영상 재생.
-- `cd helaba-knowledge-intelligence && npx tsc --noEmit -p .` → exit 0.
+- `gh repo view gracelee087/expert-knowledge-transfer --json visibility,defaultBranchRef` → PRIVATE, main.
+- `cd expert-knowledge-transfer/backend && .venv\Scripts\python.exe -m pytest -q` → 44 passed.
+- `.venv\Scripts\python.exe scripts\corpus\validate_corpus.py` → RESULT: OK.
+- 서버 기동 후 `scripts\rag\load_demo.py` → 30/30, 그 다음 `smoke_test.py http://127.0.0.1:8000/rag` → 24 pass(깨끗한 인덱스).
+- `ffprobe docs/media/demo.mp4` → 125.0 s, 1920x1080.
 
 ## Deferred + open questions
-- Deferred: ElevenLabs 나레이션, docker compose, clean-clone end-to-end, 정적 데모(gh-pages)에 시드 반영 재배포.
-- Open: 14:25~14:29 keepalive+서버 창 동시 소멸 원인 미확인(사용자가 창을 닫았는지 확인 필요). 재발 시 §39-u 명령으로 재기동.
-- Open: Content Studio 첫 미리보기 순서(현재 팟캐스트). 바꾸려면 `seed-contents.ts` 배열 순서.
+- Deferred: 레포 public 전환(사용자 결정), GitHub About·topics 설정, 클린 클론 end-to-end(docker compose up --build 미검증), 영상 샷 4의 "Interview ending soon" 배지·샷 7 캡션이 사이드바와 살짝 겹침(가독 OK), HyperFrames 렌더(디스크 확보 후 가능, 구성은 scratchpad/demo-video에 있으나 세션 종료 시 소실 가능).
+- Open: **C 드라이브 여유 2.9 GB**(사용자 정리 필요). 실측(du): `C:\Users\honor\AppData\Local\Temp` 약 44 GB, 그중 `hyperframes-extract-cache-u` 약 2.3 GB — 삭제는 사용자 결정, 이 세션은 지우지 않음. 해커톤 레포 HANDOFF.md 커밋 여부.
+- Open: README 상단 독일어 Kurzfassung 유지 여부(현재 유지).
 
 ## Pick up here
-발표 전이면 4포트 200·`/content-studio` 4개·`/learning` 영상만 눈으로 확인; 문제 시 keepalive 로그 확인 후 §39-u WMI 명령으로 재기동. 발표 후엔 gh-pages 재배포(시드 반영) 또는 ElevenLabs부터.
+레포를 public으로 바꿀지 결정하고(`gh repo edit gracelee087/expert-knowledge-transfer --visibility public --accept-visibility-change-consequences`), About/topics를 채운 뒤, 클린 클론에서 README의 "Run it locally" 절차를 한 번 그대로 따라 해 본다.
 
 ---
 
@@ -1385,3 +1387,123 @@ RAG 병합(§37 작업 1·2), Docker/Render, analyze 어댑터, 3000 인터뷰 �
 - 구현(서브에이전트, 두 사본 동일): 새 파일 `src/data/seed-contents.ts`(`SEED_CONTENTS`, 4개 그대로); `src/context/AppContext.tsx` 초기 상태 `contents: SEED_CONTENTS` + 기존 localStorage(version 6)에도 id 없는 시드만 병합(STATE_VERSION 유지 → 사용자의 기존 데모 상태 보존); `src/pages/ContentStudioPage.tsx` `resultId` 초기값 = 첫 결과 → 페이지 열자마자 팟캐스트 미리보기가 열림. 기존 `.orig` 백업은 건드리지 않음.
 - 검증: `npx tsc --noEmit -p .` exit 0; 헤드리스 `/content-studio` 첫 로드·재로드 모두 "Zuletzt generiert" 4개(Podcast/Quiz/Präsentation/Lernvideo), 중복 없음, 콘솔 오류 0; 스크린샷 scratchpad `seed_studio_first_load.png` 육안 확인(팟캐스트 플레이어·Anna/Klaus 대사 표시).
 - 순서 바꾸려면 `seed-contents.ts` 배열 순서만 변경. 공개 정적 데모(gh-pages)에는 재빌드·재배포 전까지 반영 안 됨.
+
+## 40. 계획서: 포트폴리오용 새 레포(본인 담당 부분) + 서버 통합 (2026-11-12 19:50, 승인 대기, 미착수)
+
+### 40-a. 사용자 지시(원문 요지)
+- "독일 채용 담당자용, README + 데모 영상, 내 담당 부분 위주로, 지금 레포는 말고 새로 연결 안 된 걸로 레포를 만들자."
+- "지금 서버가 나눠져 있잖아. 하나로 합치는 작업도 하자."
+
+### 40-b. 확인된 사실(1차 출처: 코드·git·HANDOFF)
+| 구성요소 | 위치 | 크기 | 소유 |
+|---|---|---|---|
+| RAG 서비스(FastAPI 8001) | `hackathnhlaba/rag-service/app` | py 3,591줄, 라우트 24개(ingest/search/check/facts/export/export/video/semantic/updates/ui) | 사용자(HANDOFF 51행 "사용자=RAG") |
+| 인터뷰 백엔드(FastAPI 8000) | `expert-knowledge-platform/ekep/backend/app` | py 5,191줄, 라우터 7개, SQLite `data/ekep.db` | git 커밋 8개 전부 Sohee Lee. **본인 작업으로 가정 — 확인 필요(40-f)** |
+| 인터뷰 프런트(Next.js 15.5, React 19) | `ekep/frontend` (app/employees, app/interviews) | ts 2,600줄, API 라우트 0, `output: standalone` | 위와 동일 |
+| 매니저 대시보드(Vite 5173) | `helaba-knowledge-intelligence` | — | **동료 작업 → 새 레포에서 제외** |
+- 8000→8001 결합은 HTTP 호출 7곳(`dashboard_content.py` export, `dashboard_interview.py` /check, `dashboard_learning.py` videos, `knowledge_routes.py`, `services/knowledge_search.py`), 설정 `RAG_SERVICE_URL`.
+- 비밀값: 두 레포 모두 `.env` 미추적·히스토리 無(19:45 확인). 새 레포도 같은 규칙.
+- 데이터: 합성 코퍼스(MainBank AG 가상 은행, 문서 28개, 청크 300). 실제 은행 데이터 없음 → README에 명시.
+
+### 40-c. 목표(성공 조건)
+1. 새 공개 레포 1개: 클론 → `.env` 채움 → **명령 1개**로 백엔드(RAG+인터뷰 통합) 기동, 명령 1개로 프런트 기동. README의 절차대로 clean clone에서 실제로 됨(검증: 새 폴더에 클론해 실행).
+2. README(영어, 상단에 독일어 3~4문장 요약): 문제 → 30초 데모 GIF/영상 링크 → 아키텍처 그림 → 내 역할·기여 명시 → 설계 결정 3개(유효기간 RAG, supersede/coexist 원장, Human-in-the-loop) → 실행법 → 측정 결과 → 한계. 채용 담당자가 5분 안에 읽을 길이.
+3. 데모 영상 1.5~2분(mp4 + README용 GIF): 인터뷰 → 자동 검증(/check) → 승인 → 교육 영상 생성 흐름.
+4. 서버 통합: FastAPI 프로세스 1개(포트 8000)에 RAG 라우트 포함, venv 1개, `.env` 1개, requirements 1개. 기존 기능 동일(스모크 테스트 통과).
+
+### 40-d. 작업 목록(비용 = 예상 시간, 되돌리기 난이도, 검증)
+| # | 작업 | 비용 | 되돌리기 | 검증 |
+|---|---|---|---|---|
+| 1 | 새 레포 스캐폴드(이름 미정, MIT, `backend/`·`frontend/`·`docs/`·`demo/`·`data/`), 코드 복사(새 히스토리), 동료 코드·HANDOFF·keepalive·`.orig` 제외 | 1 h | 쉬움(폴더 삭제) | `git ls-files`에 .env 없음, 동료 파일 0 |
+| 2 | 서버 통합: `rag-service/app` → `backend/app/rag/` 패키지, `/rag/*` 프리픽스로 마운트(`app.include_router` 또는 `app.mount`), 설정·requirements·`.env.example` 통합, Chroma 경로·videos 경로 정리 | 3~4 h | 보통(원본 레포는 그대로) | `/api/health` + `/rag/health` 200, 기존 `smoke_test.py` 19/19, 인터뷰 1회 end-to-end |
+| 3 | 8000→8001 HTTP 호출 7곳을 자기 자신(`/rag/*`) 또는 직접 함수 호출로 교체. 1차는 URL만 바꿈(안전), 2차(선택) 직접 호출 | 1 h (+2 h 선택) | 쉬움 | 인터뷰 /check·export·videos 동작 |
+| 4 | 프런트: `NEXT_PUBLIC_API_URL`만 통합 백엔드로, 데모 모드 기본값. (선택 B: Next 정적 export를 FastAPI가 서빙 → 동적 라우트 `/interviews/[id]` 때문에 위험, **비추천**) | 0.5 h | 쉬움 | 브라우저에서 인터뷰 1회 |
+| 5 | 실행 1개 명령: `docker compose up`(백엔드+프런트) **그리고** 비도커 `scripts/dev.ps1`/`Makefile` | 2 h | 쉬움 | clean clone에서 compose up → 두 URL 200 |
+| 6 | README 작성(영어+독일어 요약), 아키텍처 다이어그램(SVG/Mermaid), 스크린샷 4~5장 | 3 h | 쉬움 | 외부인 1명 읽기 테스트(선택) |
+| 7 | 데모 영상: 촬영 대본(샷 리스트)을 내가 쓰고 **사용자가 OBS/Xbox Game Bar로 녹화** → 내가 자막·컷 편집(ffmpeg) + GIF 추출. 대안: 헤드리스 자동 녹화(puppeteer) — 음성 인터뷰 장면은 수동이 자연스러움 | 2~3 h | 쉬움 | mp4 ≤ 2 min, GIF ≤ 10 MB |
+| 8 | 마무리: 비밀값 스캔, `.env.example`, LICENSE, GitHub About/토픽, (선택) GitHub Actions lint+smoke(키 없이 되는 부분만) | 1 h | 쉬움 | 스캔 0건, Actions 녹색 |
+합계 약 14~17 h (영상 녹화 대기 제외). 순서: 1→2→3→4→5(기동 확인) → 6·7 병렬 → 8.
+
+### 40-e. 하지 않을 것
+- 동료 대시보드 코드 포함·재작성(링크와 크레딧만). 백엔드 공개 호스팅(Render 등, 키 비용). ElevenLabs. 새 기능 추가. 기존 두 레포 변경(참조용으로 유지). Next 정적 export 서빙(선택 B)은 기본 범위 밖.
+
+### 40-f. 사용자가 정할 것(열린 결정)
+1. **인터뷰 앱(ekep 백엔드+프런트)도 본인이 만든 것이 맞는지** — 맞으면 포함, 아니면 RAG 서비스 중심으로 축소(그 경우 통합 대상이 달라짐).
+2. 새 레포 이름(예: `expert-knowledge-transfer`, `knowledge-validity-rag`) 및 기존 레포에 "이전 버전" 링크를 둘지.
+3. 언어: 영어 README + 독일어 요약(추천) / 전부 2개 국어.
+4. 통합 방식: A) FastAPI 1개 + Next.js 1개, docker compose로 명령 1개(추천) / B) FastAPI가 프런트까지 서빙(위험·비용↑).
+5. 영상: 사용자 직접 녹화(추천, 음성 인터뷰 장면 포함) / 헤드리스 자동 녹화(무음·클릭만).
+6. 브랜딩: Helaba/LBS·FUTURY 이름을 README에 그대로 쓸지(공개 해커톤이라 가능) / "a German bank"로 일반화할지.
+7. 기한.
+
+### 40-g. 승인·착수 (19:55, 사용자 "응")
+- 미답 항목은 추천안 적용(사용자에게 고지): 인터뷰 앱 포함, 영어 README+독일어 요약, 통합 방식 A, 영상 직접 녹화, Helaba/LBS/FUTURY 이름 유지, 레포 이름 임시 `expert-knowledge-transfer`(GitHub 생성 직전 재확인).
+- 스캐폴드 완료: `C:\Users\honor\OneDrive\Desktop\expert-knowledge-transfer` (git init, 미커밋). ekep 전체(backend/frontend/docs/docker-compose, node_modules·.venv·.env·ekep.db 제외) + `rag-service/app` → `backend/app/rag/`(원본 그대로, 미연결) + 스크립트 `backend/scripts/rag/` + 코퍼스 `data/corpus/*.md` 24개 + `_updates/`. 비밀값 파일 0개 확인.
+- 서브에이전트 2개 병렬: merge-backend(통합·검증, 포트 8010 사용, 데모 서버 불간섭), docs-writer(README 초안·샷리스트, 코드 미수정).
+
+### 40-h. 범위 결정: 확장 안 함 (20:20, 사용자 결정)
+- 사용자가 GraphRAG 전환, 메일/폼 파서, 프로필 기반 인터뷰 자동 계획, 질문 검증 지표, 가위치기 규칙 등 확장(§40 외 1~6)을 논의 → **하지 않기로 결정**. 채택: "트리거는 퇴사(offboarding), 결과물은 전 직원용(knowledge continuity)"이라는 포지셔닝만 README 서사에 반영.
+- supersede 정의(사용자 질문에 답한 내용): 승인 시 옛 문서 청크를 사실의 valid_from 시점으로 종료하고 superseded_by로 표시, 검색에서 possibly_outdated로 강등, 삭제 없음, 원장 기록. coexist는 둘 다 유효(보충 관계).
+- 진행 중: merge-backend 에이전트(검증 대기), README 초안 완료(빈칸: 실행 명령 4개, 데모 영상 URL/GIF, LICENSE). 스크린샷 4장 `docs/media/`.
+
+### 40-i. 결정: 코퍼스를 물류 SOP로, 모든 언어 영어 (20:30, 사용자 "LOGISTICS 20년 OPERATOR이고, 이제부터 모든언어는 영어야")
+- 가상 회사 Nordfracht Logistik GmbH(함부르크), 퇴사 예정 전문가 = 물류 운영 오퍼레이터 20년차(통관·위험물·창고 운영). 영어 전용(코퍼스·UI·프롬프트·README). README의 해커톤 출처 문장은 유지, 제품 UI에서 은행/LBS 흔적 제거.
+- 측정(새 레포): 프런트 독일어 파일 12개(움라우트 145곳 + 비움라우트 독일어 다수), 백엔드 독일어 프롬프트·라벨 파일 12개(intelligence 65줄, orchestrator 40, knowledge_search 22 …), `INTERVIEW_LANGUAGE` 기본 de, 시드 `backend/seed/reference_knowledge.json` 독일어 은행 내용, 코퍼스 형식 = `manifest.json`(문서별 valid_from/supersedes) + `taxonomy.json` + md/txt/json, 로더 `backend/scripts/rag/load_demo.py`.
+- 순서: (1) 물류 코퍼스 작성(에이전트) ∥ (2) 프런트 영어화(에이전트, frontend/app·components만) → merge-backend 완료 후 (3) 백엔드 프롬프트·라벨 영어화 + INTERVIEW_LANGUAGE=en + 시드 교체 + RAG UI 제목 → (4) 재적재·스모크 조건 갱신·스크린샷 재촬영·README 예시 교체.
+- 하지 않음: 독일어 병행, GraphRAG 등 확장(40-h).
+- 보정(20:40, 사용자): 중심은 통관·위험물 전문가가 아니라 **오퍼레이터의 일상 업무 SOP**, 그리고 오퍼레이터는 **IMPORT OPERATOR**(수입 운영 20년차). 버전 체인 = Import Shipment Handling SOP v1→v2, Import Customs Clearance Coordination SOP v1→v2; 통관·ADR은 보조 문서. 고객 = 수입업자. corpus-writer 에이전트에 두 차례 전달함.
+- 추가(20:45~20:50, 사용자): 고객사별 SOP 3개, 업무 엑셀(.xlsx 3개: 수입 선적 트래커·브로커/운송사 요율표·체선료 로그), 위험물(ADR) 사례 포함, 이메일은 **Outlook 다운로드 형식(.eml, RFC 5322, multipart, 서명, 인용 답장, 첨부 1건 이상)**, SOP·고객문서·케이스는 **.docx(+일부 .pdf)**, md 원본은 `data/corpus/_src/`(매니페스트 제외). 적재기가 .eml/.docx를 파싱하는지 에이전트가 확인·보고 → 미지원이면 merge 완료 후 백엔드에 파서 추가(§40-i 단계 3에 포함).
+- 결정(20:55, 사용자 "데모 영상은 그냥 AI로"): 사용자 녹화 안 함. 자동 제작 = 헤드리스 브라우저 화면 녹화(실제 앱 흐름) + Piper 영어 TTS 내레이션 + HyperFrames 합성(타이틀·문제·클립 3개 자막·마무리, 1.5~2 min, GIF 10 s). 선행 조건: 백엔드 통합 → 물류 코퍼스 적재 → 영어 UI. `docs/demo-video-shotlist.md`는 자동 녹화용 샷 리스트로 재활용.
+- 완료(21:05, frontend-english 에이전트): 새 레포 `frontend/` 영어화 — 파일 10개(Shell, ui, KnowledgeHits, layout, page, employees/*, interviews/*, review, lib/useVoice.ts, lib/api.ts 날짜 로케일 en-GB). 백엔드 기계값(hoch/mittel/niedrig, neu/ergaenzung/…, übernommen 등)은 유지하고 프런트에서 라벨 매핑(LEVEL_LABEL, DIMENSION_LABEL, PUBLISH_STATUS_LABEL). 음성 언어 상수 `SPEECH_LANG="en-US"`(useVoice.ts). 브랜딩 "Nordfracht Logistik". 샘플 직원 데이터를 물류 디스패처로. 검증: tsc 0 오류, `next build` 성공(7 라우트). 시각 확인은 아직 안 함. 남은 독일어 = 백엔드가 생성하는 콘텐츠(프롬프트 영어화 필요, 단계 3).
+- 완료 1차(21:20, corpus-writer 에이전트): Nordfracht 물류 코퍼스 `data/corpus/` — SOP 8(통관 v1/v2, ADR v1/v2, 콜드체인, 클레임, 창고 체크리스트, 에스컬레이션), 고객 프로필·케이스 6(Elbchemie/Baltica Pharma/NordKauf), 이메일 6(15~20), 인터뷰 JSON(6 facts), manifest 20건, taxonomy(4부서·용어 35), PERSONAS, `_updates/`(승인 기록 1건+원장 1행), `_incoming/`(v3 초안). 규칙 변경: 통관 v2(2025-07-01~) 간이신고 EUR 1,000→3,000, 공동서명 50,000→25,000, ZV-07 권장→필수, 신고 48h→24h, 샘플 5→10%; ADR v2(2025-04-01~) 이격 3 m→5 m, GG-01 서명자 제한, 교육 36→24개월, GG-05 사진 업로드. 심은 모순: 이메일 17(옛 기준 적용), 16(비공식 워치리스트 xlsx), 18(구두 합의 고객 예외). valid_to는 배타(모델 규약) → v1 valid_to = v2 valid_from.
+- **미달 발견**: 에이전트가 .md/.txt로만 납품(사용자 요구는 .docx/.pdf/.xlsx/.eml). 21:25 재지시: 01~08 → .docx→.pdf(Word COM), 09~14 → .docx, 15~20 → RFC 5322 .eml(multipart, Outlook 헤더, 16번에 xlsx 첨부), xlsx 3개(22 수입 선적 로그 Q1 2026 ~60행, 23 HS 워치리스트 ~25행, 24 ADR 레지스터 ~30행) 추가, 매니페스트 file에 확장자 포함, md/txt 원본은 `_src/`. 백엔드 `.eml` 파서는 내가 merge 완료 후 추가(`store.py` SUPPORTED + `chunk_file`). 사실: `backend/requirements.txt`에 openpyxl 누락(xlsx 파서가 필요) → 새 레포 venv에 설치함, requirements 추가 예정. 코퍼스 참조 잔재(수정 예정): `backend/scripts/rag/smoke_test.py:20-21`, `docs/reference/rag-service-README.md`, `docs/demo-video-shotlist.md`, README 162행.
+- 완료(21:35, 직접): 새 레포 `backend/app/rag/store.py`에 `.eml` 파서 추가 — SUPPORTED에 `.eml`, `_eml_parts()`(RFC 5322 파싱: From/To/Cc/Date/Subject 헤더+본문(plain 우선, html은 태그 제거), 첨부 pdf/docx/xlsx/txt/md는 임시파일로 풀어 `chunk_file` 재귀 → "Attachment: 이름" 섹션), `chunk_file`에 `.eml` 분기. 자체 테스트(합성 .eml + xlsx 첨부) 통과: 본문 1청크 + 첨부 시트 1청크. `backend/requirements.txt`에 `openpyxl` 추가. 함정: Bash 히어독이 `\n`/`\t`/`\1`을 실제 문자로 바꿔 store.py가 깨졌음 → Edit 도구로 복구(백슬래시가 든 파일은 Write/Edit 도구 사용).
+- 착수(21:30): backend-english 에이전트 — `backend/app` 독일어 프롬프트·라벨·주석 영어화(enum 기계값 유지), 은행 예시→물류, `INTERVIEW_LANGUAGE` 기본 en, 시드 `backend/seed/reference_knowledge.json` 물류 영어 재작성, Piper 기본 음성 en_US-lessac-medium(모델 파일 유무 보고), review.html 브랜드. store.py·requirements·Dockerfile·docs·frontend·data는 제외.
+- 보고(21:40, merge-backend, 검증 전 중간 보고 재수신): RAG `main.py`가 `APIRouter(prefix="/rag")`로 전환(23 라우트, `/` → `/rag/ui`), `app/main.py`가 `rag_main.startup()`+`include_router`; `app/rag/config.py`는 `backend/.env` 공용(ROOT=backend, DATA_DIR=backend/data/rag, CORPUS_DIR=<repo>/data/corpus, env RAG_DATA_DIR/RAG_CORPUS_DIR); semantic/updates/tts 경로 CORPUS_DIR·DATA_DIR 기준; `review.html` BASE=origin+/rag. 백엔드 7곳 자기호출은 httpx로 `RAG_SELF_URL=http://127.0.0.1:8000/rag` 유지(포트 바꾸면 RAG_SERVICE_URL 설정 필요). `.env.example` 통합(이름만), Dockerfile(python3.11-slim+ffmpeg), compose(corpus 바인드, backend-data 볼륨), `.gitignore`, `scripts/dev.ps1`, `docs/06-single-backend.md`. 이전 버전 기준 pytest 44 passed. 미검증: 8010 기동·health·ingest·search(pip 완료 후 보고 예정). 지적: 승인 기록이 `data/corpus/_updates/`(추적 대상)에 쓰여 런타임이 워킹트리를 더럽힘 → README에 명시 또는 .gitignore 후보. 루트 `.env.example`·`docs/05`에 8001 잔재.
+- 충돌 메모: merge-backend가 내 store.py 깨진 버전을 보고 수정하려 함 → "이미 고쳤다, 건드리지 말라" 전달(21:42). smoke_test.py 재작성은 내 담당으로 통지.
+- 버그 수정(21:50, merge-backend): `backend/app/rag/chunking.py` `_sliding_window_split` 무한루프 — 이전 청크의 overlap + 다음 문장이 CHUNK_SIZE를 넘으면 인덱스가 전진하지 않아 같은 청크를 영원히 추가(.md 직접 적재 시 재현, 서버 RAM 6.8 GB 소모·MemoryError). 원본 서비스는 pdf/ 렌더링을 우선 적재해서 안 걸렸음. 수정: overlap을 버리고(`current=""`) 진행; 문서 1~5 청크 수 전후 동일(15/17/15/13/16). 포트폴리오 README "버그 발견" 소재. 확인: 데모 서버 4개 + 8010 모두 200, 여유 메모리 6.26 GB(21:52).
+- merge-backend 검증 방식: 코퍼스가 교체되는 중이라 원본 MainBank 코퍼스를 스크래치 복사본으로 `RAG_CORPUS_DIR` 지정해 end-to-end 적재(28문서+6 facts, 15~20분) 후 수치 보고 예정.
+- **정정·완료(22:05, corpus-writer 2차)**: 위 21:20 항목의 코퍼스(통관/ADR 체인, Elbchemie·Baltica Pharma·NordKauf)는 **폐기**됨. 재작성된 최종 코퍼스는 IMPORT OPERATOR 중심: 버전 체인 = Import Shipment Handling SOP 2022 v1(.docx) → 2025 v2(.pdf, 2025-07-01~: 서류 컷오프 48h→72h before ETA, free time 5→3일, 스팟 한도 EUR 2,000→1,500, 사전통지 IM-04 필수 24h, 트래커 12:00→10:00), Import Customs Clearance Coordination SOP 2023 v1(.docx) → 2025 v2(.pdf, 2025-04-01~: 간이신고 <1,000→<3,000, 공동서명 >50,000→>25,000(Dr. Anke Reimers), ZV-07 필수, 지시 48h→24h, 샘플 5→10%). 고객 3사 = Hansa Retail Import / MedPharm Imports / Baltic Machinery(각 Handling Instructions·Profile·Case History .docx, 계 9). 보조: 추적·예외(05), 일일 루틴·인수인계(06), 서류·인보이스 릴리즈(07), 고객 커뮤니케이션·에스컬레이션(08 .pdf), ADR 퀵가이드(09), 콜드체인(10). 이메일 8개 .eml(20~27, multipart text+html, Outlook 서명, Message-ID, 21번 xlsx 첨부, 24번 PDF 첨부, 27번 인용 답장 In-Reply-To). 엑셀 3개: 29 Import Shipment Tracker(25행+Legend), 30 Broker/Carrier Rate Sheet(레인 14·브로커 수수료 10·할증 15), 31 Demurrage/Detention Log(16건+원인코드). 인터뷰 28번 JSON 6 facts(1 모순: 옛 48h·EUR 2,000 / 2 정확 / 3 비공식 스프레드시트 / 4 보충 / 5 Baltic 전화 합의 예외 / 6 신입 실수). coexist 케이스: MedPharm 24h 컷오프, Hansa ePOD 인보이스. 심은 모순: 이메일 22(옛 규칙 2개를 현행으로), 21(SOP에 없는 스프레드시트), 23/27(Baltic 전화 합의 미문서화). manifest 30건(file에 확장자 포함), taxonomy 4부서·용어 30, `_src/`(md 원본 19 + build_corpus.py + validate_corpus.py), `_incoming/`(v3 초안 .docx+.md). 검증: validate OK, 백엔드 청커로 30개 파일 384 청크, .eml 첨부 파싱 확인(21번 7청크 중 xlsx 3, 24번 5청크 중 PDF 2). 재빌드: `C:\Users\honor\.venvs\helaba-rag\Scripts\python.exe -I data\corpus\_src\build_corpus.py`.
+- 참고(corpus-writer 지적): PDF 3개(02/04/08)는 fitz 텍스트라 섹션 제목 없음(페이지 인용만), docx 쌍둥이는 섹션 제목 있음 → 데모 인용 품질 보고 필요시 manifest 3줄만 .docx로 전환. unstructured 미설치라 docx 표는 건너뜀(버전 표를 문단으로 반복해 둠).
+- 조치(22:10, 직접): `backend/scripts/rag/load_demo.py` — 문서 실패 시 sys.exit 대신 기록하고 계속(facts 적재 보장), 실패 목록 출력, docstring 30건 구성으로. backend-english에 고객명·규칙 정정 전달(초기 브리프가 1차 코퍼스 기준이었음).
+- 완료(22:20, 직접): `backend/scripts/rag/smoke_test.py`를 물류 코퍼스 조건으로 재작성(21 검사: a 시간유효성 3 / b 승인 전 숨김 3 / c LLM 판정 4 / e 도착 시 자동검증 3 / d export 3 / s 시맨틱 3 / f 파일형식 .eml·첨부·.xlsx 3 / l 영어 2). 기준: V1=import-sop-2022-v1, V2=import-sop-2025-v2, 초안 fact "pre-alert check spreadsheet", 모순 문장 "48 hours before ETA", "spot rate EUR 2,000", 부서명 "Customs Coordination"→key customs. 실행은 8010에 물류 코퍼스를 적재한 뒤(merge-backend 검증 종료 후).
+- 조치(22:30, 직접): 루트 `.env.example`(독일어 원본, `backend/.env.example`과 중복, compose는 `./backend/.env` 사용) 삭제. 측정: `docs/01~05` 독일어(움라우트 31/37/30/15/25, 계 약 3,400단어) → docs-english 에이전트 착수(영어 번역 + 단일 백엔드·물류 도메인 반영, 그 5개 파일만). 남은 독일어 참조: `docs/reference/`(원본 README 사본, 참조용이라 유지).
+- 완료(22:45, backend-english 에이전트): `backend/app` 영어·Nordfracht화 — intelligence/orchestrator/knowledge_search/provider/gemini_speech/routes/dashboard_*/export/guards(PII 라벨 IBAN/EMAIL/PHONE/REFERENCE_NO)/rag(tts·video·frames·motion·llm·semantic·main·chunking·review.html) 전부, `INTERVIEW_LANGUAGE`·`RAG_SERVICE_LANG` 기본 en, Piper 기본 음성 en_US-lessac-medium(파일 존재, available True), 새 `app/rag/static/nordfracht_logo.svg`, 시드 `seed/reference_knowledge.json` 물류 12건(KB-0001~0012, 로더 확인). 유지한 기계값(움라우트 잔여 8줄): 대시보드 audience "Anfänger/Fortgeschrittene/Experten"(동료 대시보드 계약), publish 상태 "übernommen/bereits übernommen"(프런트 라벨맵), motion.py TEXT["de"]; ASCII 기계값(hoch/mittel/niedrig, neu/ergaenzung/…, einsteiger/…) 유지. 테스트 결합 수정 4곳 → pytest 44 passed. grep LBS|Helaba|MainBank|Bauspar = 0. 미검증: 실제 LLM 호출, Piper 합성, ffmpeg 영상.
+- 조치(22:48, 직접): 미참조 `app/rag/static/helaba_logo.svg` 삭제, `app/rag/models.py` 예시 "Senior Credit Analyst"→"Senior Import Operations Specialist".
+- 주의: 8010 검증 서버는 backend-english 수정 전 코드로 기동됨 → merge-backend 종료 후 8010 재기동하고 물류 코퍼스 적재·새 스모크 실행.
+- **최종(22:55, corpus-writer 3차, 포맷 변환 완료)**: 적재 대상 30 = PDF 10(01~10 SOP·절차·가이드, Word COM으로 docx→pdf, 약 300 KB씩; 중간 docx는 `_src/docx/`) + DOCX 9(11~19 고객 지시·프로필·케이스) + EML 8(20~27; 21번 xlsx 첨부, 24번 PDF 첨부, 27번 인용 답장) + XLSX 3(29~31). manifest 30건(29~31 doc_type "data"). 검증 OK, 백엔드 청커 30/30 파일 276 청크(pdf 7~10, docx 8~20, xlsx 6~9, eml 3~7). 푸터 "Nordfracht Logistik GmbH - internal - uncontrolled when printed". 알려진 한계: pymupdf 경로는 제목 감지가 없어 PDF 청크에 섹션 제목 없음(페이지 인용만) → 필요시 manifest만 `_src/docx/`로 바꾸면 섹션 인용 복원. 선택지(미결): HS 워치리스트·ADR 레지스터 xlsx 추가(약 15분) — 현재 3개로 충분하다고 판단, 보류.
+- 완료(23:05, docs-english 에이전트): `docs/01~05` 영어 재작성(644→803 / 1072→1282 / 610→712 / 386→466 / 725→886 단어; 02에 /rag·Chroma 노드와 시퀀스 참가자 추가). 움라우트 0, 출처 언급은 01의 Context 제목 1곳만. enum 기계값 보존(hoch/mittel/niedrig, validierung, 5종 wissen 키, neu/ergaenzung/bestaetigung/widerspruch) + "German legacy values" 주석. 코드로 확인한 사실 반영: RAG_SERVICE_URL 기본 /rag, 타임아웃 90/120/20 s, 컨텍스트 블록명 KNOWLEDGE BASE, export SCHEMA_VERSION 1.1.0, 저장소 SQLite/PostgreSQL. 뺀 것: LBS 규모 수치(대체 수치 없음), "18개월 후 퇴직"→코퍼스 날짜 2026-12-31.
+- 조치(23:08, 직접): `backend/.env.example`과 로컬 `backend/.env`(gitignored)의 `INTERVIEW_LANGUAGE`·`RAG_SERVICE_LANG` de→en(값 출력 없이 sed로 키 줄만 변경).
+- 완료(23:10, backend-english 정정 라운드): 시드 12건을 현 코퍼스 기준으로 재구성(KB-0011 Import SOP v2, KB-0012 v1 historical 추가; 콜드체인·클레임 쌍 병합), STT 어휘·video 폼 코드·learning 키워드에서 코퍼스에 없는 용어(Elbchemie/Baltica/NordKauf/ClaimDesk/ASN/NordWMS) 제거, review.html 날짜(Jonas Petersen 2027-01-05 시작, Michael 2026-12-31 퇴직) 정정. pytest 44 passed. 추가 위임: `backend/tests` 픽스처의 독일어 은행 텍스트(LBS, Bausparvertrag) 영어·물류화(약 30분).
+- 완료(23:20, backend-english): `backend/tests` 7개 파일 픽스처를 Nordfracht 영어로(conftest, interview_flow, knowledge_search, units, gemini_speech, provider, voice). 부수 발견·수정: 가짜 ReconciliationResult가 옛 독일어 페이로드 키(treffer/einheit)를 읽어 LLM 경로 대신 휴리스틱으로 조용히 넘어가던 문제 → 영어 키(hits/unit)로 고쳐 LLM 경로를 실제로 검사. 임계값 변경 없음. grep(움라우트|LBS|Helaba|Bauspar|MainBank) tests = 0. 내가 재실행: pytest 결과 아래 줄 참고.
+  pytest(직접 재실행 23:22): 44 passed in 17.67s
+- 검증(23:25, 직접, 8010 = merge-backend가 띄운 통합 서버, 원본 MainBank 코퍼스 적재 상태): `/api/health` 200, `/rag/health` 200(embedding openai text-embedding-3-small, llm claude, chunks 331), `/rag/search?as_of=2026-11-12` → credit-policy-2025-v2 current, 2022-v1 possibly_outdated(시간유효성 동작). 단일 백엔드 통합은 end-to-end 동작 확인됨. merge-backend 최종 수치는 보조 자료.
+- 착수(23:35, 직접): 8010을 새 코드로 재기동 + 물류 코퍼스 30건 적재 + 새 스모크 → 백그라운드 스크립트 `scratchpad\restart_8010_ingest.ps1`, 로그 `scratchpad\ingest_8010.log`(약 25분, 문서당 LLM 1회).
+- 완료(23:40, 직접): 새 레포 `README.md` 물류·단일 백엔드 기준으로 전면 개정 — Nordfracht 시나리오, 예시(48h→72h, EUR 2,000→1,500, Baltic 전화 합의 unsupported), "LLM이 하는 것 / 코드가 보장하는 것" 표, 코퍼스 표(30 파일 포맷별), 통합·청커 버그 수정 서사, 실행 명령 4개 채움(docker compose / venv uvicorn / npm run dev / load_demo+smoke), env 표에 RAG_DATA_DIR·RAG_CORPUS_DIR, 테스트 44, 라이선스 MIT. 남은 플레이스홀더: `<<DEMO_VIDEO_URL>>`, `<<CHUNKS>>`, `<<SMOKE>>`, `docs/media/demo.gif`, 스크린샷 4장(은행 시절 → 재촬영 필요).
+- 기동(23:45, 직접): 포트폴리오 프런트 `frontend/` dev 서버 포트 3010(NEXT_PUBLIC_API_URL=http://127.0.0.1:8010, 최소화 창 "Portfolio FE 3010") → GET / 200. 데모 서버 3000/8000/8001/5173은 그대로.
+- 함정(23:50): 3010 프런트가 "Failed to fetch" — 백엔드 CORS 기본값이 `http://localhost:3000`뿐(`app/config.py:100`, env `CORS_ORIGINS`). 로컬 `backend/.env`에 CORS_ORIGINS(3000·3010, localhost·127.0.0.1) 추가, `.env.example`에도 항목 추가. 8010은 적재 중이라 적재 완료 후 재기동 시 반영.
+- 확인(23:55, 스크린샷): 8010 `/rag/ui` 영어·Nordfracht 콘솔 정상(적재 중 7문서/63청크 시점; 버전 체인 2개, v1 둘 다 possibly outdated 표시, 시드 승인 기록 1건 표시). 잔재 수정: 원장 경로 라벨 "database/_updates/" → "data/corpus/_updates/"(review.html, main.py docstring 2곳, updates.py).
+- 완료(00:00, 직접): `docs/demo-video-shotlist.md`를 자동 제작 흐름(헤드리스 녹화 + Piper en_US-lessac-medium + HyperFrames)·영어 UI 라벨·Nordfracht 시나리오로 재작성(10샷 약 120 s, GIF 10 s). puppeteer-core 25.12.0(page.screencast 지원) 확인.
+- 최종 보고(00:05, merge-backend): venv Python 3.11.9(pyenv), pip 설치 exit 0(chromadb 1.5.9, anthropic 2.8.0, openai 3.49.0, fastapi 0.162.5, piper-tts 1.8.0, pymupdf 2.1). pytest 44 passed. 8010(원본 MainBank 코퍼스): /api/health·/rag/health 200, OpenAPI 59 경로 중 /rag 20개, 적재 28/28 문서 325 청크 + 6 facts(총 331), /rag/search 유효성 라벨 정상, /rag/check "correct", `/api/assistant/ask` 자기호출(httpx → /rag/search 동일 프로세스) 200 → 자기호출 경로 입증. 미검증: 영상 export, Docker build, dev.ps1, 인터뷰 end-to-end. 주의: 로컬 `backend/.env`의 RAG_SERVICE_URL이 8010 → 일반 사용 전 8000으로(README 실행 전 정리 항목).
+- **결과(00:15, 8010 물류 코퍼스)**: 적재 30/30 문서, 0 실패, 6 facts(kb 판정: fact1 possibly_outdated·draft, fact4 contradicted→needs_review, 나머지 correct·draft; 승인자 Sandra Kuehl), 시맨틱 284 concepts / 20 changed / 26 with expert statements / 부서 customs·operations. 스모크 1차 21 pass / 3 fail: c3(LLM이 "plausible" — 문장이 invoice value라 했는데 SOP는 customs value) → 문장을 SOP 문구로 바꾸고 correct|plausible 허용; e2(5일 = v1 규칙이라 "possibly_outdated"로 판정, 합리적) → 어느 버전에도 없는 값(7일 from ETA)으로 교체, e3는 e2 종속. 8010을 CORS 반영해 재기동 + 스모크 2차 백그라운드(`scratchpad\smoke2_8010.log`).
+- 결과(00:20, 스모크 2차): 20 pass / 2 fail — b1은 1차에서 이미 승인된 시드 fact를 다시 승인하려 해 실패, e1은 1차와 동일 답변이라 content_hash 중복으로 거부된 fact가 재사용됨. 스모크를 재실행에 견디게 수정: b 섹션은 이미 승인된 경우 SKIP, 전문가 이름에 RUN_TAG(HHMMSS)를 붙여 fact 중복 회피(`smoke_test.py`, `from datetime import datetime` 추가, py_compile OK).
+- 착수(00:25, 직접): 스모크 3차를 실행 중인 8010(재기동 없음, demo-recorder가 사용 중)에 대해 백그라운드 실행 — `scratchpad\smoke3_8010.ps1`, 로그 `scratchpad\smoke3_8010.log`. README `<<CHUNKS>>` → 276 채움. 새 레포 `git status`: 미추적 9개 최상위 항목(.gitignore, LICENSE, README.md, backend/, data/, docker-compose.yml, docs/, frontend/, scripts/), .gitignore 기준 .env/.venv/node_modules/.next/*.db/backend/data/** 제외 확인(민감 파일 0건 추적 예정). 스크린샷 4장은 아직 20:06 버전(demo-recorder 재촬영 대기). demo-recorder 진행: 데모 직원 emp_6b88661b14, 인터뷰 int_0b4efa0e17, 턴 2개 진행(AI 질문이 48h/EUR 2,000 vs SOP v2 72h/EUR 1,500 불일치를 정확히 지적).
+- **결과(00:35, 스모크 3차, 8010 재기동 없이)**: 21 passed / 0 failed / 1 skipped(b 섹션: 시드 fact가 2차에서 이미 승인됨 → SKIP, 깨끗한 수치는 코퍼스 재적재 후). 총 검사 24개(a3 b3 c4 e3 d3 s3 f3 l2). 로그 `scratchpad\smoke3_8010.log`. README 측정 표 채움: 276 chunks, "24 checks: latest run 21 passed, 0 failed, 1 skipped". 남은 플레이스홀더: `<<DEMO_VIDEO_URL>>` 1개 + demo.gif + 스크린샷 재촬영.
+- 준비(00:40, 직접): 내레이션 10문장 Piper en_US-lessac-medium으로 생성 → `scratchpad\narration\shot01..10.wav`(8.1/5.7/3.9/6.4/4.8/5.1/10.7/8.3/6.3/5.1 s, 합계 64.4 s). 샷 7·8은 샷리스트 시간(20 s·12 s)보다 짧아 클립 길이가 기준.
+- 보고(00:45, repo-audit, 읽기 전용): 커밋 예정 189파일, 비밀값 0건(플레이스홀더만), .env/.venv/data 제외 확인. must-fix 22건: 독일어·은행 잔재(check_llm.py, check_voice.py, ingest_dashboard_articles.py, frontend 주석 5파일, globals.css Helaba 주석), 옛 구조 서술(docs/06 코퍼스 행·스모크 수·Piper 기본음성, export_chroma.py 경로, docs/reference/ 3파일 전체 = 은행·8001 시절), README(_src 문구, demo.gif·URL 플레이스홀더), `_updates/`에 데모 실행 중 생긴 승인 기록 3건(시드 1건만 남겨야 함). nice-to-have 19건(tsbuildinfo·tasks/ gitignore, .dockerignore .env, 로거 이름, `_hinweis` 키, 앱 제목 통일 등).
+- 조치(00:50): 스모크 검사 수는 24가 맞음(감사의 21은 c2~c4 루프 누락; 직접 셈). 정리 에이전트 repo-cleanup 투입(backend/docs 항목 12개: 스크립트 영어화, ingest_dashboard_articles.py·make_demo_pdfs.py·docs/reference/ 삭제, docs/06 정정, gitignore/dockerignore 보강, 앱 제목 "Expert Knowledge Transfer"). 프런트 주석 5파일은 녹화 중 HMR을 피하려 demo-recorder 종료 후 직접. README _src 문구·전제조건(Python 3.11 고정, Node = 프런트+HyperFrames) 직접 수정. `_updates/`는 커밋 직전 시드 상태(03.md + ledger 1행)로 되돌릴 것.
+- 완료(00:55, 직접): 코퍼스 생성·검증 스크립트 3개(build_corpus.py, validate_corpus.py, convert_docx_to_pdf.ps1)를 스크래치패드에서 `backend/scripts/corpus/`로 옮기고 절대경로를 레포 상대경로(`parents[3]/data/corpus`, `$PSScriptRoot` 기준)로 교체. validate_corpus.py 실행 RESULT: OK. data/corpus/README.md와 README.md의 "스크립트는 레포 밖" 문구를 새 위치로 정정.
+- 완료(01:00, repo-cleanup 보고): 감사 must-fix 12건 반영 — check_llm.py·check_voice.py 영어·물류화, ingest_dashboard_articles.py·make_demo_pdfs.py·docs/reference/ 삭제, load_demo.py 죽은 pdf/ 분기 제거, export_chroma.py 경로, semantic.py taxonomy 경로, 로거 "rag", seed `_hinweis`→`_note`, config.py 주석, FastAPI 제목 "Expert Knowledge Transfer", docs/06(코퍼스 30건·24 checks·en_US-lessac), .gitignore(+*.tsbuildinfo, tasks/), .dockerignore(+.env). pytest 44 passed(43.6 s). 남은 grep 히트: README·docs/01의 출처 언급(의도), frontend/app/globals.css:3 Helaba 주석(내 몫). 추가 발견 "phase 2/until the vector database is connected" 잔재 6곳(models.py, services/export.py, knowledge_search.py 3곳, docs/05) → 같은 에이전트에 후속 위임.
+- 완료(01:05, repo-cleanup 후속): "phase 2 / until the vector database is connected" 잔재 정리(models.py, services/export.py, knowledge_search.py, docs/05 → "/rag Chroma 인덱스가 1차 출처, seed JSON은 폴백"). pytest 44 passed. docs/01·02의 Phase 1/2/3 로드맵 표는 원 챌린지 서술이라 유지, docs/01:67 "stand-in" 행만 직접 "yes: /rag 지식베이스(내 파트)"로 정정.
+- 완료(23:10, 직접): 프런트 독일어 주석 32줄 영어화(globals.css, interviews/[id]/page.tsx, useInterviewSocket.ts, useVoice.ts 25줄) + 대시보드 활동 라벨 `knowledge_base.published` → "Knowledge base updated". 움라우트 grep 0(기계 enum übernommen/fehlgeschlagen 제외), `npm run typecheck` 통과.
+- 투입(23:08): video-maker 에이전트 — 클립 10개 트리밍, 내레이션 WAV, HyperFrames 조립(타이틀·캡션·클로징), `docs/media/demo.mp4`(<12 MB)·`demo.gif`(<5 MB). demo-recorder는 23:01 샷 9까지 녹화 완료, mp4 변환·clips.json·스크린샷 01/03 재촬영 마무리 중.
+- **사용자 결정(23:12)**: GitHub 레포는 내가 직접 private으로 생성·푸시("너가 레포 생성 private으로 알아서해"). gh 인증 확인(계정 gracelee087, scope repo), 이름 `expert-knowledge-transfer` 미사용 확인, 원격 없음. 로컬 backend/.env RAG_SERVICE_URL 8010→8000 복원(실행 중 8010 프로세스는 영향 없음).
+- 확인(23:15): 스크린샷 02-interview-session.png(20:06)는 이미 영어·Nordfracht 내용(72h/EUR 1,500 질문, KB 매치 3건, 모순 경고) → 재촬영 불필요. README `<<DEMO_VIDEO_URL>>` → `docs/media/demo.mp4`(레포에 MP4 동봉, <12 MB)로 채움, 플레이스홀더 0개. 남은 의존: video-maker(demo.mp4/gif), demo-recorder 최종 보고(clips.json, 01/03 재촬영) → `_updates/` 시드 복원 → 커밋 → `gh repo create --private` → 푸시.
+- **함정(23:35)**: HyperFrames 렌더가 `ENOSPC: no space left on device`로 실패(renders/ 비어 있음). C: 여유 공간 2.9 GB(사용 458 GB) — 1080p 3,600프레임 PNG 캡처가 그 이상을 요구. 재시도 대신 video-maker에 ffmpeg 폴백(drawtext 카드·캡션, 내레이션 concat/amix, crf 24) 지시. 사용자에게 디스크 공간 경고 필요. demo-recorder에는 최종 보고 즉시 송신·GIF 생략·추가 승인 금지 지시.
+- 완료(23:40, 직접): `data/corpus/_updates/`를 시드 상태로 복원 — 데모·스모크 실행 중 생긴 승인 기록 3개(.md) 삭제, ledger.csv는 헤더 + 시드 1행만 유지.
+- 보고(23:45, demo-recorder 최종): 직원 emp_6b88661b14, 인터뷰1 int_0b4efa0e17(시드, 7유닛 확인·발행, 훈련 trn_53814369ca 5슬라이드·20문항), 인터뷰2 int_073812ca07(녹화용, in_review). 클립 shot01~09.mp4(8.5/19.5/21.4/32.6/23.2/34.1/20.7/21.0/27.2 s) + shot10.mp4(훈련 영상 88.1 s, "Old rules" 장면 65.6 s~), clips.json에 키 모먼트. 실패·흠: 샷 6은 "Confirm" 클릭이 "Confirmed" 필터를 눌러 발행 미수행 → 셀렉터 고쳐 샷 6만 재녹화 지시(승인 허용, 이후 _updates 재복원 필요); 샷 7은 Baltic 카드(contradicted) 승인이라 내레이션을 화면에 맞게 재생성(shot07.wav 9.9 s, 구버전 shot07_old.wav); 샷 4는 37분 경과 배지("Interview ending soon") 노출(수용). 판정 실측: 48h 답변 possibly_outdated(draft), Baltic 전화합의 contradicted(needs_review; README가 말한 unsupported 아님), 스프레드시트 correct.
+- 수정(23:50, README): 49행 Baltic 예시를 실측 판정으로(데모 contradicted, 문서 전무 답변은 unsupported = 스모크 e1), 39행 "1월 이메일이 found and flagged" 미검증 주장 → 코퍼스 트랩 설명으로 완화. video-maker에 새 shot07.wav 사용·샷 6 교체 예고(v1 먼저 납품).
+- **결과(00:00, video-maker v1, ffmpeg 폴백)**: `docs/media/demo.mp4` 122.9 s, 10.6 MB, 1920x1080 30 fps H.264 + AAC 48 kHz; `docs/media/demo.gif` 10 s, 1280x720, 12 fps, 2.4 MB. 프레임 5장 직접 확인(타이틀·샷4·샷7·샷9·클로징): 캡션 하단 좌측 반투명 박스, 가독성 양호, 잘림 없음. v2 지시: 클로징 URL에 계정명(github.com/gracelee087/expert-knowledge-transfer), 샷 7 캡션 "a human decides", 새 shot07.wav, 샷 6 교체(재녹화 도착 시). 커밋 전 비밀값 스캔: 패턴(sk-/sk-ant-/AIza/ghp_/gho_/xox/PRIVATE KEY/AKIA) 0건, .env 계열은 backend/.env.example만, 커밋 예정 187파일, 최대 파일 demo.mp4 10.6 MB.
+- 완료(00:05): demo-recorder 샷 6 재녹화 성공(10.1 s; 유닛 KU-8FB60C 확인 → "Update knowledge base" → 결과 카드 "0 entries published, contradiction - clarify"; /rag에 새 fact 없음). video-maker v1 재조립(새 shot07.wav 반영, 122.89 s / 10.64 MB) + 트림 내역 보고(샷별 소스 구간·배속 3x~7x, 샷 10은 훈련 영상 65~73 s "Old rules that no longer apply"). v2 지시: 샷 6 교체 + 클로징 URL 계정명 + 샷 7 캡션. `docs/demo-video-shotlist.md`를 실제 제작 방식(HyperFrames check 통과·렌더는 디스크 부족으로 ffmpeg 조립)과 샷 7 실제 내용으로 정정. `_updates/`는 시드 상태 유지 확인(아래 출력).
+- **완료(00:30, 최종)**: video-maker v2 → `docs/media/demo.mp4` 124.49 s / 9.38 MB(샷 6 교체, 클로징 URL 계정명, 샷 7 캡션), demo.gif 2.37 MB 유지; 샷 6·클로징 프레임 직접 확인 OK. 커밋 95de896(187파일) → `gh repo create expert-knowledge-transfer --private --source . --push` → https://github.com/gracelee087/expert-knowledge-transfer (PRIVATE, main, 원격 docs/media 7파일 확인). HANDOFF 상단 Session Handoff 블록 교체, 노션 로그 신규 항목.
+- 추가(00:35): video-maker 최종 빌드(샷 6 전체 10.1 s, 124.99 s / 9.43 MB)가 초기 커밋 직후 도착 → 샷 6 프레임 확인 후 docs/media/demo.mp4만 2번째 커밋으로 푸시.
