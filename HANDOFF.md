@@ -1363,3 +1363,9 @@ RAG 병합(§37 작업 1·2), Docker/Render, analyze 어댑터, 3000 인터뷰 �
 3. 인터뷰(ekep): 시작 시 Planner(gpt-4o)는 직원 프로필·목표·시간만으로 계획 → **RAG 미사용**. 질문마다 orchestrator `_ask` → `POST /interview/next`(expert, topic=RAG_SERVICE_TOPIC 또는 인터뷰 제목, 이전 turn+verdict, as_of 오늘) → RAG가 주제 검색(현재+과거, 미승인 fact 포함, 부서 범위) + 직전 답변 주변 근거 + 이 전문가의 미커버 개념 + 미지 용어 → Claude가 질문 1개 + 이유(opening/gap/contradiction/deepen/handover/closing) + 근거 → ekep 인터뷰어 컨텍스트에 합쳐 최종 질문 생성. 답변마다 병렬 3가지: Analyst 지식단위 추출(백그라운드), `GET /search`(답변 텍스트, as_of 오늘 → 유효성·인용 포함 “Abgleich”), `POST /facts`(fire-and-forget: 부서 분류 → 부서 범위 검색(3건 미만이면 전체) → check_statement 판정 correct/plausible/possibly_outdated/contradicted/unsupported → draft 저장, contradicted는 needs_review; 판정은 다음 /interview/next에 되먹임). 대시보드 AI Interview(5173)는 같은 엔진을 `dashboard_interview.py`로 미러링, 핵심 문장은 `POST /check`.
 4. 검토·확정: ekep 리뷰에서 확정한 단위 → `knowledge_routes`가 add_fact + approve_fact(resolution=coexist 기본; supersede면 인용 문서 구절 유효기간 닫고 superseded_by=fact) → `database/_updates/ledger.csv`에 기록. 8001 `/ui`에서도 승인·거절 가능.
 5. 활용: `GET /export?topic`(검색 → 학습 개요) → `/export/video`(Piper+ffmpeg) / 대시보드 Content Studio·Learning 모듈(8000 `dashboard_content.py`, `dashboard_learning.py`).
+
+### 39-s. 서버 다운 원인과 복구 (13:36)
+- 증상: 새 세션 시작 시 8001·8000 응답 없음, 3000은 살아 있으나 모든 페이지에 "Jest worker encountered 2 child process exceptions" 500.
+- 원인(확인): 서버 4개 중 3개(8001, 8000, 3000)가 이전 Claude Code 세션의 백그라운드 작업으로 떠 있었고, 세션 종료 시 작업이 정리되면서 8001·8000 프로세스는 종료, 3000은 메인 프로세스만 남고 Next.js 컴파일 워커(child process)가 죽어 페이지 컴파일마다 실패.
+- 복구: 8001·8000 재기동(bg bkdpzy60k / bz50s8zxw), 3000은 PID 21416 종료 + `.next` 캐시 삭제 후 재기동(bg bajxo2s9d). 헤드리스 확인: /employees/<id>, /interviews, 5173 /ai-interview 모두 로드, 페이지 오류 0.
+- 재발 방지: `scripts/start_demo.ps1` 신규 — PowerShell 창 4개에 서버를 독립 실행(Claude Code 세션과 무관). 사용법: 탐색기에서 우클릭 → PowerShell로 실행, 또는 `powershell -ExecutionPolicy Bypass -File scripts/start_demo.ps1`. 지금 돌리면 기존 서버와 포트 충돌하므로 먼저 현재 서버를 끄거나(세션 종료) 그대로 두고 발표 후 전환.
