@@ -11,7 +11,7 @@ if (!container) throw new Error('Root-Element #root nicht gefunden')
 
 createRoot(container).render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <AppProvider>
         <ToastProvider>
           <App />

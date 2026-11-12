@@ -1342,3 +1342,9 @@ RAG 병합(§37 작업 1·2), Docker/Render, analyze 어댑터, 3000 인터뷰 �
 
 ### 39-o. Workforce 트레이닝 현황 패널 제거 (12:20, 사용자 "안하기로 했어, 지워줘")
 - §39-m의 패널을 되돌림: `src/pages/WorkforcePage.tsx`를 `.orig`에서 복원(백업 파일 제거), `src/components/workforce/TrainingStatusPanel.tsx`·`src/lib/training-status.ts` 삭제. 원본 폴더(helaba-knowledge-intelligence)와 저장소 `dashboard/` 복사본 모두 적용, 두 파일 동일 확인. tsc exit 0.
+
+### 39-p. 정적 배포(GitHub Pages, mock 모드) 준비 — "컴퓨터 꺼도 되는 URL" (12:48)
+- 요구: 심사위원이 URL 하나로 보고, 발표자 노트북이 꺼져도 동작. 13:00까지 가능한 유일한 방법 = 대시보드를 정적 사이트(mock AI)로 GitHub Pages에 배포. 백엔드 기능(실시간 인터뷰, 새 콘텐츠 생성)은 시뮬레이션으로 대체되고, 인터뷰 결과(영상·기사·퀴즈 20)는 스냅샷으로 포함.
+- 변경(대시보드 원본 + 저장소 `dashboard/` 모두): `src/main.tsx` `<BrowserRouter basename={import.meta.env.BASE_URL}>`(dev에서는 '/'); `src/services/learning-remote.ts` backend 모드가 아니면 `public/demo/learning-modules.json`·`learning-articles.json`을 읽고 상대 videoUrl에 BASE_URL을 붙임; `public/demo/`에 8000의 `/api/learning/modules`·`/articles` 스냅샷(videoUrl → `demo/videos/training_motion.mp4`)과 영상 mp4(10.6 MB) 복사. `.gitignore`에 `!dashboard/public/demo/**` 예외.
+- 빌드: `MSYS_NO_PATHCONV=1 VITE_AI_MODE=mock npx vite build --base=/hackathnhlaba/` (Git Bash가 `--base=/...`를 `/Git/...`로 바꾸는 함정 → MSYS_NO_PATHCONV 필요), `dist/404.html = index.html`(SPA 딥링크).
+- 발행은 Claude Code 권한 분류기가 "공개 표면 생성"으로 거부 → 사용자가 직접 `npx gh-pages -d dist` + `gh api ... /pages` 실행 필요(아래 채팅 안내). 예상 URL https://gracelee087.github.io/hackathnhlaba/

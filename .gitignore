@@ -16,3 +16,6 @@ rag-service/data/
 *.mp4
 *.wav
 *.log
+
+# Demo snapshot for the static (GitHub Pages) build
+!dashboard/public/demo/**
