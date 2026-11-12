@@ -1369,3 +1369,8 @@ RAG 병합(§37 작업 1·2), Docker/Render, analyze 어댑터, 3000 인터뷰 �
 - 원인(확인): 서버 4개 중 3개(8001, 8000, 3000)가 이전 Claude Code 세션의 백그라운드 작업으로 떠 있었고, 세션 종료 시 작업이 정리되면서 8001·8000 프로세스는 종료, 3000은 메인 프로세스만 남고 Next.js 컴파일 워커(child process)가 죽어 페이지 컴파일마다 실패.
 - 복구: 8001·8000 재기동(bg bkdpzy60k / bz50s8zxw), 3000은 PID 21416 종료 + `.next` 캐시 삭제 후 재기동(bg bajxo2s9d). 헤드리스 확인: /employees/<id>, /interviews, 5173 /ai-interview 모두 로드, 페이지 오류 0.
 - 재발 방지: `scripts/start_demo.ps1` 신규 — PowerShell 창 4개에 서버를 독립 실행(Claude Code 세션과 무관). 사용법: 탐색기에서 우클릭 → PowerShell로 실행, 또는 `powershell -ExecutionPolicy Bypass -File scripts/start_demo.ps1`. 지금 돌리면 기존 서버와 포트 충돌하므로 먼저 현재 서버를 끄거나(세션 종료) 그대로 두고 발표 후 전환.
+
+### 39-t. 새 영상이 Learning Academy에 안 보인 원인과 조치 (14:08)
+- 원인: Learning 모듈은 인터뷰별 TrainingPackage에서 생성됨(`dashboard_learning.py` `/learning/modules`). 사용자가 14:00에 만든 영상(`…_cbaa02/training_motion.mp4`)은 인터뷰 int_07e170f3a8 것인데 그 인터뷰에는 패키지가 없었고, 패키지 생성은 전문가 확정 단위가 있어야 가능(409 "Training nur aus expertenbestätigten Wissenseinheiten")한데 단위 4개가 모두 `extracted`였음.
+- 조치(사용자 "수정해"): API로 단위 4개(KU-DD188F, KU-9B6B47, KU-975BB3, KU-EDE6FE) `confirm` → `POST /api/interviews/int_07e170f3a8/training` audience einsteiger(20 s) → 패키지 trn_684ea8d6fd(슬라이드 5, 퀴즈 20). `/api/learning/modules`에 모듈 2개: trn-trn_684ea8d6fd(새 영상 cbaa02) + trn-trn_f110ecd4a8(기존 80e010). 대시보드는 새로고침해야 반영(마운트 시 병합).
+- 데모 절차 메모: 인터뷰 종료 → 리뷰에서 단위 확정 → Schulungspaket 생성 → (영상은 전후 무관) → 대시보드 새로고침.
