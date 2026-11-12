@@ -1175,3 +1175,42 @@ export JSON의 외부 컨슈머 존재 여부. semantic.json의 changed 비율�
 - 따라서 연결 작업 = ① 동료 `.env` `VITE_AI_MODE=backend` + dev 서버 재시작(프록시 `/api`→localhost:8000 이미 설정) ② 우리 백엔드 8000에 `POST /api/interviews/reply` 어댑터(§37 작업 3). RAG 병합(§37 작업 1·2)은 이 연결에 **필수 아님**(어댑터가 8001을 httpx로 호출하면 됨).
 - 함정: 대시보드 데이터는 브라우저 localStorage뿐. 우리 Next.js 앱(3000)의 기존 인터뷰(int_3654dd400c)는 자동으로 안 보임. 데모는 5173 안에서 새 인터뷰 진행이 자연스러움. 기존 결과를 옮기려면 별도 작업(시드 주입 또는 동료 코드 수정).
 - 상태: 조사만. 코드 미착수.
+
+## 38. 계획서: 동료 대시보드(5173) 중심 발표 — RAG+Chroma·AI 인터뷰 연결 (2026-11-12 09:25, 승인 대기)
+
+### 확인된 사실 (원문)
+- 동료 화면의 백엔드 호출은 4개뿐: `POST /api/interviews/reply`(ExpertKnowledgePage), `POST /api/assistant/ask`(AssistantPage), `POST /api/content/generate`(ContentStudioPage), `POST /api/documents/analyze`(useDocumentProcessor). 스위치 `.env` `VITE_AI_MODE=backend`. 동료 코드 수정 불필요.
+- `/dashboard`는 localStorage 상태(`hki.demo-state`)에서 렌더 → 5173 안에서 인터뷰하면 자동 반영.
+- **데이터 불일치**: 동료 mock = LBS Bausparen(SEED_ARTICLES 36개, validFrom/validUntil/status aktuell|historisch|pruefung|veraltet, 인터뷰 스크립트 historisch/projekt/generisch). 우리 Chroma = Nordlicht 신용정책. 그대로 연결하면 verdict 대부분 unsupported.
+- **동료 VideoPlayer(`MediaViewers.tsx:106`)는 `<video>` 없음** — VideoScene[](title/narration/subtitle/durationSec) 텍스트 시뮬레이션. mp4 임베드는 동료 코드 변경 필요.
+- RAG 보유 라우트: `/interview/next`, `/check`, `/search`, `/export?outline=true`, `/export/video`, `/ingest`, `/facts`.
+
+### 작업
+| # | 작업 | 시간 | 되돌리기 | 검증 |
+|---|---|---|---|---|
+| T0 | 동료 `.env` `VITE_AI_MODE=backend` + 5173 재시작 | 10 m | 한 줄 | Settings "Verbindung testen" OK |
+| T1 | SEED_ARTICLES 36개 → md → `POST /ingest`(language=de, valid_from/valid_to, department=LBS, doc_id=a-…) | 30 m | `DELETE /documents/{id}` | `/search?as_of=2026-11-12` Generation A → possibly_outdated |
+| T2 | reply 어댑터(ekep backend `app/api/dashboard_adapter.py`, 라우터 먼저 include): LLM(gpt-4o) → reply/statement/topic/resolveMissing/topicDone/finished; RAG `/check` → score(correct 90/plausible 70/unsupported 62/possibly_outdated 50/contradicted 30), reasons, contradiction(contradicted만) | 75 m | 파일 1개 | /expert-knowledge 실제 대화, 대시보드 숫자 변동, <60 → Vier-Augen |
+| T3 | Bauspar 주제 모션 영상 사전 렌더(`/export/video?topic=…&lang=de&style=motion`, 백그라운드 ~5 m) | 5 m | 파일 삭제 | mp4 200 |
+| T4 | ask 어댑터: `/search` + LLM 요약 → AssistantAnswer(sources.articleId = doc_id로 역매핑) | 35 m | 파일 1개 | /assistant 질문, historisch 경고 |
+| T5 | generate 어댑터: `/export?outline=true&lang=de` → slides/scenes/quiz, podcast LLM 1회, 모든 리스트 항상 반환(빈 배열 허용), quiz ≥4 | 35 m | 파일 1개 | /content-studio 생성 → Learning Academy |
+| T6 | 커밋·푸시, HANDOFF, 리허설 | 20 m | — | — |
+
+### 일정
+09:30 T0 → 09:45 T1 → 10:15 T3(bg)+T2 → 11:30 T4 → 12:05 T5 → 12:40 T6 → 13:00 프리즈. 최소 성공선 = T2. 밀리면 T5→T4 순으로 제외.
+
+### 하지 않을 것
+RAG 병합(§37 작업 1·2), Docker/Render, analyze 어댑터, 3000 인터뷰 → 대시보드 이전, 동료 코드 수정(사용자·동료 합의 시 videoUrl 10줄만 예외), RAG 신규 기능.
+
+### 열린 결정
+1. 범위 T0~T3 vs T5까지(권장 T5, 12:05 재평가). 2. T1 적재 허용(권장 예). 3. 영상: (a) 장면 플레이어 + mp4 별도 탭 vs (b) 동료에 videoUrl+`<video>` 요청(권장 b 문의, 불가 시 a). 4. 어댑터 위치 expert-knowledge-platform `ekep/backend/app/api/dashboard_adapter.py`, 응답 독일어.
+- 상태: **승인 대기, 미착수.**
+
+### 38-a. 실행 결과 (2026-11-12 09:40~09:55, 서브에이전트 3개 병렬 + 직접 검증)
+- **T0** 완료: 동료 `.env` `VITE_AI_MODE=backend`, `VITE_API_TIMEOUT_MS=120000`(콘텐츠 생성 40~48 s 때문에 60 s에서 상향), 5173 재시작. 5173 프록시 → 8000 `/api/health` 200.
+- **T1** 완료: 동료 기사 **11개**(36이 아님, 내 오측) → `rag-service/scripts/ingest_dashboard_articles.py` → Chroma. 문서 28→39, 청크 13개 추가, 83 s. doc_id = 기사 id(`a-…`), language=de, department 자동분류(전부 other), supersedes 체인 3쌍. 함정: store는 구문서가 먼저 있어야 `superseded_by`를 찍음 → 스크립트가 순서를 맞춤. 검색 검증: Generation A possibly_outdated / Tarif-Überblick current; WoP-alt possibly_outdated / WoP-2021 current. 생성 데이터 `rag-service/data/dashboard_articles/`(gitignored).
+- **T2** 완료: `ekep/backend/app/api/dashboard_interview.py` `POST /api/interviews/reply`. gpt-4o structured 1회 + RAG `/check`(lang=de) → score 매핑(correct 90 / plausible 72 / unsupported 62 / possibly_outdated 48 / contradicted 30), reasons = 설명+Quelle×2+"Heute gilt". `/check` 응답에 `evidence_ids` 없음 → `evidence[].citation` 사용. 프록시 경유 실측: "WoP 소득한도 25.600 €" → score 48, contradiction(mittel), 근거 2021/2020 두 문서, 9 s. 미검증: finished/topicDone=true 경로, RAG 다운 경로.
+- **T4/T5** 완료: `ekep/backend/app/api/dashboard_content.py` `POST /api/assistant/ask`(RAG `/search` k=6 + gpt-4o, 6 s) / `POST /api/content/generate`(RAG `/export?outline=true&lang=de` + gpt-4o 퀴즈·팟캐스트 1회, 43 s; 슬라이드 5·장면 3·퀴즈 5·팟캐스트 7). 내 수정 1건: ask에서 대시보드 문서(`a-` 접두 또는 요청 articles id) 히트가 2개 이상이면 다른 코퍼스 히트 제외(Bauspar 질문에 Kreditrichtlinie 경고가 섞이던 문제). 퀴즈 정답 인덱스 회전(gpt-4o가 전부 0에 둠).
+- main.py: 두 라우터를 기존 `router`보다 먼저 include. 8000 재시작 3회(마지막 bg ID 아래).
+- **T3** 진행 중: `/export/video?topic=Historische Bausparverträge und Tarifgenerationen&lang=de&style=motion` 백그라운드(09:41 시작, 작업 폴더 `rag-service/data/videos/historische-bausparvertr-ge-und-tarifgen_69f7d9/`).
+- 데모 동선: 5173 `/expert-knowledge`(인터뷰, 답당 ~9 s) → `/reviews`(60 미만 자동 생성) → `/assistant` → `/content-studio`(~45 s) → `/learning`. mp4는 8001 `/videos/...` 별도 탭.
