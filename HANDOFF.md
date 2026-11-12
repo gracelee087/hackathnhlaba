@@ -1214,3 +1214,6 @@ RAG 병합(§37 작업 1·2), Docker/Render, analyze 어댑터, 3000 인터뷰 �
 - main.py: 두 라우터를 기존 `router`보다 먼저 include. 8000 재시작 3회(마지막 bg ID 아래).
 - **T3** 진행 중: `/export/video?topic=Historische Bausparverträge und Tarifgenerationen&lang=de&style=motion` 백그라운드(09:41 시작, 작업 폴더 `rag-service/data/videos/historische-bausparvertr-ge-und-tarifgen_69f7d9/`).
 - 데모 동선: 5173 `/expert-knowledge`(인터뷰, 답당 ~9 s) → `/reviews`(60 미만 자동 생성) → `/assistant` → `/content-studio`(~45 s) → `/learning`. mp4는 8001 `/videos/...` 별도 탭.
+- **T3** 완료(09:46): Bauspar 모션 영상 98.6 s, 8장면(title / 4 section / history "Historische Regeln – nicht mehr aktuell" / quiz / outro), 총 275 s(script 30 + TTS 12 + HyperFrames 200). URL `http://localhost:8001/videos/historische-bausparvertr-ge-und-tarifgen_69f7d9/training_motion.mp4`, 복사본 `Desktop\training_bauspar_demo.mp4`. 데모에서는 이 URL을 별도 탭으로.
+- 커밋: hackathnhlaba fe123ff(ingest 스크립트+HANDOFF), expert-knowledge-platform aa3005c(어댑터 2파일+main.py). 둘 다 push 완료.
+- 실행 중 bg: RAG 8001 `bpsz91k0f`, 앱 백엔드 8000 `bfw9gwvhz`(log hlb_tmp/ekep_backend9.log), 앱 프런트 3000 `ba01me2qq`, 동료 프런트 5173(쉘 분리 실행, log hlb_tmp/helaba_fe4.log; 종료는 포트 5173 PID taskkill).
