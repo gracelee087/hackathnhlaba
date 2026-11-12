@@ -1,0 +1,4 @@
+Legt hier das offizielle Logo ab:
+  logo.svg       (für helle Flächen)
+  logo-white.svg (für dunkle Flächen, z. B. Seitenleiste)
+PNG geht auch – dann in src/components/brand/Logo.tsx die Endung anpassen.
