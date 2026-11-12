@@ -1279,3 +1279,18 @@ RAG 병합(§37 작업 1·2), Docker/Render, analyze 어댑터, 3000 인터뷰 �
 - 사이드바 "AI Content Studio" 바로 위 **AI Interview**(`/ai-interview`, 그룹 Wissen vermitteln, 아이콘 Mic). 페이지는 우리 인터뷰 앱(3000)을 iframe으로 통째로 임베드(`allow="microphone; autoplay; clipboard-write"`), 우측 상단 "In neuem Tab öffnen". URL은 `VITE_INTERVIEW_APP_URL`(기본 http://localhost:3000).
 - 동료 파일: `src/pages/AiInterviewPage.tsx` 신규, `src/components/navigation/nav-items.ts` 1줄, `src/App.tsx` import+라우트. tsc 통과. 헤드리스 확인: 메뉴 순서 OK, 임베드 앱 로드 OK(3000은 frame 차단 헤더 없음), 콘솔 오류 0.
 - 서버 재기동(10:33): RAG 8001 bg b7i3glcy8(log server_8001z.log) / ekep 백엔드 8000 bg ba21s79m9(ekep_backend12.log) / ekep 프론트 3000 bg bupkp25g3(ekep_frontend7.log) / 동료 5173 detached(helaba_fe5.log, 포트 PID로 종료).
+
+### 39-f. 디자인 정렬 + 퀴즈 20문항 + 전체 스모크 (10:48)
+- 우리 앱(3000) 디자인을 대시보드 토큰에 맞춤: `app/globals.css`(Inter, brand #e30613, navy 버튼, 22px 카드, shadow-card), `app/layout.tsx`(Inter 로드), `components/Shell.tsx`(iframe 임베드 시 EK 브랜딩 숨김·슬림 탭·py-6). 헤드리스 스크린샷으로 대시보드 안에서 자연스럽게 보임 확인.
+- 퀴즈: `backend/app/agents/intelligence.py` TRAINING_SYSTEM "4-6 Quizfragen" → "GENAU 20 Quizfragen"(explanation 포함). `frontend/app/interviews/[id]/review/page.tsx` Wissenscheck에 요약(답변 수/정답/오답/%/합격 70 %) 추가. 사용자 붙여넣은 스펙(영상 후 퀴즈 자동 표시·채점)은 기존 Review 페이지 흐름(Training 생성 → 슬라이드 + Wissenscheck, Lernvideo 버튼)으로 커버; "영상 시청 완료 후에만 퀴즈 표시" 게이팅은 **미구현**.
+- 스모크(실측, 백엔드 bg b56bqa5ok, 로그 ekep_backend13.log):
+  - POST /api/interviews/int_4981f54b92/training → 200, 19.6 s, slides 5, **quiz 20**, 모든 문항 correct_index 유효 + explanation 있음.
+  - 대시보드 프록시: /assistant/ask 200 2.9 s(conf 85, 대시보드 소스만), /content/generate 200 38.2 s(slides 6, scenes 4, quiz 5, podcast 9).
+  - 페이지 로드 13개(3000: /, /interviews, /employees, /review; 5173: dashboard, expert-knowledge, ai-interview, content-studio, assistant, knowledge-base, learning, reviews, settings) 모두 200, 콘솔/페이지 오류 0.
+  - 영상: POST /knowledge-base/video?style=motion 실행 중(bg bd60zun6j, 로그 hlb_tmp/smoke_video.log) — 결과는 §39-g.
+- 커밋: expert-knowledge-platform(아래 로그 참조). 주의: 인터뷰 → 영상/퀴즈 경로는 **expertenbestätigte 유닛이 있어야**(Review에서 "Bestätigen") 409가 안 남.
+
+### 39-g. 영상 스모크 결과 + Learning Academy 연동 착수 (10:58)
+- POST /api/interviews/int_4981f54b92/knowledge-base/video?style=motion → 200, 318 s, 107.4 s 영상, `http://localhost:8001/videos/wissenssicherung-firmenkundenkredite-mit_80e010/training_motion.mp4` (10.6 MB, 206 서빙 확인). 발표용으로는 미리 렌더된 이 영상을 사용.
+- 사용자 요청: 인터뷰 후 생성된 영상+퀴즈를 대시보드 **Learning Academy**에 기존 콘텐츠 형식으로 노출, 이후 생성물에 모두 "neu" 태그.
+- 설계: 우리 백엔드 `GET /api/learning/modules`(읽기 전용, TrainingPackage + audit_log의 training.video_generated → 대시보드 LearningModule JSON: 1 chapter type video, slides, quiz 20, passingScore 70, tags ["neu"], videoUrl, interviewId) ← agent-learn-be. 대시보드: types 선택 필드(tags, videoUrl, interviewId), `services/learning-remote.ts`, AppContext 마운트 시 fetch+merge(원격 우선, id 중복 제거), CourseCard "Neu" 배지, CourseDetailPage 실제 mp4 `<video>`, content.ts toModule tags ['neu'] ← agent-learn-fe. 각 동료 파일 `.orig` 백업.
