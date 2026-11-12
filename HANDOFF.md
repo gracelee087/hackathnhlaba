@@ -1355,3 +1355,4 @@ RAG 병합(§37 작업 1·2), Docker/Render, analyze 어댑터, 3000 인터뷰 �
 - AI Interview 페이지를 공개 URL에서 살리는 하이브리드(cloudflared 터널 2개 + CORS/NEXT_PUBLIC_API_URL 재시작 + 대시보드 재배포)는 사용자 결정으로 **하지 않음**. 파일 변경 없음(조사만). ngrok 실행은 권한 분류기가 차단함.
 - 제출물: 공개 데모 https://gracelee087.github.io/hackathnhlaba/ (정적, mock AI + 인터뷰 결과 스냅샷), 저장소 https://github.com/gracelee087/hackathnhlaba (README Quickstart, dashboard/ 포함), https://github.com/gracelee087/expert-knowledge-platform.
 - 제출 후 후보: ElevenLabs 나레이션(§39 계획), docker compose 번들(4 서비스), Render 등 전체 호스팅, README 기준 clean clone 검증.
+- 12:52 사용자 확인: 주최 측이 코드 제출은 요구하지 않음. 공개 URL·저장소는 발표 보조용으로만 유지.
