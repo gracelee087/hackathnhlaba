@@ -1,4 +1,4 @@
-# Session Handoff — 포트폴리오 레포 `expert-knowledge-transfer` 완성·private 푸시 (2026-11-13 00:30)
+# Session Handoff — 포트폴리오 레포 `expert-knowledge-transfer` 완성·private 푸시·클린 클론 검증 (2026-11-13 01:00)
 
 > 아래 "Session Handoff"는 최신 세션 요약. 그 밑의 §1~§40-i는 누적 기록(원문 그대로 보존). 이번 세션의 단계별 타임라인은 §40-i(20:30~00:30).
 
@@ -6,7 +6,9 @@
 해커톤 결과물을 독일 채용 담당자용 포트폴리오로 재구성: 새 레포 `C:\Users\honor\OneDrive\Desktop\expert-knowledge-transfer`(내 파트 중심, 두 FastAPI 서버를 하나로 병합, `/rag` 라우터). 사용자 결정: 코퍼스를 은행 → 물류(Nordfracht Logistik, 20년차 수입 오퍼레이터 Michael Brandt), 모든 언어 영어, 고객사 SOP·Outlook .eml·업무 xlsx·ADR 사례 포함, 데모 영상은 AI 자동 제작(헤드리스 녹화 + Piper 영어 TTS), 레포는 **private으로 내가 직접 생성**("너가 레포 생성 private으로 알아서해"). 서브에이전트 활용 허용.
 
 ## Decisions locked + what shipped
-- **GitHub**: https://github.com/gracelee087/expert-knowledge-transfer — PRIVATE, main, 커밋 95de896(187파일, "Initial public version: ..."), 작업 트리 clean. 민감 경로 0건(.env/.db/data/node_modules/.venv 제외 확인, 비밀값 패턴 스캔 0건).
+- **GitHub**: https://github.com/gracelee087/expert-knowledge-transfer — PRIVATE, main = d2650d5(95de896 초기 187파일 + 최종 demo.mp4), 작업 트리 clean. About 설명은 이미 있었고, 01:00에 topics 10개 추가(fastapi, nextjs, rag, chromadb, llm, knowledge-management, knowledge-transfer, expert-interviews, python, typescript).
+- **클린 클론 검증(01:00, 통과)**: GitHub에서 새로 clone → README "Run it locally" 그대로: venv + `pip install -r requirements.txt`(10분 이상 소요, 완료) → `.env`(실제 키 복사, 포트만 8020) → uvicorn 8020 기동 → `load_demo.py` 30/30 파일·276 doc chunks·6 facts(health chunks=282) → `smoke_test.py` **24 passed / 0 failed / 0 skipped**(깨끗한 인덱스라 b 섹션도 실행됨). 프런트: `npm install` 46패키지, `tsc --noEmit` exit 0, `npm run build` exit 0(8 라우트). 클론은 검증 후 삭제(키 복사본 포함), 로그만 scratchpad `cleanclone/`에 보관. **Docker 경로는 미검증**(디스크 1.3 GB 여유로 이미지 pull 불가).
+- npm 경고: next 15.5.6은 보안 권고 CVE-2025-66478 대상(npm deprecated 메시지). 패치 버전으로 올릴지는 사용자 결정(올리면 빌드·typecheck 재확인 필요). 민감 경로 0건(.env/.db/data/node_modules/.venv 제외 확인, 비밀값 패턴 스캔 0건).
 - **단일 백엔드**: `backend/app/main.py`가 `app/rag/main.py`(APIRouter prefix `/rag`, 20 경로)를 마운트, 자기호출 `RAG_SERVICE_URL=http://127.0.0.1:8000/rag`, CORS env `CORS_ORIGINS`. 청커 무한루프 수정, `.eml` 파서(헤더·본문·첨부 재귀 청킹), openpyxl 추가. pytest 44 passed.
 - **코퍼스** `data/corpus/`: 30 manifest 파일(01–10 PDF, 11–19 DOCX, 20–27 EML, 28 인터뷰 JSON 6 facts, 29–31 XLSX) + `_src/` md 마스터 + `_incoming/` v3 초안 + `_updates/`(시드 승인 1건으로 복원). 생성·검증 스크립트는 `backend/scripts/corpus/`(레포 상대경로, validate RESULT: OK). 적재 실측 276 doc chunks(+facts 285).
 - **스모크** `backend/scripts/rag/smoke_test.py`: 24 검사, 3차 실행 21 pass / 0 fail / 1 skip(승인 단계는 재적재 후에만). 재실행 안전화(RUN_TAG, b 섹션 skip).
@@ -23,25 +25,27 @@
 - Plan file: 없음. Memory files touched: 없음.
 
 ## Running state
-- Background processes (이 세션): 없음(감시용 대기 명령은 모두 종료; 스크래치패드 du 스캔 1건은 무해, 종료돼도 무관).
+- Background processes (이 세션): 없음(클린 클론용 uvicorn 8020은 검증 후 종료, 포트 비어 있음 확인).
 - 포트폴리오 검증 서버(이 세션이 띄움, 최소화 창): 백엔드 8010(새 코드, 물류 코퍼스 적재, 데모 인터뷰 데이터 포함), 프런트 3010(NEXT_PUBLIC_API_URL=8010). 필요 없으면 창을 닫으면 됨. 데모 서버 8000/8001/3000/5173과 keepalive는 건드리지 않음.
 - 서브에이전트(모두 idle): merge-backend, docs-writer, corpus-writer, frontend-english, backend-english, docs-english, repo-audit, repo-cleanup, demo-recorder, video-maker.
-- Open worktrees / branches: expert-knowledge-transfer main = origin/main (95de896 초기 + 영상 최종 빌드 커밋 1개); hackathnhlaba main(HANDOFF만 수정, 미커밋).
+- Open worktrees / branches: expert-knowledge-transfer main = origin/main d2650d5; hackathnhlaba main = origin/main 0ae9dcc(00:40에 HANDOFF 커밋·푸시; 이 01:00 갱신분은 다시 미커밋).
 
 ## Verification — how to confirm things still work
 - `gh repo view gracelee087/expert-knowledge-transfer --json visibility,defaultBranchRef` → PRIVATE, main.
 - `cd expert-knowledge-transfer/backend && .venv\Scripts\python.exe -m pytest -q` → 44 passed.
 - `.venv\Scripts\python.exe scripts\corpus\validate_corpus.py` → RESULT: OK.
-- 서버 기동 후 `scripts\rag\load_demo.py` → 30/30, 그 다음 `smoke_test.py http://127.0.0.1:8000/rag` → 24 pass(깨끗한 인덱스).
+- 서버 기동 후 `scripts\rag\load_demo.py` → 30/30, 그 다음 `smoke_test.py http://127.0.0.1:8000/rag` → 24 pass(깨끗한 인덱스). 01:00 클린 클론에서 실측: 24 passed / 0 failed / 0 skipped(로그 `C:\Users\honor\AppData\Local\Temp\claude\6a1c4929272c2259\4044dd27-f96e-452f-9a02-8382ccf23375\scratchpad\cleanclone\load_smoke_8020.log`, 세션 종료 시 소실 가능).
+- `cd frontend && npm install && npx tsc --noEmit && npm run build` → 모두 exit 0(01:00 클린 클론 실측).
 - `ffprobe docs/media/demo.mp4` → 125.0 s, 1920x1080.
 
 ## Deferred + open questions
-- Deferred: 레포 public 전환(사용자 결정), GitHub About·topics 설정, 클린 클론 end-to-end(docker compose up --build 미검증), 영상 샷 4의 "Interview ending soon" 배지·샷 7 캡션이 사이드바와 살짝 겹침(가독 OK), HyperFrames 렌더(디스크 확보 후 가능, 구성은 scratchpad/demo-video에 있으나 세션 종료 시 소실 가능).
-- Open: **C 드라이브 여유 2.9 GB**(사용자 정리 필요). 실측(du): `C:\Users\honor\AppData\Local\Temp` 약 44 GB, 그중 `hyperframes-extract-cache-u` 약 2.3 GB — 삭제는 사용자 결정, 이 세션은 지우지 않음. 해커톤 레포 HANDOFF.md 커밋 여부.
+- Deferred: `docker compose up --build` 미검증(디스크 부족; Docker 28.5.1은 설치돼 있음), next 15.5.6 → CVE-2025-66478 패치 버전으로 올릴지, 영상 샷 4의 "Interview ending soon" 배지·샷 7 캡션이 사이드바와 살짝 겹침(가독 OK), HyperFrames 렌더(디스크 확보 후 가능, 구성은 scratchpad/demo-video에 있으나 세션 종료 시 소실 가능).
+- Open: **레포 public 전환 여부**(사용자 결정, 외부 공개라 승인 전 실행 안 함): `gh repo edit gracelee087/expert-knowledge-transfer --visibility public --accept-visibility-change-consequences`.
+- Open: **C 드라이브 여유 2.4 GB**(01:00 실측, 사용자 정리 필요). du: `C:\Users\honor\AppData\Local\Temp` 약 44 GB, 그중 `hyperframes-extract-cache-u` 약 2.3 GB — 삭제는 사용자 결정, 이 세션은 지우지 않음.
 - Open: README 상단 독일어 Kurzfassung 유지 여부(현재 유지).
 
 ## Pick up here
-레포를 public으로 바꿀지 결정하고(`gh repo edit gracelee087/expert-knowledge-transfer --visibility public --accept-visibility-change-consequences`), About/topics를 채운 뒤, 클린 클론에서 README의 "Run it locally" 절차를 한 번 그대로 따라 해 본다.
+사용자가 (1) 레포 public 전환, (2) Temp 폴더 정리를 결정하면 실행한다. 그 외 남은 기술 항목은 next 보안 패치 버전 업그레이드와 docker compose 검증(디스크 확보 후)뿐이다.
 
 ---
 
@@ -1507,3 +1511,4 @@ RAG 병합(§37 작업 1·2), Docker/Render, analyze 어댑터, 3000 인터뷰 �
 - 완료(00:05): demo-recorder 샷 6 재녹화 성공(10.1 s; 유닛 KU-8FB60C 확인 → "Update knowledge base" → 결과 카드 "0 entries published, contradiction - clarify"; /rag에 새 fact 없음). video-maker v1 재조립(새 shot07.wav 반영, 122.89 s / 10.64 MB) + 트림 내역 보고(샷별 소스 구간·배속 3x~7x, 샷 10은 훈련 영상 65~73 s "Old rules that no longer apply"). v2 지시: 샷 6 교체 + 클로징 URL 계정명 + 샷 7 캡션. `docs/demo-video-shotlist.md`를 실제 제작 방식(HyperFrames check 통과·렌더는 디스크 부족으로 ffmpeg 조립)과 샷 7 실제 내용으로 정정. `_updates/`는 시드 상태 유지 확인(아래 출력).
 - **완료(00:30, 최종)**: video-maker v2 → `docs/media/demo.mp4` 124.49 s / 9.38 MB(샷 6 교체, 클로징 URL 계정명, 샷 7 캡션), demo.gif 2.37 MB 유지; 샷 6·클로징 프레임 직접 확인 OK. 커밋 95de896(187파일) → `gh repo create expert-knowledge-transfer --private --source . --push` → https://github.com/gracelee087/expert-knowledge-transfer (PRIVATE, main, 원격 docs/media 7파일 확인). HANDOFF 상단 Session Handoff 블록 교체, 노션 로그 신규 항목.
 - 추가(00:35): video-maker 최종 빌드(샷 6 전체 10.1 s, 124.99 s / 9.43 MB)가 초기 커밋 직후 도착 → 샷 6 프레임 확인 후 docs/media/demo.mp4만 2번째 커밋으로 푸시.
+- 추가(00:40~01:00, "진행" 지시): GitHub topics 10개 추가(About 설명은 기존). 해커톤 HANDOFF 커밋 0ae9dcc 푸시. **클린 클론 검증 통과**: GitHub clone → venv + pip(10분+) → .env(키 복사, 포트 8020) → load_demo 30/30(276 doc chunks + 6 facts = 282) → smoke 24 passed/0 failed/0 skipped; 프런트 npm install·tsc·build exit 0. Docker 경로는 디스크(1.3 GB 여유)로 미검증. npm 경고: next 15.5.6 = CVE-2025-66478. 클론·8020 서버 정리 완료(키 복사본 삭제). 되돌리기 어려운 두 건(public 전환, Temp 44 GB 정리)은 사용자 확인 대기.
