@@ -1302,3 +1302,7 @@ RAG 병합(§37 작업 1·2), Docker/Render, analyze 어댑터, 3000 인터뷰 �
 - 함정(정정): 원격 모듈은 setState를 거치므로 localStorage `hki.demo-state`에도 저장됨(agent-learn-fe 실측: 리로드 후 1부 유지). 매 로드마다 다시 fetch해 같은 id를 덮어씀. 백엔드 8000이 꺼져 있으면 마지막 저장본이 보이고, 저장본도 없으면 seed만 보임(오류 없음). 영상은 8001 정적 서빙이므로 8001도 떠 있어야 재생됨(8001은 HEAD 405, GET 정상).
 - 미구현(사용자 안내됨): "영상 시청 완료 후에만 퀴즈" 게이팅.
 - 실행 상태: RAG 8001 bg b7i3glcy8 / ekep 백엔드 8000 bg b1qoz1vxh(ekep_backend14.log) / ekep 프론트 3000 bg bupkp25g3 / 동료 5173 detached(helaba_fe5.log).
+
+### 39-i. 영상 소리 문의 + Content Studio 연동 조사 (11:06)
+- 사용자: /learning/trn-trn_f110ecd4a8 영상에 소리가 안 남. 실측: mp4에 AAC 스테레오 트랙(48 kHz, 0초부터, mean −19 dB, max −3 dB), 8001은 206/Range 정상, 페이지 `<video>`는 muted=false·volume 1이고 헤드리스 Chrome이 오디오 바이트를 디코딩(webkitAudioDecodedByteCount>0). 파일·페이지 쪽 결함은 못 찾음 → 사용자 브라우저/장치(탭 음소거, 사이트 소리 설정, 볼륨 믹서) 가능성. 안전장치로 `src/pages/CourseDetailPage.tsx` `<video onPlay>`에서 muted=false, volume 0이면 1로 설정(HMR 11:05, tsc 통과). 우리 앱 review 페이지(`<video controls>`)는 손대지 않음.
+- Content Studio 조사(원문): 소스 = `state.articles`(KnowledgeArticle) 체크리스트 → `POST /api/content/generate`(articles 전체 전송) → 우리 백엔드 `dashboard_content.py`가 RAG `/export?topic=<article titles>&outline=true` → outline → slides/scenes/podcast/quiz(4–6). RAG 스토어에는 int_4981f54b92의 confirmed 유닛 2개가 approved fact로 이미 들어 있음(`/facts?status=approved` 2건; `/export?topic=Firmenkundenkredite…`에서 `interview:dr-petra-hoffmann` 히트 확인). 따라서 인터뷰 지식을 KnowledgeArticle로 노출하면 4개 생성기 모두 기존 경로로 동작. 계획은 채팅 §39-i 참조(승인 대기).
