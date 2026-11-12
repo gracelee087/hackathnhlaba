@@ -1317,3 +1317,9 @@ RAG 병합(§37 작업 1·2), Docker/Render, analyze 어댑터, 3000 인터뷰 �
 
 ### 39-k. 사이드바 순서 변경 (11:38, 사용자 요청)
 - `src/components/navigation/nav-items.ts`: "Wissen vermitteln" 그룹 순서를 AI Interview → **Learning Academy** → AI Content Studio → AI Knowledge Assistant 로(Learning Academy를 Content Studio 위로). tsc 통과, 헤드리스로 렌더 순서 확인.
+
+### 39-l. Podcast·Lernvideo 음성 (11:58, 사용자 "1번" 승인)
+- 원인: 대시보드 PodcastPlayer/VideoPlayer(`src/components/learning/MediaViewers.tsx`)는 소리 없는 데모 UI(타이머로 줄/장면만 넘김). 사용자 요구: AI Interview·생성 영상·Podcast 모두 소리 필수.
+- 조치(대시보드, git 아님): 신규 `src/lib/speech.ts`(Web Speech API: 독일어 음성 선택, 로컬 음성 우선, 문장 단위 발화(Chrome 장문 끊김 회피, 숫자 뒤 마침표는 분리 안 함), onend 미발화 대비 가드 타임아웃, `stopSpeaking()` 세대 카운터로 취소). `MediaViewers.tsx`(.orig 백업): PodcastPlayer는 줄마다 `speak()` 후 다음 줄(Anna voiceIndex 0 pitch 1.1 / Klaus voiceIndex 1 pitch 0.85), VideoPlayer는 장면 나레이션을 읽고 끝나면 다음 장면(진행바는 장면 끝에서 대기), 일시정지/언마운트/콘텐츠 교체 시 취소. speechSynthesis 없는 브라우저는 기존 타이머 동작.
+- 검증(헤드리스, speechSynthesis 스텁으로 발화 기록): Podcast 생성 55 s → 9줄, 2.6 s 동안 7개 발화·두 음성 교대·하이라이트 이동·일시정지 시 cancel. Video 생성 51 s → 장면 1 나레이션 문장별 발화; seed 코스 /learning/m-grundlagen에서 장면 1/2 → 2/2 전환 확인. tsc 통과, 콘솔 오류 0. 실제 음질은 사용자 브라우저의 독일어 음성(Windows Hedda/Katja/Stefan 또는 Google Deutsch)에 달림 — 사용자 귀로 최종 확인 필요.
+- 인터뷰 영상(mp4)과 AI Interview(브라우저 TTS)는 원래 소리 있음(§39-i).
