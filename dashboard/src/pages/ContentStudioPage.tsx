@@ -70,7 +70,7 @@ export default function ContentStudioPage() {
   const [search, setSearch] = useState('')
   const [running, setRunning] = useState(false)
   const [step, setStep] = useState(0)
-  const [resultId, setResultId] = useState<string | null>(null)
+  const [resultId, setResultId] = useState<string | null>(state.contents[0]?.id ?? null)
   const [previewTab, setPreviewTab] = useState('main')
 
   const result: GeneratedContent | undefined = state.contents.find((c) => c.id === resultId)

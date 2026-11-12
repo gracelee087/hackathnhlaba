@@ -1,52 +1,45 @@
-# Session Handoff — 발표일 마무리: Content Studio/Academy 통합 검증, 음성, 심사용 README·GitHub Pages, 서버 복구, 새 인터뷰 영상 연결 (2026-11-12 14:15)
+# Session Handoff — 발표 직전: 서버 24h 감시(keepalive), 스모크 테스트, Content Studio 결과 하드코딩, 발표 대본 (2026-11-12 14:45)
 
-> 아래 "Session Handoff"는 최신 세션 요약. 그 밑의 §1~§39-t는 누적 기록(원문 그대로 보존).
+> 아래 "Session Handoff"는 최신 세션 요약. 그 밑의 §1~§39-v는 누적 기록(원문 그대로 보존).
 
 ## Where it started
-FUTURY Build Days #4(LBS/Helaba "Knowledge Transfer") 발표일. 코드 프리즈 13:00. 사용자(Sohee Lee) 요구: Learning Academy·AI Content Studio에 인터뷰 지식 연결("Neu" 표기), 생성 영상·팟캐스트는 반드시 소리, 심사위원이 URL 하나로 보게 하기(나중에 "코드 제출 불필요"로 정정), 발표 시 로컬 서버가 죽지 않게 하기. 규칙: 계획→승인→실행, 1차 출처 확인, 비밀값은 `.env`에만, 동료 대시보드 수정 시 `.orig` 백업.
+FUTURY Build Days #4(LBS/Helaba "Knowledge Transfer") 발표 직전. 사용자(Sohee Lee) 요구: "서버는 앞으로 24시간 계속 살려줘, 절대 꺼지면 안됨", "잘되는지 스모크 테스트", "AI Content Studio에 결과물이 없다 → 이미 만든 걸 하드코드로", "intro+problem statement+마무리 대본", "서브에이전트 써서 진행". 규칙: 1차 출처·실측, 비밀값은 `.env`에만, 동료 대시보드 수정 시 `.orig` 백업(이미 있으면 보존).
 
 ## Decisions locked + what shipped
-- Content Studio가 인터뷰 기사(`GET /api/learning/articles`, 1인터뷰=1기사, tags ["neu","Interview",…])를 소스로 씀. 퀴즈는 전용 스키마로 정확히 20문항 — `C:\Users\honor\OneDrive\Desktop\expert-knowledge-platform\ekep\backend\app\api\dashboard_content.py`, `dashboard_learning.py` (§39-j).
-- Podcast/Lernvideo 플레이어 브라우저 음성(Web Speech, Anna/Klaus 두 목소리) — `C:\Users\honor\OneDrive\Desktop\helaba-knowledge-intelligence\src\lib\speech.ts`, `src\components\learning\MediaViewers.tsx` (§39-l). 사이드바 순서 Learning Academy → AI Content Studio (§39-k).
-- Workforce 트레이닝 현황 패널: 만들었다가 사용자 결정으로 **제거**, 원복 완료 (§39-m/§39-o).
-- 심사 재현용: 동료 대시보드 소스를 `C:\Users\honor\OneDrive\Desktop\hackathnhlaba\dashboard\`로 복사(원본은 `helaba-knowledge-intelligence`, git 아님 — 원본 수정 시 재복사 필요), 루트 `README.md`(clean-clone Quickstart), `rag-service/requirements.txt`에 pillow·piper-tts 추가, ekep `backend/.env.example` 생성 (§39-n).
-- 공개 정적 데모 https://gracelee087.github.io/hackathnhlaba/ (mock AI + 인터뷰 결과 스냅샷 `dashboard/public/demo/`, 영상 포함; gh-pages 브랜치는 `git add -f`로 직접 푸시해야 mp4가 들어감) (§39-p). 하이브리드 터널·Render·Docker는 하지 않음 (§39-q).
-- 주최 측 제출: 코드 불필요로 확인. 레포 요청 시 https://github.com/gracelee087/hackathnhlaba 와 https://github.com/gracelee087/expert-knowledge-platform.
-- 서버가 Claude 세션 종료로 죽은 원인 확인 → `C:\Users\honor\OneDrive\Desktop\hackathnhlaba\scripts\start_demo.ps1`(독립 PowerShell 창 4개) (§39-s).
-- 새 인터뷰(int_07e170f3a8) 영상이 Academy에 안 보인 원인: TrainingPackage 없음 → 단위 4개 confirm + 패키지 trn_684ea8d6fd 생성 → 모듈 2개, 새 영상 연결 (§39-t). 팟캐스트는 브라우저에서 직접 생성해야 저장됨(서버 저장 없음).
-- ElevenLabs 나레이션: 계획만(키는 `rag-service/.env`에 `ELEVENLABS_API_KEY`로 사용자가 직접), 미착수.
+- 서버 감시: `C:\Users\honor\OneDrive\Desktop\hackathnhlaba\scripts\keepalive.ps1` — 20 s마다 8001/8000/3000/5173 HTTP 체크, 2회 연속 실패 시 재기동. **pwsh 7 전용**, Claude 세션과 분리하려고 WMI(`Invoke-CimMethod Win32_Process Create`)로 숨김 실행(§39-u). 대시보드는 `--host 127.0.0.1` 필수(없으면 ::1만 듣고 무한 재시작).
+- 스모크(실측 14:24~14:40): 4포트 200, Learning 모듈 2개+영상 206, 기사 2개, 헤드리스 대시보드·인터뷰 앱 렌더 OK. 인터뷰 앱은 `localhost:3000`으로 열 것(127.0.0.1은 CORS 거부).
+- Content Studio: 백엔드로 4개 포맷 생성(podcast/quiz 20/praesentation/video, 기사 iv-int_07e170f3a8) → `src/data/seed-contents.ts`로 두 사본(동료 원본 `helaba-knowledge-intelligence`, repo `dashboard/`)에 시드. 초기 상태 + 기존 localStorage에 병합(STATE_VERSION 6 유지), 페이지 열면 첫 결과(팟캐스트) 미리보기 자동 오픈 (§39-v).
+- 발표 대본: `C:\Users\honor\OneDrive\Desktop\hackathnhlaba\docs\pitch_script.md` (영/독, 인트로+문제제기 65~70 s, 마무리 25 s, Q&A 3줄).
+- 이전 결정 유지: 코드 제출 불필요, 공개 정적 데모 https://gracelee087.github.io/hackathnhlaba/ (이번 시드는 미반영), ElevenLabs·Docker·터널 미착수.
 
 ## Key files for next session
-- `C:\Users\honor\OneDrive\Desktop\hackathnhlaba\HANDOFF.md` §39-h~§39-t — 오늘 전 과정과 검증 수치.
-- `C:\Users\honor\OneDrive\Desktop\hackathnhlaba\README.md` — 실행 순서·환경변수 이름·Troubleshooting.
-- `C:\Users\honor\OneDrive\Desktop\hackathnhlaba\scripts\start_demo.ps1` — 서버 4개 독립 실행.
-- `C:\Users\honor\OneDrive\Desktop\expert-knowledge-platform\ekep\backend\app\api\dashboard_learning.py`, `dashboard_content.py` — 대시보드용 Learning/Content API.
-- `C:\Users\honor\OneDrive\Desktop\helaba-knowledge-intelligence\src\services\learning-remote.ts` — 백엔드/정적 스냅샷 로더(`.orig` 백업들은 같은 폴더).
-- Plan file: 없음(계획은 HANDOFF §37~§39에 기록). Memory files touched: 없음.
+- `C:\Users\honor\OneDrive\Desktop\hackathnhlaba\HANDOFF.md` §39-u~§39-v — keepalive 함정 3개, 시드 구현·검증.
+- `C:\Users\honor\OneDrive\Desktop\hackathnhlaba\scripts\keepalive.ps1`, `scripts\start_demo.ps1` — 서버 기동.
+- `C:\Users\honor\OneDrive\Desktop\helaba-knowledge-intelligence\src\data\seed-contents.ts`, `src\context\AppContext.tsx`, `src\pages\ContentStudioPage.tsx` — 시드(repo `dashboard/src`에 동일 사본).
+- `C:\Users\honor\OneDrive\Desktop\hackathnhlaba\docs\pitch_script.md` — 대본.
+- Plan file: 없음. Memory files touched: 없음.
 
 ## Running state
-- Background processes (이 세션): bkdpzy60k = RAG 8001 (`rag-service`, venv `C:\Users\honor\.venvs\helaba-rag`), bz50s8zxw = 인터뷰 백엔드 8000 (`ekep/backend/.venv`), bajxo2s9d = 인터뷰 프런트 3000 (`npm run dev`). 종료: TaskStop <id> 또는 `Get-NetTCPConnection -LocalPort <port> -State Listen | % { Stop-Process -Id $_.OwningProcess -Force }`.
-- 대시보드 5173: 세션 밖에서 떠 있음(PID 5656, `helaba-knowledge-intelligence`, `npm run dev`). 로그: `C:\Users\honor\AppData\Local\Temp\hlb_tmp\*.log`.
-- Dev servers / ports: http://127.0.0.1:5173 (대시보드), :3000 (인터뷰 앱), :8000 (백엔드), :8001 (RAG). 공개: https://gracelee087.github.io/hackathnhlaba/
-- Open worktrees / branches: hackathnhlaba main (0814ed5 이후 이 handoff 커밋), gh-pages(배포본); expert-knowledge-platform main fa28960. 작업 트리 둘 다 clean(ekep `tsconfig.tsbuildinfo` 수정만 무시).
-- 주의: 이 세션이 끝나면 8001/8000/3000이 꺼진다. 발표 전 `scripts/start_demo.ps1`로 전환 권장.
+- Background processes (이 세션): 없음(모두 종료). 서버는 세션 밖 프로세스.
+- keepalive: pwsh 숨김 프로세스, PID는 `C:\Users\honor\AppData\Local\Temp\hlb_keepalive.pid`(14:34 기준 24888). 로그 `C:\Users\honor\AppData\Local\Temp\hlb_keepalive.log`. 종료: `Stop-Process -Id (Get-Content $env:TEMP\hlb_keepalive.pid)` 후 포트별 프로세스 kill. 재시작: HANDOFF §39-u의 WMI 명령 또는 pwsh 터미널에서 `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts\keepalive.ps1`.
+- 서버 창(최소화): "RAG 8001", "Backend 8000", "Frontend 3000", "Dashboard 5173" — 닫혀도 40 s 내 재기동.
+- Dev servers / ports: http://127.0.0.1:5173 (대시보드), http://localhost:3000 (인터뷰 앱), :8000, :8001. 공개: https://gracelee087.github.io/hackathnhlaba/
+- Open worktrees / branches: hackathnhlaba main(이 커밋), gh-pages; expert-knowledge-platform main fa28960(변경 없음).
 
 ## Verification — how to confirm things still work
-- `curl http://127.0.0.1:8001/health` → `"status":"ok"`, `"chunks":300`; `curl http://127.0.0.1:8000/api/health` → `"llm_configured":true`.
-- `curl http://127.0.0.1:5173/api/learning/modules` → 모듈 2개(trn-trn_684ea8d6fd, trn-trn_f110ecd4a8), 각 `videoUrl`은 8001 `/videos/...` → 200.
+- `curl http://127.0.0.1:8001/health`, `:8000/api/health`, `http://localhost:3000/`, `http://127.0.0.1:5173/` → 모두 200.
+- `Get-Content $env:TEMP\hlb_keepalive.log -Tail 5` → 최근 "ok"/"started" 줄, "unhealthy" 반복 없음.
+- 브라우저 http://127.0.0.1:5173/content-studio → "Zuletzt generiert" 4개, 팟캐스트 미리보기 열림(재생 버튼 → 브라우저 음성).
+- http://127.0.0.1:5173/learning → 과정 6(Neu 3), 새 영상 재생.
 - `cd helaba-knowledge-intelligence && npx tsc --noEmit -p .` → exit 0.
-- 헤드리스 스크립트(scratchpad `academy_check.cjs`, `pages_live.cjs`): Academy Neu 배지 3, 새 과정 video readyState 4, 20 Quizfragen, 오류 0; 공개 URL 딥링크 영상 로드.
-- `curl -o /dev/null -w "%{http_code}" https://gracelee087.github.io/hackathnhlaba/demo/videos/training_motion.mp4` → 200.
 
 ## Deferred + open questions
-- Deferred: ElevenLabs 나레이션(tts.py에 REST 경로 + Piper 폴백) — 시간 부족, 키 미입력.
-- Deferred: docker compose 4서비스 번들, Render 등 전체 호스팅, README 기준 clean clone end-to-end 검증(대시보드 `npm ci`+build만 확인).
-- Deferred: "영상 시청 후 퀴즈" 게이팅(사용자에게 미구현 고지).
-- Open: 정적 데모를 계속 쓸지(새 인터뷰 결과 추가 시 `public/demo` 스냅샷 재생성·gh-pages 재배포 필요, §39-p 절차).
-- Open: 대시보드 `.orig` 백업 파일 정리 시점(원본 폴더·repo 복사본에 남아 있음, repo 복사본에는 `*.orig` 제외됨).
+- Deferred: ElevenLabs 나레이션, docker compose, clean-clone end-to-end, 정적 데모(gh-pages)에 시드 반영 재배포.
+- Open: 14:25~14:29 keepalive+서버 창 동시 소멸 원인 미확인(사용자가 창을 닫았는지 확인 필요). 재발 시 §39-u 명령으로 재기동.
+- Open: Content Studio 첫 미리보기 순서(현재 팟캐스트). 바꾸려면 `seed-contents.ts` 배열 순서.
 
 ## Pick up here
-발표 전이면 `scripts/start_demo.ps1`로 서버 4개를 독립 창에서 띄우고 5173 새로고침 → Academy에 과정 2개·영상 소리 확인; 발표 후면 ElevenLabs(키를 `rag-service/.env`에 넣은 뒤 tts.py 수정)부터.
+발표 전이면 4포트 200·`/content-studio` 4개·`/learning` 영상만 눈으로 확인; 문제 시 keepalive 로그 확인 후 §39-u WMI 명령으로 재기동. 발표 후엔 gh-pages 재배포(시드 반영) 또는 ElevenLabs부터.
 
 ---
 
@@ -1374,3 +1367,21 @@ RAG 병합(§37 작업 1·2), Docker/Render, analyze 어댑터, 3000 인터뷰 �
 - 원인: Learning 모듈은 인터뷰별 TrainingPackage에서 생성됨(`dashboard_learning.py` `/learning/modules`). 사용자가 14:00에 만든 영상(`…_cbaa02/training_motion.mp4`)은 인터뷰 int_07e170f3a8 것인데 그 인터뷰에는 패키지가 없었고, 패키지 생성은 전문가 확정 단위가 있어야 가능(409 "Training nur aus expertenbestätigten Wissenseinheiten")한데 단위 4개가 모두 `extracted`였음.
 - 조치(사용자 "수정해"): API로 단위 4개(KU-DD188F, KU-9B6B47, KU-975BB3, KU-EDE6FE) `confirm` → `POST /api/interviews/int_07e170f3a8/training` audience einsteiger(20 s) → 패키지 trn_684ea8d6fd(슬라이드 5, 퀴즈 20). `/api/learning/modules`에 모듈 2개: trn-trn_684ea8d6fd(새 영상 cbaa02) + trn-trn_f110ecd4a8(기존 80e010). 대시보드는 새로고침해야 반영(마운트 시 병합).
 - 데모 절차 메모: 인터뷰 종료 → 리뷰에서 단위 확정 → Schulungspaket 생성 → (영상은 전후 무관) → 대시보드 새로고침.
+
+### 39-u. 발표 직전: 서버 24시간 유지(keepalive) + 스모크 테스트 + 발표 대본 (14:20~14:40)
+- 요구: "서버는 앞으로 24시간 동안 계속 살려줘. 절대로 꺼지면 안됨", "스모크 테스트", "intro+problem statement+마지막 인사 대본".
+- 전원: `powercfg`로 AC/DC 절전·최대절전·모니터 끄기 해제(측정: 이미 적용됨, 14:15 이전 세션).
+- 감시 스크립트 `scripts/keepalive.ps1`: 20 s마다 4개 포트 HTTP 체크, 2회 연속 실패 시 포트 점유 프로세스 kill 후 재기동. 로그 `%TEMP%\hlb_keepalive.log`, 표준출력 `%TEMP%\keepalive_out.txt`, PID `%TEMP%\hlb_keepalive.pid`.
+  - 함정 1: Windows PowerShell 5.1로 실행하면 "keepalive started" 직후 프로세스가 종료됨(원인 미확인). **pwsh 7로 실행해야 함**.
+  - 함정 2: Claude Code 도구에서 `Start-Process`로 띄운 창은 열리지 않음(로그 0줄). `Invoke-CimMethod Win32_Process Create`(WMI)로 띄우면 부모가 WmiPrvSE가 되어 세션과 무관하게 살아남음(확인: 14:24 기동 후 다른 도구 호출을 거쳐도 생존). 예약 작업(schtasks) 등록은 권한 분류기에 막힘(사용자가 직접 하면 가능).
+  - 함정 3: 대시보드를 `npm run dev`만으로 띄우면 Vite가 `localhost`(::1)만 듣고 `127.0.0.1:5173`은 응답 없음 → 헬스체크 실패로 무한 재시작. `-- --host 127.0.0.1 --port 5173` 추가로 해결(14:34).
+  - 14:25~14:29 사이에 keepalive와 서버 창 4개가 한꺼번에 사라진 적 있음(원인 미확인; 사용자가 창을 닫았을 가능성 포함). 이후 keepalive는 `-WindowStyle Hidden`, 서버 창은 `Minimized`로 재기동(14:30, PID는 `%TEMP%\hlb_keepalive.pid`). **서버 창(RAG 8001/Backend 8000/Frontend 3000/Dashboard 5173)을 닫아도 40 s 안에 재기동되지만, 숨김 keepalive 자체를 작업 관리자에서 죽이면 복구 없음.**
+- 스모크(14:24~14:35, 전부 실측): 4포트 200; `/api/learning/modules` 2개(둘 다 8001 영상 206 OK); `/api/learning/articles` 2개; 헤드리스 대시보드 `/`·`/learning` 렌더 OK(과정 6, Neu 3); 인터뷰 앱 3000 렌더 OK. 주의: 인터뷰 앱을 `127.0.0.1:3000`으로 열면 백엔드 CORS 거부(`localhost:3000`으로 열어야 함; 대시보드 iframe은 localhost 사용). `/studio`, `/interview` 경로는 존재하지 않음(실제 라우트는 App.tsx 참조).
+- 발표 대본: `docs/pitch_script.md` (영어+독일어, 인트로·문제제기 65~70 s, 마무리 25 s, Q&A 3줄; 주최측 자료의 표현만 사용, 수치 미확인분은 [placeholder]).
+
+### 39-v. AI Content Studio에 생성 결과 4개 하드코딩 (14:35~14:45, 사용자 "이미 만들어놓은걸 하드코드로 넣어줘")
+- 조사(서브에이전트, 읽기 전용): Content Studio 결과는 브라우저 localStorage(`hki.demo-state`, version 6)에만 저장되고 백엔드/디스크에는 없음(`POST /api/content/generate`는 응답만 반환). 팟캐스트 오디오 파일 없음 — 대사 텍스트를 브라우저 음성으로 읽음. 따라서 "이미 만든 것"은 존재하지 않아 새로 생성함.
+- 생성(14:35~14:38, 백엔드 8000, 최신 기사 iv-int_07e170f3a8 = 인터뷰 int_07e170f3a8): podcast gc-b367c582(대사 9), quiz gc-e1a6ab88(20문항), praesentation gc-ffa6850b(슬라이드 7), video gc-43e8b92c(장면 5). 각 49~63 s. 원본 JSON: scratchpad `gc_*.json`.
+- 구현(서브에이전트, 두 사본 동일): 새 파일 `src/data/seed-contents.ts`(`SEED_CONTENTS`, 4개 그대로); `src/context/AppContext.tsx` 초기 상태 `contents: SEED_CONTENTS` + 기존 localStorage(version 6)에도 id 없는 시드만 병합(STATE_VERSION 유지 → 사용자의 기존 데모 상태 보존); `src/pages/ContentStudioPage.tsx` `resultId` 초기값 = 첫 결과 → 페이지 열자마자 팟캐스트 미리보기가 열림. 기존 `.orig` 백업은 건드리지 않음.
+- 검증: `npx tsc --noEmit -p .` exit 0; 헤드리스 `/content-studio` 첫 로드·재로드 모두 "Zuletzt generiert" 4개(Podcast/Quiz/Präsentation/Lernvideo), 중복 없음, 콘솔 오류 0; 스크린샷 scratchpad `seed_studio_first_load.png` 육안 확인(팟캐스트 플레이어·Anna/Klaus 대사 표시).
+- 순서 바꾸려면 `seed-contents.ts` 배열 순서만 변경. 공개 정적 데모(gh-pages)에는 재빌드·재배포 전까지 반영 안 됨.

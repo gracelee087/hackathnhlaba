@@ -28,6 +28,7 @@ import {
   SEED_MODULES,
   SEED_PROGRESS,
 } from '@/data/mock-data'
+import { SEED_CONTENTS } from '@/data/seed-contents'
 import { buildArticleFromDocument, buildArticleFromInterview, bumpVersion } from '@/lib/knowledge'
 import { applyInterviewReply, createInterviewRecord } from '@/lib/interview'
 import { DEPARTMENT_HEADS, assessPlausibility } from '@/lib/plausibility'
@@ -126,7 +127,7 @@ function createInitialState(): AppState {
     articles: SEED_ARTICLES,
     interviews: [...workforce.interviews, ...SEED_INTERVIEWS],
     modules: SEED_MODULES,
-    contents: [],
+    contents: SEED_CONTENTS,
     progress: SEED_PROGRESS,
     activities: SEED_ACTIVITIES,
     conversations: SEED_CONVERSATIONS,
@@ -147,6 +148,7 @@ function loadState(): AppState {
         // Unterbrochene Verarbeitungen (z. B. durch Reload) sauber kennzeichnen
         return {
           ...parsed,
+          contents: [...(parsed.contents ?? []), ...SEED_CONTENTS.filter((s) => !(parsed.contents ?? []).some((c) => c.id === s.id))],
           documents: parsed.documents.map((d) =>
             d.status === 'uploading' || d.status === 'processing'
               ? { ...d, status: 'error', error: 'Die Verarbeitung wurde unterbrochen. Bitte erneut analysieren.' }
