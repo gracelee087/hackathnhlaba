@@ -1323,3 +1323,18 @@ RAG 병합(§37 작업 1·2), Docker/Render, analyze 어댑터, 3000 인터뷰 �
 - 조치(대시보드, git 아님): 신규 `src/lib/speech.ts`(Web Speech API: 독일어 음성 선택, 로컬 음성 우선, 문장 단위 발화(Chrome 장문 끊김 회피, 숫자 뒤 마침표는 분리 안 함), onend 미발화 대비 가드 타임아웃, `stopSpeaking()` 세대 카운터로 취소). `MediaViewers.tsx`(.orig 백업): PodcastPlayer는 줄마다 `speak()` 후 다음 줄(Anna voiceIndex 0 pitch 1.1 / Klaus voiceIndex 1 pitch 0.85), VideoPlayer는 장면 나레이션을 읽고 끝나면 다음 장면(진행바는 장면 끝에서 대기), 일시정지/언마운트/콘텐츠 교체 시 취소. speechSynthesis 없는 브라우저는 기존 타이머 동작.
 - 검증(헤드리스, speechSynthesis 스텁으로 발화 기록): Podcast 생성 55 s → 9줄, 2.6 s 동안 7개 발화·두 음성 교대·하이라이트 이동·일시정지 시 cancel. Video 생성 51 s → 장면 1 나레이션 문장별 발화; seed 코스 /learning/m-grundlagen에서 장면 1/2 → 2/2 전환 확인. tsc 통과, 콘솔 오류 0. 실제 음질은 사용자 브라우저의 독일어 음성(Windows Hedda/Katja/Stefan 또는 Google Deutsch)에 달림 — 사용자 귀로 최종 확인 필요.
 - 인터뷰 영상(mp4)과 AI Interview(브라우저 TTS)는 원래 소리 있음(§39-i).
+
+### 39-m. Workforce Board 트레이닝 현황 패널 + 대시보드 소스를 저장소에 포함 (12:05)
+- 사용자 요구: Workforce Board 오른쪽에 "전체 N명 중 완료/미완료" 표시, 타일 클릭 시 명단 즉시 표시. 데이터는 "지금 있는 정보로 fake" → 최종 "0명이 되도 상관없어, 그냥 계획대로".
+- 조치(대시보드, subagent "panel"): 신규 `src/lib/training-status.ts`(`trainingStatusOf`: 필수 모듈 = `targetRoles`에 jobRole 포함된 모듈; knowledgeCoverage ≥85 → abgeschlossen 100 %, 45–84 → in_bearbeitung(=coverage), <45 → nicht_begonnen 0 % — **데모 휴리스틱**, 실제 학습 진도 아님, 코드 주석에 명시), 신규 `src/components/workforce/TrainingStatusPanel.tsx`(요약 "N Mitarbeitende · X abgeschlossen · Y offen" + 진행바, 타일 3개 토글 → 명단(이니셜·이름·직함·부서·%·필수 모듈 수), 이름 클릭 → 기존 상세 드로어), `src/pages/WorkforcePage.tsx`(.orig 백업; import 1줄 + 보드를 `xl:grid-cols-[minmax(0,1fr)_320px]`로 감싸고 패널 배치, `employees={visible}`라 검색/부서 필터 반영).
+- 검증: tsc exit 0. 헤드리스 /workforce(기본 사용자): "24 Mitarbeitende · 5 abgeschlossen · 19 offen", 타일 5/10/9(합 24), 완료 타일 클릭 → 5행(첫 행 Elke Neumann 100 % 2 Module), 재클릭 → 숨김, In Bearbeitung → 10행, 이름 클릭 → 상세 다이얼로그 열림, 콘솔 오류 0. 스크린샷 scratchpad `workforce_panel.png`.
+- 저장소 포함: 사용자 요구 "심사위원이 내 URL로 자기 랩톱에서 똑같이 구현" → 동료 대시보드(git 아님)를 `hackathnhlaba/dashboard/`로 복사(robocopy; node_modules·dist·.vite·`.env`·`*.orig`·`*.log` 제외, 760 KB). `dashboard/.env.example`은 데모 값(VITE_AI_MODE=backend, timeout 120000)으로 맞춤. 비밀값 없음 확인(grep sk-/AIza 0건). 원본 폴더는 그대로(향후 수정 시 다시 복사 필요).
+
+### 39-n. 심사위원 재현(clean clone) 점검 + 루트 README (12:10, subagent "repro")
+- 사용자 요구: "심사위원이 내 URL로 자기 랩톱에서 똑같이 구현할 수 있어야 함". 두 저장소(hackathnhlaba: rag-service + dashboard, expert-knowledge-platform: ekep backend/frontend)를 클론해 실행하는 절차를 `README.md`(루트, 영어)로 작성: 아키텍처/포트, 사전 요구(Python 3.11/3.12, Node 20+, ffmpeg, Anthropic·OpenAI 키), 순서별 Quickstart(8001 → 8000 → 3000 → 5173, PowerShell/bash), 환경변수 이름 표(값 없음), 데모 URL, Troubleshooting.
+- 발견한 차단 요인과 조치:
+  1. `rag-service/requirements.txt`에 `pillow`·`piper-tts` 누락(서버 시작 시 PIL import → 실패). **추가함**(venv 실제 버전 pillow 13.0.0, piper-tts 1.8.0).
+  2. Piper 음성 파일 `rag-service/data/voices/` gitignored → README에 huggingface 다운로드 URL 4개(HTTP 200 확인) 기재. 영상 생성에만 필요.
+  3. Chroma 스토어(`rag-service/data/`) gitignored → README: 서버 기동 후 `python scripts/load_demo.py`(28문서 + 인터뷰 fact 6건 ingest). HANDOFF §39의 `load_parallel.py`는 저장소에 없음(미추적) — README는 load_demo.py 사용.
+  4. ffmpeg PATH 필요(video만). 5. `app/frames.py` 폰트 `C:\Windows\Fonts` 하드코딩, 타 OS는 PIL 기본 폰트로 폴백(치명 아님). 6. motion 스타일은 Node + hyperframes 필요(기본 still은 불필요). 7. ekep backend `.env.example` 없었음 → **생성**(플레이스홀더만). 8. ekep은 OpenAI gpt-4o 기본 → 심사위원 OpenAI 키 필요.
+- 확인 못 함: 실제 clean clone end-to-end 실행(시간 부족). load_demo 소요 시간 미측정.
