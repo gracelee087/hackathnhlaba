@@ -1339,3 +1339,6 @@ RAG 병합(§37 작업 1·2), Docker/Render, analyze 어댑터, 3000 인터뷰 �
   4. ffmpeg PATH 필요(video만). 5. `app/frames.py` 폰트 `C:\Windows\Fonts` 하드코딩, 타 OS는 PIL 기본 폰트로 폴백(치명 아님). 6. motion 스타일은 Node + hyperframes 필요(기본 still은 불필요). 7. ekep backend `.env.example` 없었음 → **생성**(플레이스홀더만). 8. ekep은 OpenAI gpt-4o 기본 → 심사위원 OpenAI 키 필요.
 - 확인 못 함: 실제 clean clone end-to-end 실행(시간 부족). load_demo 소요 시간 미측정.
 - 추가 검증(12:16): 저장소의 `dashboard/` 복사본에서 `npm ci` + `npx vite build` → exit 0, built in 12.5 s(청크 크기 경고만). 즉 심사위원이 클론 후 `npm install && npm run dev`로 대시보드 실행 가능. `dashboard/node_modules`·`dist`는 gitignore로 제외됨(git status clean).
+
+### 39-o. Workforce 트레이닝 현황 패널 제거 (12:20, 사용자 "안하기로 했어, 지워줘")
+- §39-m의 패널을 되돌림: `src/pages/WorkforcePage.tsx`를 `.orig`에서 복원(백업 파일 제거), `src/components/workforce/TrainingStatusPanel.tsx`·`src/lib/training-status.ts` 삭제. 원본 폴더(helaba-knowledge-intelligence)와 저장소 `dashboard/` 복사본 모두 적용, 두 파일 동일 확인. tsc exit 0.

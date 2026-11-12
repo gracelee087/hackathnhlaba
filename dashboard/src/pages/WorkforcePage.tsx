@@ -11,7 +11,6 @@ import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/components/ui/toast'
 import { EmployeeCard, monthsUntil } from '@/components/workforce/EmployeeCard'
 import { TransferPipeline } from '@/components/workforce/TransferPipeline'
-import { TrainingStatusPanel } from '@/components/workforce/TrainingStatusPanel'
 import { useApp } from '@/context/AppContext'
 import { DEPARTMENTS } from '@/data/mock-data'
 import { BOARD_STATUS_ORDER, EMPLOYEE_STATUS_META, EMPLOYEE_STATUS_ORDER, ROLE_LABELS } from '@/lib/permissions'
@@ -159,8 +158,6 @@ export default function WorkforcePage() {
         </div>
       </Card>
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px] items-start">
-      <div className="min-w-0">
       {visible.length === 0 ? (
         <Card>
           <EmptyState icon={Users} title="Keine Mitarbeitenden gefunden" description="Passen Sie Suche oder Abteilung an." />
@@ -232,9 +229,6 @@ export default function WorkforcePage() {
           })}
         </div>
       )}
-      </div>
-      <TrainingStatusPanel employees={visible} modules={state.modules} onSelect={setDetailId} />
-      </div>
 
       <Dialog
         open={!!detail}
