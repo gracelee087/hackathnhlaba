@@ -1307,7 +1307,7 @@ RAG 병합(§37 작업 1·2), Docker/Render, analyze 어댑터, 3000 인터뷰 �
 - 사용자: /learning/trn-trn_f110ecd4a8 영상에 소리가 안 남. 실측: mp4에 AAC 스테레오 트랙(48 kHz, 0초부터, mean −19 dB, max −3 dB), 8001은 206/Range 정상, 페이지 `<video>`는 muted=false·volume 1이고 헤드리스 Chrome이 오디오 바이트를 디코딩(webkitAudioDecodedByteCount>0). 파일·페이지 쪽 결함은 못 찾음 → 사용자 브라우저/장치(탭 음소거, 사이트 소리 설정, 볼륨 믹서) 가능성. 안전장치로 `src/pages/CourseDetailPage.tsx` `<video onPlay>`에서 muted=false, volume 0이면 1로 설정(HMR 11:05, tsc 통과). 우리 앱 review 페이지(`<video controls>`)는 손대지 않음.
 - Content Studio 조사(원문): 소스 = `state.articles`(KnowledgeArticle) 체크리스트 → `POST /api/content/generate`(articles 전체 전송) → 우리 백엔드 `dashboard_content.py`가 RAG `/export?topic=<article titles>&outline=true` → outline → slides/scenes/podcast/quiz(4–6). RAG 스토어에는 int_4981f54b92의 confirmed 유닛 2개가 approved fact로 이미 들어 있음(`/facts?status=approved` 2건; `/export?topic=Firmenkundenkredite…`에서 `interview:dr-petra-hoffmann` 히트 확인). 따라서 인터뷰 지식을 KnowledgeArticle로 노출하면 4개 생성기 모두 기존 경로로 동작. 계획은 채팅 §39-i 참조(승인 대기).
 
-### 39-j. AI Content Studio 연동 결과 (11:32, 실측)
+### 39-j. AI Content Studio 연동 결과 (11:20, 실측)
 - 사용자 승인("진행") 후 agent-learn-be(백엔드)/agent-learn-fe(프론트) 병렬, 이후 내가 재시작·실측.
 - 백엔드(`68258ee` 이후 커밋, push 완료): `dashboard_learning.py`에 `GET /api/learning/articles`(?interviewId=) 추가 — confirmed 유닛이 있는 인터뷰당 KnowledgeArticle 1건(id `iv-<interview_id>`, origin interview, verifiziert, tags ["neu","Interview",+유닛 제목], content = 유닛별 문단, facts = 최신 TrainingPackage 퀴즈 20개, category/department/targetRoles 키워드 매핑, Kreditanalyse → Immobilienfinanzierung). `dashboard_content.py`: format=quiz일 때 전용 스키마 `_GenerateQuizLLM`(필드 설명 "GENAU 20") + 시스템 프롬프트 치환 + user 앞머리 ANZAHL 20 + `[:20]`, 재시도 조건 ≥10. 다른 형식은 4–6 그대로. 주의: 처음엔 user 텍스트 끝에 "genau 20"만 붙였더니 gpt-4o가 5–6개만 반환 → 스키마 설명에 넣어야 20개 나옴.
 - 대시보드(git 아님, 신규 `.orig` 3개): `types/index.ts`(KnowledgeArticle.interviewId?, GeneratedContent.tags?), `services/learning-remote.ts`(fetchRemoteArticles), `context/AppContext.tsx`(마운트 시 modules+articles 머지, saveContent가 tags ["neu"] 부여), `pages/ContentStudioPage.tsx`(1단계 목록·결과 헤더·Zuletzt generiert에 Neu 배지), `components/knowledge/KnowledgeComponents.tsx` + `pages/ArticleDetailPage.tsx`(Neu 배지). tsc 통과.
@@ -1315,10 +1315,10 @@ RAG 병합(§37 작업 1·2), Docker/Render, analyze 어댑터, 3000 인터뷰 �
 - 함정: Content Studio 생성은 기사 제목을 주제로 RAG /export를 돌리므로 RAG 8001이 꺼져 있으면 기사 본문만으로 폴백(품질 저하). 인터뷰 기사는 확인된 유닛(Review "Bestätigen")이 있는 인터뷰만 노출.
 - 실행 상태: RAG 8001 bg b7i3glcy8 / ekep 백엔드 8000 **bg b60cphs4p**(ekep_backend16.log) / ekep 프론트 3000 bg bupkp25g3 / 동료 5173 detached.
 
-### 39-k. 사이드바 순서 변경 (11:38, 사용자 요청)
+### 39-k. 사이드바 순서 변경 (11:25, 사용자 요청)
 - `src/components/navigation/nav-items.ts`: "Wissen vermitteln" 그룹 순서를 AI Interview → **Learning Academy** → AI Content Studio → AI Knowledge Assistant 로(Learning Academy를 Content Studio 위로). tsc 통과, 헤드리스로 렌더 순서 확인.
 
-### 39-l. Podcast·Lernvideo 음성 (11:58, 사용자 "1번" 승인)
+### 39-l. Podcast·Lernvideo 음성 (11:36, 사용자 "1번" 승인)
 - 원인: 대시보드 PodcastPlayer/VideoPlayer(`src/components/learning/MediaViewers.tsx`)는 소리 없는 데모 UI(타이머로 줄/장면만 넘김). 사용자 요구: AI Interview·생성 영상·Podcast 모두 소리 필수.
 - 조치(대시보드, git 아님): 신규 `src/lib/speech.ts`(Web Speech API: 독일어 음성 선택, 로컬 음성 우선, 문장 단위 발화(Chrome 장문 끊김 회피, 숫자 뒤 마침표는 분리 안 함), onend 미발화 대비 가드 타임아웃, `stopSpeaking()` 세대 카운터로 취소). `MediaViewers.tsx`(.orig 백업): PodcastPlayer는 줄마다 `speak()` 후 다음 줄(Anna voiceIndex 0 pitch 1.1 / Klaus voiceIndex 1 pitch 0.85), VideoPlayer는 장면 나레이션을 읽고 끝나면 다음 장면(진행바는 장면 끝에서 대기), 일시정지/언마운트/콘텐츠 교체 시 취소. speechSynthesis 없는 브라우저는 기존 타이머 동작.
 - 검증(헤드리스, speechSynthesis 스텁으로 발화 기록): Podcast 생성 55 s → 9줄, 2.6 s 동안 7개 발화·두 음성 교대·하이라이트 이동·일시정지 시 cancel. Video 생성 51 s → 장면 1 나레이션 문장별 발화; seed 코스 /learning/m-grundlagen에서 장면 1/2 → 2/2 전환 확인. tsc 통과, 콘솔 오류 0. 실제 음질은 사용자 브라우저의 독일어 음성(Windows Hedda/Katja/Stefan 또는 Google Deutsch)에 달림 — 사용자 귀로 최종 확인 필요.
