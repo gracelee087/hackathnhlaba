@@ -1,52 +1,52 @@
-# Session Handoff — 모션그래픽 교육영상(HyperFrames) 구현·승인 → 동료 대시보드 로컬 기동 → 병합/배포 계획(§37, 미착수, 내일 재개) (2026-11-12 00:40)
+# Session Handoff — 발표일 마무리: Content Studio/Academy 통합 검증, 음성, 심사용 README·GitHub Pages, 서버 복구, 새 인터뷰 영상 연결 (2026-11-12 14:15)
 
-> 아래 "Session Handoff"는 최신 세션 요약. 그 밑의 §1~§37은 누적 기록(원문 그대로 보존).
+> 아래 "Session Handoff"는 최신 세션 요약. 그 밑의 §1~§39-t는 누적 기록(원문 그대로 보존).
 
 ## Where it started
-FUTURY Build Days #4 (LBS/Helaba "Knowledge Transfer"), 코드 프리즈 **2026-11-12 13:00**. 이 세션: Git 저장소 2개 공개·푸시 → 교육영상을 motion-graphics explainer 스타일로 재구현(HyperFrames) → 사용자 품질 승인("앞으로도 이런 퀄리티로") → 1:20 빨간 밑줄(취소선) 수정 → 동료 프런트(5173) 로컬 기동 → RAG+앱 백엔드 병합·동료 대시보드 연결·배포(Render/Docker) 계획과 심사위원 관점 평가. 사용자 마지막 지시: **"일단 병합이던 뭐든 하지 말고", "내일 다시 하자"** → 코드 미착수.
+FUTURY Build Days #4(LBS/Helaba "Knowledge Transfer") 발표일. 코드 프리즈 13:00. 사용자(Sohee Lee) 요구: Learning Academy·AI Content Studio에 인터뷰 지식 연결("Neu" 표기), 생성 영상·팟캐스트는 반드시 소리, 심사위원이 URL 하나로 보게 하기(나중에 "코드 제출 불필요"로 정정), 발표 시 로컬 서버가 죽지 않게 하기. 규칙: 계획→승인→실행, 1차 출처 확인, 비밀값은 `.env`에만, 동료 대시보드 수정 시 `.orig` 백업.
 
 ## Decisions locked + what shipped
-- 교육영상 `style=motion` — `...\hackathnhlaba\rag-service\app\motion.py`(신규, HyperFrames 0.7.54 프로젝트 생성+렌더), `video.py`(style 분기, `_concat`), `main.py`(`/export/video?style=still|motion`, 기본 still). 앱 쪽 `...\ekep\backend\app\services\rag_client.py`(style="motion", TIMEOUT 900 s), `knowledge_routes.py`, 검토 페이지 스피너 문구. 측정: 단독 렌더 224 s, 검토화면 경유 e2e 314 s(HTTP 200). §36.
-- 사용자 승인: 모션 영상 품질을 기준선으로 유지. 취소선은 `span.old` 배경 그라디언트(줄별)로 수정, 80.5 s 스냅샷 확인. 데스크톱 `training_motion_demo.mp4`.
-- 동료 프런트 "HELABA Knowledge Intelligence"(Vite+React, port 5173, mock 모드) — `C:\Users\honor\OneDrive\Desktop\helaba-knowledge-intelligence\`(git 아님). 계약 `API.md`: `/api/health`, `/api/documents/analyze`, `/api/interviews/reply`, `/api/content/generate`, `/api/assistant/ask`. §35.
-- §37 계획(승인 대기, **미착수**): RAG `app/`를 앱 백엔드에 `/rag`로 마운트 + `POST /api/interviews/reply` 어댑터(LLM 다음 질문 + RAG verdict→plausibility 0~100, <60이면 동료 화면이 Vier-Augen-Prüfung 생성). §37-b Render/Docker 검토, §37-c 심사위원 관점(탭 하나 데모가 핵심, 호스팅 무관), §37-d 원리 설명.
-- Git — 두 저장소 Public, 마지막 푸시 hackathnhlaba f62ccf4 / expert-knowledge-platform 52f8418. **이후 HANDOFF §37-c/§37-d 추가분은 미커밋.**
-- Notion 세션 로그 2건(23:15, 00:40).
+- Content Studio가 인터뷰 기사(`GET /api/learning/articles`, 1인터뷰=1기사, tags ["neu","Interview",…])를 소스로 씀. 퀴즈는 전용 스키마로 정확히 20문항 — `C:\Users\honor\OneDrive\Desktop\expert-knowledge-platform\ekep\backend\app\api\dashboard_content.py`, `dashboard_learning.py` (§39-j).
+- Podcast/Lernvideo 플레이어 브라우저 음성(Web Speech, Anna/Klaus 두 목소리) — `C:\Users\honor\OneDrive\Desktop\helaba-knowledge-intelligence\src\lib\speech.ts`, `src\components\learning\MediaViewers.tsx` (§39-l). 사이드바 순서 Learning Academy → AI Content Studio (§39-k).
+- Workforce 트레이닝 현황 패널: 만들었다가 사용자 결정으로 **제거**, 원복 완료 (§39-m/§39-o).
+- 심사 재현용: 동료 대시보드 소스를 `C:\Users\honor\OneDrive\Desktop\hackathnhlaba\dashboard\`로 복사(원본은 `helaba-knowledge-intelligence`, git 아님 — 원본 수정 시 재복사 필요), 루트 `README.md`(clean-clone Quickstart), `rag-service/requirements.txt`에 pillow·piper-tts 추가, ekep `backend/.env.example` 생성 (§39-n).
+- 공개 정적 데모 https://gracelee087.github.io/hackathnhlaba/ (mock AI + 인터뷰 결과 스냅샷 `dashboard/public/demo/`, 영상 포함; gh-pages 브랜치는 `git add -f`로 직접 푸시해야 mp4가 들어감) (§39-p). 하이브리드 터널·Render·Docker는 하지 않음 (§39-q).
+- 주최 측 제출: 코드 불필요로 확인. 레포 요청 시 https://github.com/gracelee087/hackathnhlaba 와 https://github.com/gracelee087/expert-knowledge-platform.
+- 서버가 Claude 세션 종료로 죽은 원인 확인 → `C:\Users\honor\OneDrive\Desktop\hackathnhlaba\scripts\start_demo.ps1`(독립 PowerShell 창 4개) (§39-s).
+- 새 인터뷰(int_07e170f3a8) 영상이 Academy에 안 보인 원인: TrainingPackage 없음 → 단위 4개 confirm + 패키지 trn_684ea8d6fd 생성 → 모듈 2개, 새 영상 연결 (§39-t). 팟캐스트는 브라우저에서 직접 생성해야 저장됨(서버 저장 없음).
+- ElevenLabs 나레이션: 계획만(키는 `rag-service/.env`에 `ELEVENLABS_API_KEY`로 사용자가 직접), 미착수.
 
 ## Key files for next session
-- `C:\Users\honor\OneDrive\Desktop\hackathnhlaba\HANDOFF.md` — §35~§37-d가 이 세션 후반 전부. §37부터 읽을 것.
-- `C:\Users\honor\OneDrive\Desktop\hackathnhlaba\rag-service\app\motion.py` — 모션 영상 생성기(장면 빌더·`write_project`·`render`·`build`).
-- `C:\Users\honor\OneDrive\Desktop\helaba-knowledge-intelligence\API.md` — 동료 프런트 계약(camelCase, reply 필수 필드 2개).
-- `C:\Users\honor\OneDrive\Desktop\expert-knowledge-platform\ekep\backend\app\api\knowledge_routes.py` — publish/video 라우트(style 파라미터).
-- Plan file: `C:\Users\honor\OneDrive\Desktop\hackathnhlaba\plan.md`(초기); 이번 계획은 HANDOFF §37.
-- Memory files touched: none
+- `C:\Users\honor\OneDrive\Desktop\hackathnhlaba\HANDOFF.md` §39-h~§39-t — 오늘 전 과정과 검증 수치.
+- `C:\Users\honor\OneDrive\Desktop\hackathnhlaba\README.md` — 실행 순서·환경변수 이름·Troubleshooting.
+- `C:\Users\honor\OneDrive\Desktop\hackathnhlaba\scripts\start_demo.ps1` — 서버 4개 독립 실행.
+- `C:\Users\honor\OneDrive\Desktop\expert-knowledge-platform\ekep\backend\app\api\dashboard_learning.py`, `dashboard_content.py` — 대시보드용 Learning/Content API.
+- `C:\Users\honor\OneDrive\Desktop\helaba-knowledge-intelligence\src\services\learning-remote.ts` — 백엔드/정적 스냅샷 로더(`.orig` 백업들은 같은 폴더).
+- Plan file: 없음(계획은 HANDOFF §37~§39에 기록). Memory files touched: 없음.
 
 ## Running state
-- Background processes: **none** — 2026-11-12 00:45 사용자 지시로 4개 모두 TaskStop. (기록용 ID:)
-  - `bz8ufja32` — RAG uvicorn 8001 (`...\hackathnhlaba\rag-service`, venv `C:\Users\honor\.venvs\helaba-rag`), 로그 `C:\Users\honor\AppData\Local\Temp\hlb_tmp\server_8001x.log`. 종료: TaskStop bz8ufja32
-  - `bep4hx12f` — 앱 백엔드 uvicorn 8000 (`...\ekep\backend\.venv`), 로그 `...\hlb_tmp\ekep_backend5.log`. 종료: TaskStop bep4hx12f
-  - `bhkdjxr5b` — 앱 프런트 `npm run dev` 3000. 종료: TaskStop bhkdjxr5b
-  - `byiizp521` — 동료 프런트 `npm run dev -- --host 127.0.0.1 --port 5173`, 로그 `...\hlb_tmp\helaba_fe.log`. 종료: TaskStop byiizp521
-- Dev servers / ports: none (모두 종료됨)
-- 다시 띄우기: `rag-service`에서 `python -m uvicorn app.main:app --port 8001`; `ekep/backend`에서 `.venv/Scripts/python -m uvicorn app.main:app --port 8000`; `ekep/frontend`에서 `npm run dev`; `helaba-knowledge-intelligence`에서 `npm run dev -- --port 5173`.
-- Open worktrees / branches: 두 저장소 모두 `main`, 워크트리 없음
+- Background processes (이 세션): bkdpzy60k = RAG 8001 (`rag-service`, venv `C:\Users\honor\.venvs\helaba-rag`), bz50s8zxw = 인터뷰 백엔드 8000 (`ekep/backend/.venv`), bajxo2s9d = 인터뷰 프런트 3000 (`npm run dev`). 종료: TaskStop <id> 또는 `Get-NetTCPConnection -LocalPort <port> -State Listen | % { Stop-Process -Id $_.OwningProcess -Force }`.
+- 대시보드 5173: 세션 밖에서 떠 있음(PID 5656, `helaba-knowledge-intelligence`, `npm run dev`). 로그: `C:\Users\honor\AppData\Local\Temp\hlb_tmp\*.log`.
+- Dev servers / ports: http://127.0.0.1:5173 (대시보드), :3000 (인터뷰 앱), :8000 (백엔드), :8001 (RAG). 공개: https://gracelee087.github.io/hackathnhlaba/
+- Open worktrees / branches: hackathnhlaba main (0814ed5 이후 이 handoff 커밋), gh-pages(배포본); expert-knowledge-platform main fa28960. 작업 트리 둘 다 clean(ekep `tsconfig.tsbuildinfo` 수정만 무시).
+- 주의: 이 세션이 끝나면 8001/8000/3000이 꺼진다. 발표 전 `scripts/start_demo.ps1`로 전환 권장.
 
 ## Verification — how to confirm things still work
-- `curl -s http://localhost:8001/health` — 200, embedding backend openai
-- `curl -s "http://localhost:8001/export/video?topic=...&style=motion"` 대신 검토화면 버튼 사용(≈5분, mp4 200)
-- `python -m app.motion data/videos/<job> --no-render` — HyperFrames 프로젝트만 생성, `npx hyperframes check --json` 0 errors
-- 브라우저 http://127.0.0.1:5173/expert-knowledge — 동료 화면 렌더(mock)
-- 각 폴더 `git status -sb` — hackathnhlaba는 HANDOFF.md 수정 1건(미커밋)
+- `curl http://127.0.0.1:8001/health` → `"status":"ok"`, `"chunks":300`; `curl http://127.0.0.1:8000/api/health` → `"llm_configured":true`.
+- `curl http://127.0.0.1:5173/api/learning/modules` → 모듈 2개(trn-trn_684ea8d6fd, trn-trn_f110ecd4a8), 각 `videoUrl`은 8001 `/videos/...` → 200.
+- `cd helaba-knowledge-intelligence && npx tsc --noEmit -p .` → exit 0.
+- 헤드리스 스크립트(scratchpad `academy_check.cjs`, `pages_live.cjs`): Academy Neu 배지 3, 새 과정 video readyState 4, 20 Quizfragen, 오류 0; 공개 URL 딥링크 영상 로드.
+- `curl -o /dev/null -w "%{http_code}" https://gracelee087.github.io/hackathnhlaba/demo/videos/training_motion.mp4` → 200.
 
 ## Deferred + open questions
-- Deferred: §37 병합·reply 어댑터·Docker·Render — 사용자 지시로 보류("내일 다시 하자").
-- Deferred: Delta Engine 나머지, reconcile 비결정성, `.env`의 HIP_API_KEY 줄 삭제(이전 세션 항목 유지).
-- Open: §37 결정 3가지 — 병합 진행 여부 / 어댑터 범위(reply만 vs 4개) / Docker 포함 여부. 배포는 노트북+ngrok 권장.
-- Open: Public 저장소 문서의 Helaba/LBS 이름·로컬 경로 노출 — 사용자 판단.
-- Open: 사용자 질문 "서버 4개나 왜 필요해?" — 답: 우리 앱은 8001+8000+3000 세 개, 5173은 동료 것(독립). 병합하면 백엔드 1개로 줄어듦.
+- Deferred: ElevenLabs 나레이션(tts.py에 REST 경로 + Piper 폴백) — 시간 부족, 키 미입력.
+- Deferred: docker compose 4서비스 번들, Render 등 전체 호스팅, README 기준 clean clone end-to-end 검증(대시보드 `npm ci`+build만 확인).
+- Deferred: "영상 시청 후 퀴즈" 게이팅(사용자에게 미구현 고지).
+- Open: 정적 데모를 계속 쓸지(새 인터뷰 결과 추가 시 `public/demo` 스냅샷 재생성·gh-pages 재배포 필요, §39-p 절차).
+- Open: 대시보드 `.orig` 백업 파일 정리 시점(원본 폴더·repo 복사본에 남아 있음, repo 복사본에는 `*.orig` 제외됨).
 
 ## Pick up here
-아래 '다시 띄우기' 명령으로 서버를 올린 뒤 사용자의 §37 결정을 받는다. 승인 전에는 코드를 건드리지 않는다. HANDOFF §37-c/§37-d는 미커밋이므로 사용자가 "커밋" 하면 hackathnhlaba에서 `git add HANDOFF.md && git commit && git push`.
+발표 전이면 `scripts/start_demo.ps1`로 서버 4개를 독립 창에서 띄우고 5173 새로고침 → Academy에 과정 2개·영상 소리 확인; 발표 후면 ElevenLabs(키를 `rag-service/.env`에 넣은 뒤 tts.py 수정)부터.
 
 ---
 
