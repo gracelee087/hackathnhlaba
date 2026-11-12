@@ -1294,3 +1294,11 @@ RAG 병합(§37 작업 1·2), Docker/Render, analyze 어댑터, 3000 인터뷰 �
 - POST /api/interviews/int_4981f54b92/knowledge-base/video?style=motion → 200, 318 s, 107.4 s 영상, `http://localhost:8001/videos/wissenssicherung-firmenkundenkredite-mit_80e010/training_motion.mp4` (10.6 MB, 206 서빙 확인). 발표용으로는 미리 렌더된 이 영상을 사용.
 - 사용자 요청: 인터뷰 후 생성된 영상+퀴즈를 대시보드 **Learning Academy**에 기존 콘텐츠 형식으로 노출, 이후 생성물에 모두 "neu" 태그.
 - 설계: 우리 백엔드 `GET /api/learning/modules`(읽기 전용, TrainingPackage + audit_log의 training.video_generated → 대시보드 LearningModule JSON: 1 chapter type video, slides, quiz 20, passingScore 70, tags ["neu"], videoUrl, interviewId) ← agent-learn-be. 대시보드: types 선택 필드(tags, videoUrl, interviewId), `services/learning-remote.ts`, AppContext 마운트 시 fetch+merge(원격 우선, id 중복 제거), CourseCard "Neu" 배지, CourseDetailPage 실제 mp4 `<video>`, content.ts toModule tags ['neu'] ← agent-learn-fe. 각 동료 파일 `.orig` 백업.
+
+### 39-h. Learning Academy 연동 결과 (10:56, 실측)
+- 백엔드 `GET /api/learning/modules` 실측(프록시 경유): 모듈 1개 `trn-trn_f110ecd4a8` "Wissenssicherung: Firmenkundenkredite / Mittelstand", tags ['neu'], quiz 20, videoUrl = training_motion.mp4(8001). 커밋 expert-knowledge-platform `68258ee`(push 완료): `backend/app/api/dashboard_learning.py` 신규 + `main.py` 라우터.
+- 동료 대시보드(git 아님, 각 파일 `.orig` 백업): `src/types/index.ts`(+tags?, videoUrl?, interviewId?), `src/services/learning-remote.ts` 신규(VITE_AI_MODE=backend일 때만 fetch, 10 s 타임아웃, 실패 시 []), `src/context/AppContext.tsx`(마운트 시 원격 모듈 머지, 원격 우선·id 중복 제거), `src/lib/content.ts`(Content Studio 생성 모듈도 tags ['neu']), `src/components/learning/CourseCard.tsx` + `src/pages/CourseDetailPage.tsx`("Neu" 배지, videoUrl 있으면 실제 `<video>` 아니면 기존 씬 플레이어). tsc 통과.
+- 헤드리스 실측: /learning 에 모듈 제목 표시 + Neu 배지, 카드 10개(seed 9 + 원격 1). /learning/trn-trn_f110ecd4a8: h1 OK, `<video src=…training_motion.mp4>`, 배지 Neu, "Anfänger · Leicht · 35 Min. · KI-generiert", Quiz 탭 → "Frage 1 von 20". 콘솔/페이지 오류 0.
+- 함정: 원격 모듈은 localStorage `hki.demo-state`에 저장되지 않고 매 로드마다 fetch → 백엔드 8000이 꺼져 있으면 Academy에 seed만 보임(오류 없음). 영상은 8001 정적 서빙이므로 8001도 떠 있어야 재생됨.
+- 미구현(사용자 안내됨): "영상 시청 완료 후에만 퀴즈" 게이팅.
+- 실행 상태: RAG 8001 bg b7i3glcy8 / ekep 백엔드 8000 bg b1qoz1vxh(ekep_backend14.log) / ekep 프론트 3000 bg bupkp25g3 / 동료 5173 detached(helaba_fe5.log).
