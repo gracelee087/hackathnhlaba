@@ -1,4 +1,4 @@
-# Session Handoff — 포트폴리오 레포 `expert-knowledge-transfer` 완성·private 푸시·클린 클론 검증 (2026-11-13 01:00)
+# Session Handoff — 포트폴리오 레포 `expert-knowledge-transfer` 완성·private 푸시·클린 클론 검증·로컬 폴더 삭제 (2026-11-13 02:00)
 
 > 아래 "Session Handoff"는 최신 세션 요약. 그 밑의 §1~§40-i는 누적 기록(원문 그대로 보존). 이번 세션의 단계별 타임라인은 §40-i(20:30~00:30).
 
@@ -16,6 +16,7 @@
 - **데모 영상 제작 방식**: puppeteer 스크린캐스트 10샷 + Piper en_US-lessac 내레이션 + **ffmpeg 조립**(HyperFrames 구성은 check 통과했지만 렌더가 ENOSPC로 실패 → 폴백). 샷리스트 `docs/demo-video-shotlist.md`에 실제 방식 반영.
 - **감사 정리**(repo-audit → repo-cleanup): 독일어·은행 잔재 제거(스크립트 2개 영어화, ingest_dashboard_articles.py·make_demo_pdfs.py·docs/reference/ 삭제), docs/06·05·01 정정, 프런트 주석 32줄 영어화, 활동 라벨 "Knowledge base updated", gitignore(+*.tsbuildinfo, tasks/), dockerignore(+.env), 앱 제목 "Expert Knowledge Transfer".
 - 하지 않은 것(결정): GraphRAG 등 확장 없음, 은행 시절 docs/reference 삭제(원본은 해커톤 레포), ElevenLabs·Docker build 검증·gh-pages 재배포 미착수.
+- **로컬 폴더 삭제(02:00, 사용자 지시 "깃 커밋·푸시하고 내 컴퓨터에서는 지워줘")**: `C:\Users\honor\OneDrive\Desktop\expert-knowledge-transfer` 삭제 완료. 삭제 직전 실측 dirty=0, HEAD=origin/main=bb8ac8b. 같이 사라진 로컬 전용 파일: backend/.env(키는 해커톤 폴더 rag-service/.env·ekep/backend/.env에 그대로 있음), Chroma 인덱스, Piper 음성(backend/data/rag/voices), .venv, node_modules. 다시 시작하려면 GitHub에서 clone 후 README "Run it locally" 그대로(클린 클론 검증 통과한 절차). 사용자 메모: "나중에 GraphRAG + Claude 강의 다 듣고 다시 업데이트할게".
 
 ## Key files for next session
 - `C:\Users\honor\OneDrive\Desktop\expert-knowledge-transfer\README.md` — 포트폴리오 본문(먼저 읽을 것).
@@ -26,7 +27,7 @@
 
 ## Running state
 - Background processes (이 세션): 없음(클린 클론용 uvicorn 8020은 검증 후 종료, 포트 비어 있음 확인).
-- 포트폴리오 검증 서버(이 세션이 띄움, 최소화 창): 백엔드 8010(새 코드, 물류 코퍼스 적재, 데모 인터뷰 데이터 포함), 프런트 3010(NEXT_PUBLIC_API_URL=8010). 필요 없으면 창을 닫으면 됨. 데모 서버 8000/8001/3000/5173과 keepalive는 건드리지 않음.
+- 포트폴리오 검증 서버 8010/3010: 02:00에 종료(폴더 삭제 전). 데모 서버 8000/8001/3000/5173과 keepalive는 건드리지 않음(여전히 실행 중).
 - 서브에이전트(모두 idle): merge-backend, docs-writer, corpus-writer, frontend-english, backend-english, docs-english, repo-audit, repo-cleanup, demo-recorder, video-maker.
 - Open worktrees / branches: expert-knowledge-transfer main = origin/main d2650d5; hackathnhlaba main = origin/main 0ae9dcc(00:40에 HANDOFF 커밋·푸시; 이 01:00 갱신분은 다시 미커밋).
 
@@ -46,7 +47,7 @@
 - Open: README 상단 독일어 Kurzfassung 유지 여부(현재 유지).
 
 ## Pick up here
-포트폴리오 작업은 종료 상태. 남은 기술 항목은 next 보안 패치 버전 업그레이드(사용자 결정)와 docker compose 검증(이제 디스크 39 GB 여유라 가능)뿐이다. 레포 public 전환은 사용자가 나중에 결정.
+포트폴리오 작업은 종료 상태이며 로컬 폴더는 삭제됨(GitHub private 레포 bb8ac8b가 유일한 사본). 사용자가 GraphRAG·Claude 강의 후 다시 업데이트할 계획. 재개 시: `gh repo clone gracelee087/expert-knowledge-transfer` → `backend/.env`를 해커톤 폴더의 .env에서 복사(값은 절대 문서에 적지 않음) → README 절차. 남은 기술 항목은 next 보안 패치 버전 업그레이드(사용자 결정)와 docker compose 검증(이제 디스크 39 GB 여유라 가능)뿐이다. 레포 public 전환은 사용자가 나중에 결정.
 
 ---
 
@@ -1516,3 +1517,4 @@ RAG 병합(§37 작업 1·2), Docker/Render, analyze 어댑터, 3000 인터뷰 �
 - 완료(01:10~01:15): 사용자 결정 — 레포 private 유지, Temp 전체 정리 승인. Temp 실측 43 GB 중 DiagOutputDir\RdClientAutoTrace(.etl 5,377개, 33.8 GB)가 대부분. 하루 이상 된 항목만 삭제(RD 추적 5,225개, hf-render 2.2 GB, hyperframes 캐시 2.3 GB, Office 덤프, Outlook 로그, 옛 puppeteer 프로필) → 여유 0.0 → 39.0 GB, 실패 0. claude scratchpad·당일 파일은 보존. 함정: 함수명 Rm이 Remove-Item 별칭에 가려짐.
 - 추가(01:20~01:40, 사용자 ok): GraphRAG 질문 → 원문 확인(plan.md 3절, HANDOFF §참조): 우리 파트는 GraphRAG 아님(벡터 RAG + 유효기간 메타데이터 + supersession + concept 태깅 semantic layer). 'GraphRAG'는 친구 폴더 regulatory-agent(Cognee 1.4 + ComplianceGraph 그래프 순회)에만 있었음. networkx는 rag-service lock에만 있는 전이 의존성(import 0건). next 15.5.6→15.5.29 커밋 bb8ac8b 푸시(tsc·build OK). docker compose 검증은 Docker Desktop 엔진 미기동으로 차단(위 Deferred 참조).
 - 조사(01:50, "TDD 있어?"): 포트폴리오 레포 실측 — backend/tests 6파일 44테스트는 전부 인터뷰 백엔드(app.services/llm/agents/db, LLM fake) 대상, app.rag를 import하는 테스트 0건. RAG 파트 검증은 scripts/rag/smoke_test.py 24검사(실서버·실LLM 통합 테스트)뿐. CI 워크플로 없음(.github/workflows 없음), 프런트 테스트 없음. TDD 절차 증거 없음(해커톤 3987c6a에 코드와 스모크가 같은 커밋). 결론: "테스트는 있으나 TDD는 아님". 후보(미승인): app/rag 단위 테스트(청커·supersession·eml 파서·validity·중복 판정, fake 임베딩) + GitHub Actions.
+- 완료(02:00): 사용자 지시로 포트폴리오 로컬 폴더 삭제. 절차: 8010/3010 서버·관련 프로세스 4개 종료 → git fetch 후 dirty=0, HEAD=origin/main(bb8ac8b) 재확인 → Remove-Item. 해커톤 폴더는 유지(사용자 선택). C 여유 32.4 GB(39 → Docker Desktop VM 기동으로 감소 추정, 미확인). 사용자 메모: GraphRAG + Claude 강의 후 재업데이트 예정.
