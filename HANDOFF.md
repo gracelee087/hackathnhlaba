@@ -40,12 +40,12 @@
 
 ## Deferred + open questions
 - Deferred: `docker compose up --build` 미검증(디스크 부족; Docker 28.5.1은 설치돼 있음), next 15.5.6 → CVE-2025-66478 패치 버전으로 올릴지, 영상 샷 4의 "Interview ending soon" 배지·샷 7 캡션이 사이드바와 살짝 겹침(가독 OK), HyperFrames 렌더(디스크 확보 후 가능, 구성은 scratchpad/demo-video에 있으나 세션 종료 시 소실 가능).
-- Open: **레포 public 전환 여부**(사용자 결정, 외부 공개라 승인 전 실행 안 함): `gh repo edit gracelee087/expert-knowledge-transfer --visibility public --accept-visibility-change-consequences`.
-- Open: **C 드라이브 여유 2.4 GB**(01:00 실측, 사용자 정리 필요). du: `C:\Users\honor\AppData\Local\Temp` 약 44 GB, 그중 `hyperframes-extract-cache-u` 약 2.3 GB — 삭제는 사용자 결정, 이 세션은 지우지 않음.
+- 결정(사용자, 01:10): **레포는 private 유지**(나중에 결정). public 전환 명령은 `gh repo edit gracelee087/expert-knowledge-transfer --visibility public --accept-visibility-change-consequences`.
+- 완료(사용자 승인 "Temp 전체 정리", 01:15): **C 드라이브 여유 0.0 GB → 39.0 GB**. Temp 43 GB의 정체는 `DiagOutputDir\RdClientAutoTrace`(Remote Desktop 클라이언트 자동 추적 .etl 5,377개, 33.8 GB, 11-07~11-12 5일치 → 하루 약 6~7 GB씩 다시 쌓임. 이 폴더가 계속 커지면 Remote Desktop/Windows App의 진단 로그 설정을 확인할 것 — 설정 위치는 미확인). 삭제: 하루 이상 지난 .etl 5,225개, `hf-render-pjVGm4`(11-11 HyperFrames 렌더 잔여, 소유 PID 종료 확인) 2.2 GB, `hyperframes-extract-cache-u` 2.3 GB, `Diagnostics`(Office 덤프) 0.3 GB, Outlook Logging 하루 이상 된 파일 323개, 하루 이상 된 puppeteer 프로필·scoped_dir·decompressed-browser 폴더. 남긴 것: `claude`(세션 scratchpad 2.2 GB), `hlb_tmp`, `node-compile-cache`, `vscode-stable-user-x64`, 당일 파일. 실패 0건. 함정: PowerShell에서 함수 이름 `Rm`은 Remove-Item 별칭에 가려져 아무것도 안 지워짐 → `Clean-Path`로 재실행. 정리 직전 여유 공간이 2.4 → 0.0 GB로 급감한 원인은 미확인(정리 후 20초 측정에서 변동 0 MB).
 - Open: README 상단 독일어 Kurzfassung 유지 여부(현재 유지).
 
 ## Pick up here
-사용자가 (1) 레포 public 전환, (2) Temp 폴더 정리를 결정하면 실행한다. 그 외 남은 기술 항목은 next 보안 패치 버전 업그레이드와 docker compose 검증(디스크 확보 후)뿐이다.
+포트폴리오 작업은 종료 상태. 남은 기술 항목은 next 보안 패치 버전 업그레이드(사용자 결정)와 docker compose 검증(이제 디스크 39 GB 여유라 가능)뿐이다. 레포 public 전환은 사용자가 나중에 결정.
 
 ---
 
@@ -1512,3 +1512,4 @@ RAG 병합(§37 작업 1·2), Docker/Render, analyze 어댑터, 3000 인터뷰 �
 - **완료(00:30, 최종)**: video-maker v2 → `docs/media/demo.mp4` 124.49 s / 9.38 MB(샷 6 교체, 클로징 URL 계정명, 샷 7 캡션), demo.gif 2.37 MB 유지; 샷 6·클로징 프레임 직접 확인 OK. 커밋 95de896(187파일) → `gh repo create expert-knowledge-transfer --private --source . --push` → https://github.com/gracelee087/expert-knowledge-transfer (PRIVATE, main, 원격 docs/media 7파일 확인). HANDOFF 상단 Session Handoff 블록 교체, 노션 로그 신규 항목.
 - 추가(00:35): video-maker 최종 빌드(샷 6 전체 10.1 s, 124.99 s / 9.43 MB)가 초기 커밋 직후 도착 → 샷 6 프레임 확인 후 docs/media/demo.mp4만 2번째 커밋으로 푸시.
 - 추가(00:40~01:00, "진행" 지시): GitHub topics 10개 추가(About 설명은 기존). 해커톤 HANDOFF 커밋 0ae9dcc 푸시. **클린 클론 검증 통과**: GitHub clone → venv + pip(10분+) → .env(키 복사, 포트 8020) → load_demo 30/30(276 doc chunks + 6 facts = 282) → smoke 24 passed/0 failed/0 skipped; 프런트 npm install·tsc·build exit 0. Docker 경로는 디스크(1.3 GB 여유)로 미검증. npm 경고: next 15.5.6 = CVE-2025-66478. 클론·8020 서버 정리 완료(키 복사본 삭제). 되돌리기 어려운 두 건(public 전환, Temp 44 GB 정리)은 사용자 확인 대기.
+- 완료(01:10~01:15): 사용자 결정 — 레포 private 유지, Temp 전체 정리 승인. Temp 실측 43 GB 중 DiagOutputDir\RdClientAutoTrace(.etl 5,377개, 33.8 GB)가 대부분. 하루 이상 된 항목만 삭제(RD 추적 5,225개, hf-render 2.2 GB, hyperframes 캐시 2.3 GB, Office 덤프, Outlook 로그, 옛 puppeteer 프로필) → 여유 0.0 → 39.0 GB, 실패 0. claude scratchpad·당일 파일은 보존. 함정: 함수명 Rm이 Remove-Item 별칭에 가려짐.
